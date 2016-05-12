@@ -1,12 +1,10 @@
 # wuliBlog
 
-simple  module                  
-
 need mongo + node(v4+)
 
 usage:
 
-git clone https://github.com/Beim/hello-world.git
+git clone https://github.com/Beim/wuliBlog.git
 
 npm install
 

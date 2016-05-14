@@ -15,6 +15,11 @@ a{
 	text-decoration: none;
 }
 
+a:hover{
+	/*color: #DC3522;*/
+	/*text-decoration: underline;*/
+}
+
 html, body, .blog{
 	height: 100%;
 	width: 100%;
@@ -83,6 +88,28 @@ html, body, .blog{
 	/*margin-right: 3%;*/
 }
 
+.fullstrip-title div{
+	color: #fff;
+	margin-right: 10%;
+	display: inline;
+	cursor:	pointer;
+	/*padding-right: 15%;*/
+}
+
+.fullstrip-title div:hover{
+	color: #F6E497;
+}
+
+.fullstrip-super-tag{
+	/*padding-right: 15%;*/
+	margin-right: 20%;
+}
+
+.fullstrip-tag{
+	/*color: #FCFAE1;*/
+	font-size: 20px;
+}
+
 .mainContainer{
 	margin-top: 2%;
 	width: 100%;
@@ -120,16 +147,24 @@ html, body, .blog{
 	/*text-decoration: none;*/
 }
 
+.post-name a:hover{
+	/*color: #B9121B;*/
+	/*color: #4C1B1B;*/
+	color: #BD8D46;
+}
+
 .post-date{
 	color: #d1d1d1;
 }
 
 .post-excerpt{
 	font-size: 18px;
+	padding-bottom: 1%;
 }
 
 .post-tag{
 	padding-right: 5px;
+	color: #444;
 }
 
 .post-tag a {
@@ -138,4 +173,47 @@ html, body, .blog{
 
 .post-tag a:hover{
 	color: #DC3522;
+}
+
+.pagination{
+	text-align: center;
+	/*position: relative;*/
+	display: flex;
+	justify-content: space-between;
+	margin-bottom: 17%;
+}
+
+.pagination .previous{
+	border: 1px solid #d1d1d1;
+	border-radius: 4px;
+	padding: 9px;
+	color: #d1d1d1;
+	display: inline;
+	cursor: pointer;
+}
+
+.pagination	.previous:hover{
+	color: #444;
+	border: 1px solid #444;
+
+}
+
+.pagination .page_number{
+	color: #d1d1d1;
+	padding-top: 8px;
+	display: inline-block;
+}
+
+.pagination .next{
+	border: 1px solid #d1d1d1;
+	border-radius: 4px;
+	padding: 9px;
+	color: #d1d1d1;
+	display: inline;
+	cursor: pointer;
+}
+
+.pagination .next:hover{
+	color: #444;
+	border: 1px solid #444;
 }

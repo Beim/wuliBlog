@@ -39,6 +39,7 @@ html, body, .home{
 	/*color: red;*/
 	text-transform: uppercase;
 }
+
 .site-link:hover{
 	color: #DC3522;
 }

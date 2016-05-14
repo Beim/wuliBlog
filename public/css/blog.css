@@ -1,0 +1,141 @@
+* {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box; 
+  /*display: flex;*/
+  margin: 0;
+  padding: 0;
+}
+
+h1, h2, h3, h4{
+	color: #444444;
+}
+
+a{
+	text-decoration: none;
+}
+
+html, body, .blog{
+	height: 100%;
+	width: 100%;
+	/*display: block;*/
+}
+
+
+
+.site-header{
+	/*padding-left: 7%;*/
+	/*padding-right: 7%;*/
+	padding: 17px 7% 17px 7%;
+}
+
+
+.site-nav{
+	float: right;
+}
+
+.site-title{
+	font-weight: lighter;
+	font-size: 17px;
+	text-decoration: none;
+	color: #444444;
+	/*color: #DC3522;*/
+}
+
+.site-title:hover{
+	color: #DC3522;
+	/*color: lightblue;*/
+}
+
+.site-link{
+	font-weight: lighter;
+	font-size: 17px;
+	text-decoration: none;
+	padding: 0px 20px 0px 0px	;
+	color: #444444;
+	text-transform: uppercase;
+}
+.site-link:hover{
+	color: #DC3522;
+}
+
+.fullstrip{
+	background: url(../img/pagebackground.jpg);
+	/*background-size: cover;*/
+	background-size: 100% 100%;
+	background-repeat: no-repeat;
+	padding-left: 18%;
+	padding-right: 18%;
+	width: 100%;
+	height: 15%;
+}
+
+.fullstrip-container{
+	height: 100%;
+	display: flex;
+	align-items: center;
+}
+
+.fullstrip-title{
+	font-size: 32px;
+	font-weight: bold;
+	color: #fff;
+	/*margin-right: 3%;*/
+}
+
+.mainContainer{
+	margin-top: 2%;
+	width: 100%;
+	height: 100%;
+	padding-left: 18%;
+	padding-right: 18%;
+}
+
+.mainContainer-content{
+	width: 100%;
+	height: 100%;
+	/*background-color: lightblue;*/
+}
+
+.post-wrap{
+	/*background-color: grey;*/
+	margin-bottom: 5%;
+	padding: 10px 10px 20px 10px;
+	border: 1px solid #BFBFBF;
+	box-shadow: 2px 2px 3px #aaaaaa;
+	/*border-radius: 25px;*/
+	border-top-left-radius: 20px;
+	border-top-right-radius: 20px;
+	border-bottom-left-radius: 20px;
+	border-bottom-right-radius: 20px;
+}
+
+.post-name{
+	padding: 9px 0 0;
+	font-size: 36px;
+}
+
+.post-name a{
+	color: #444;
+	/*text-decoration: none;*/
+}
+
+.post-date{
+	color: #d1d1d1;
+}
+
+.post-excerpt{
+	font-size: 18px;
+}
+
+.post-tag{
+	padding-right: 5px;
+}
+
+.post-tag a {
+	color: #444;
+}
+
+.post-tag a:hover{
+	color: #DC3522;
+}

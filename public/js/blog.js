@@ -115,7 +115,7 @@ var content = React.createClass({display : 'content',
 			rce('div', {'className': 'mainContainer-content'},
 				wraps,
 				rce('div', {'className': 'pagination'},
-					rce('div', {'className': 'previous', 'style': this.state.currentNum===1 ? style1 : style2, 'onClick': this.handlePrev}, '← Newer Posts'),
+					rce('div', {'className': 'previous', 'style': this.state.currentNum <=1 ? style1 : style2, 'onClick': this.handlePrev}, '← Newer Posts'),
 					rce('span', {'className': 'page_number'}, `Page: ${this.state.currentNum} of ${this.state.totalNum}`),
 					rce('div', {'className': 'next', 'style': this.state.currentNum >= this.state.totalNum ? style1 : style2, 'onClick': this.handleNext}, 'Older Posts →')
 				)

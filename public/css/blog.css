@@ -29,8 +29,6 @@ html, body, .blog{
 
 
 .site-header{
-	/*padding-left: 7%;*/
-	/*padding-right: 7%;*/
 	padding: 17px 7% 17px 7%;
 }
 
@@ -49,7 +47,6 @@ html, body, .blog{
 
 .site-title:hover{
 	color: #DC3522;
-	/*color: lightblue;*/
 }
 
 .site-link{
@@ -216,4 +213,64 @@ html, body, .blog{
 .pagination .next:hover{
 	color: #444;
 	border: 1px solid #444;
+}
+
+.westEgg-title{
+	height: 40px;
+	width: 100%;
+	margin-bottom: 20px;
+	/*background-color: grey;*/
+}
+
+.westEgg-title input{
+	height: 100%;
+	width: 100%;
+	/*line-height: 40px;*/
+	font-size: 20px;
+	border: 1px solid #BFBFBF;
+	box-shadow: 2px 2px 3px #aaaaaa;
+	padding: 0 7px;
+}
+
+.westEgg-body{
+	height: 500px;
+	width: 100%;
+	margin-bottom: 30px;
+	padding: 10px 0px 0px 0px;
+}
+
+.westEgg-body-img{
+	height: 7%;
+	width: 100%;
+}
+
+
+
+.westEgg-body-img div {
+	border: 1px solid #d1d1d1;
+	border-radius: 4px;
+	padding: 7px;
+	color: #d1d1d1;
+	cursor: pointer;
+	display: inline;
+}
+
+.westEgg-body-img div:hover{
+	color: #444;
+	border: 1px solid #444
+}
+
+.westEgg-body-edit{
+	height: 93%;
+	width: 100%;
+	border: 1px solid #BFBFBF;
+	box-shadow: 2px 2px 3px #aaaaaa;
+	overflow-y : auto;
+}
+
+.westEgg-body-edit p{
+	height: 100%;
+	padding: 7px;
+	width: 100%;
+
 }

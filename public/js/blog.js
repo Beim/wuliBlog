@@ -1,8 +1,8 @@
 'use strict'
 var rce = React.createElement.bind()
 var socket = io.connect('/')
-const myName = '北冥有鱼吃'
 React.initializeTouchEvents(true)
+const myName = '北冥有鱼吃'
 const SelectTag = {
 	front: ['html', 'css', 'javascript'],
 	back: ['koa', 'node'],
@@ -32,6 +32,47 @@ for(let i=0; i<6; i++){
 }
 
 
+
+var westEgg = React.createClass({display: 'westEgg',
+	getInitialState: function(){
+		return{
+			titleValue: ''
+		}
+	},
+	handleTitleChange: function(e){
+		this.setState({
+			titleValue: e.target.value
+		})
+	},
+	handleAddImg: function(){
+
+	},
+	render: function(){
+		return(
+			rce('div', {'className': 'mainContainer-content', 'style': {'display': this.props.display === 1 ? 'block' : 'none'}},
+				// rce('div', null, 'hello')
+
+				rce('div', {'className': 'westEgg-title'},
+					// rce('div', null, 'hello')
+					rce('input', {'placeholder': 'Please fill the title', 'value': this.state.titleValue, 'onChange': this.handleTitleChange})
+				),
+				rce('div', {'className': 'westEgg-body'},
+					// rce('div', null, 'world')
+					rce('div', {'className': 'westEgg-body-img'},
+						rce('div', {'onClick': this.handleAddImg}, 'Image')
+					),
+					// rce('div', {'className': 'westEgg-body-nothing'}),
+					rce('div', {'className': 'westEgg-body-edit'},
+						rce('p' ,{'contentEditable': 'true'})
+					)
+				),
+				rce('div', {'className': 'westEgg-sort-tag'},
+					rce('div', null, '945')
+				)
+			)
+		)
+	}
+})
 
 var content = React.createClass({display : 'content',
 	getInitialState : function(){
@@ -100,7 +141,7 @@ var content = React.createClass({display : 'content',
 					rce('p', null, value.excerpt + '...')
 				),
 				rce('div', {'className': 'post-tags'},
-					rce('span', {'className': 'post-tag'}, 'tags#'),
+					rce('span', {'className': 'post-tag'}, 'tags:'),
 					value.tags.map(function(value1, index1){
 						return rce('span', {'key': 'tags' + Date() + index1, 'className': 'post-tag'},
 							rce('a', {'href': '#'}, value1)
@@ -112,7 +153,7 @@ var content = React.createClass({display : 'content',
 		let style1 = {'color': 'white', 'border': '1px solid white'}
 		let style2 = {}
 		return (
-			rce('div', {'className': 'mainContainer-content'},
+			rce('div', {'className': 'mainContainer-content', 'style': {'display': this.props.display === 0 ? 'block' : 'none'}},
 				wraps,
 				rce('div', {'className': 'pagination'},
 					rce('div', {'className': 'previous', 'style': this.state.currentNum <=1 ? style1 : style2, 'onClick': this.handlePrev}, '← Newer Posts'),
@@ -127,12 +168,20 @@ var content = React.createClass({display : 'content',
 var total = React.createClass({display: 'total',
 	getInitialState: function(){
 		return{
-			select: 'Blog'
+			select: 'Blog',
+			display: 1
 		}
 	},
 	handleSelect: function(e){
 		this.setState({
 			select: e.target.innerHTML
+		})
+	},
+	handleChangeDisplay: function(){
+		let nextDisplay = this.state.display === 0 ? 1 : 0
+		// console.info('display' + nextDisplay)
+		this.setState({
+			display: nextDisplay
 		})
 	},
 	render : function(){
@@ -141,7 +190,7 @@ var total = React.createClass({display: 'total',
 				rce('div', {'className': 'site-header'},
 					rce('a', {'className': 'site-title', 'href': 'https://github.com/Beim'}, myName),
 					rce('nav', {'className': 'site-nav'}, 
-						rce('a', {'className': 'site-link', 'href': '#', 'style': {'color': 'white'}}, 'secret'),
+						rce('a', {'className': 'site-link', 'href': '#', 'style': {'color': 'white'}, 'onClick': this.handleChangeDisplay}, 'secret'),
 						rce('a',{'className': 'site-link', 'href': '../index.html'}, 'HOME'),
 						rce('a',{'className': 'site-link', 'href': '../about.html'}, 'ABOUT'),
 						rce('a',{'className': 'site-link', 'href': '../blog.html'}, 'BLOG'),
@@ -163,9 +212,10 @@ var total = React.createClass({display: 'total',
 					)
 				),
 				rce('div', {'className': 'mainContainer'},
-					rce('div', {'className': 'mainContainer-content'},
-						rce(content, {'select': this.state.select})
-					)
+					// rce('div', {'className': 'mainContainer-content'},
+						rce(content, {'select': this.state.select, 'display': this.state.display}),
+						rce(westEgg, {'display': this.state.display})
+					// )
 				)
 			)
 		)

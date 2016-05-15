@@ -272,5 +272,9 @@ html, body, .blog{
 	height: 100%;
 	padding: 7px;
 	width: 100%;
+}
 
+.westEgg-body-edit img{
+	max-width: 90%;
+	max-height: 300px;
 }

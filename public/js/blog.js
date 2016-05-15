@@ -45,25 +45,44 @@ var westEgg = React.createClass({display: 'westEgg',
 		})
 	},
 	handleAddImg: function(){
+		$('#fileInput').click()
+	},
+	onAddImg: function(e){
+		let fileObj = document.getElementById('fileInput').files[0]
+		let form = new FormData()
+		form.append('file', fileObj)
+		form.append('hello', 'world')
 
+		let xhr = new XMLHttpRequest()
+		xhr.open('post', 'postMethod/images', true)
+		// xhr.setRequestHeader('Content-type', 'multipart/form-data')
+		xhr.responstType = 'text'
+		xhr.onload = function (e) {
+			let url = this.response
+			let p = document.getElementById('westEgg-body-edit-p')
+			let div = document.createElement('div')
+			let img = document.createElement('img')
+			img.src = url
+			div.appendChild(img)
+			p.appendChild(div)
+			p.focus()
+		}
+		xhr.send(form)
 	},
 	render: function(){
 		return(
 			rce('div', {'className': 'mainContainer-content', 'style': {'display': this.props.display === 1 ? 'block' : 'none'}},
-				// rce('div', null, 'hello')
-
 				rce('div', {'className': 'westEgg-title'},
-					// rce('div', null, 'hello')
 					rce('input', {'placeholder': 'Please fill the title', 'value': this.state.titleValue, 'onChange': this.handleTitleChange})
 				),
 				rce('div', {'className': 'westEgg-body'},
-					// rce('div', null, 'world')
 					rce('div', {'className': 'westEgg-body-img'},
-						rce('div', {'onClick': this.handleAddImg}, 'Image')
+						rce('div', {'onClick': this.handleAddImg, 'type': 'file'}, 'Image'),
+						rce('input', {'type': 'file', 'id': 'fileInput', 'accept': 'image/gif, image/jpeg, image/x-png', 'style': {'display': 'none'}, 'onChange': this.onAddImg})
 					),
 					// rce('div', {'className': 'westEgg-body-nothing'}),
 					rce('div', {'className': 'westEgg-body-edit'},
-						rce('p' ,{'contentEditable': 'true'})
+						rce('p' ,{'contentEditable': 'true', 'id': 'westEgg-body-edit-p'})
 					)
 				),
 				rce('div', {'className': 'westEgg-sort-tag'},

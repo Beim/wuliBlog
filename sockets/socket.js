@@ -5,7 +5,7 @@ module.exports = function (server){
 	var io = socketIo.listen(server)
 	
 	io.on('connection', function(socket){
-		console.log('connected~')
+		// console.log('connected~')
 		// socket.on('event', function(data){
 		// 	socket.name = data.name
 		//    to all
@@ -18,7 +18,7 @@ module.exports = function (server){
 		// 	})
 		// })
 		socket.on('disconnect', function(){
-			console.log('disconnect')
+			// console.log('disconnect')
 		})
 	})
 }

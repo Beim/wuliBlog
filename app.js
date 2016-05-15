@@ -8,6 +8,7 @@ var session = require('koa-session')
 var logger = require('koa-logger')
 var koaStatic = require('koa-static')
 var db = require('./mongo.js')
+
 // var views = require('koa-views')
 // var onerror = require('koa-onerror')
 // var fs = require('fs')
@@ -15,6 +16,8 @@ var db = require('./mongo.js')
 /* routes*/
 var index = require('./routes/index')
 var users = require('./routes/users')
+var getMethod = require('./routes/getMethod')
+var postMethod = require('./routes/postMethod')
 
 /*
 	middleware
@@ -30,13 +33,15 @@ app.use(function * (next) {
   var start = new Date()
   yield next
   var ms = new Date() - start
-  console.log('%s%s - %s', this.method, this.url, ms)
+  // console.log('%s%s - %s', this.method, this.url, ms)
 })
 
 app.use(koaStatic(path.join(__dirname, '/public')))
 
 koaRouter.use('/', index.routes(), index.allowedMethods())
 koaRouter.use('/users', users.routes(), users.allowedMethods())
+koaRouter.use('/getMethod', getMethod.routes(), getMethod.allowedMethods())
+koaRouter.use('/postMethod', postMethod.routes(), postMethod.allowedMethods())
 
 app.use(koaRouter.routes())
 

@@ -65,7 +65,7 @@ var westEgg = React.createClass({display: 'westEgg',
 			img.src = url
 			div.appendChild(img)
 			p.appendChild(div)
-			p.focus()
+			p.lastChild.focus()
 		}
 		xhr.send(form)
 	},

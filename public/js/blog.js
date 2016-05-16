@@ -87,12 +87,43 @@ var westEgg = React.createClass({display: 'westEgg',
 		}
 		this.setState({chooseTag: chooseTag})
 	},
+	onPost: function(){
+		let title = this.state.titleValue
+		let author = this.state.authorValue
+		let _date = new Date()
+		let m = (_date.getMonth() + "").length == 1 ? "0" + _date.getMonth() : _date.getMonth()
+		let d = (_date.getDate() + "").length == 1 ? "0" + _date.getDate() : _date.getDate()
+		let date = _date.getFullYear() + "-" + m + "-" + d
+		let article = document.getElementById('westEgg-body-edit-p').innerHTML
+		let tags = this.state.chooseTag
+		var data = {
+			'title': title,
+			'author': author,
+			'date': date,
+			'article': article,
+			'tags': tags
+		}
+		// data = JSON.parse(data)
+		data = JSON.stringify(data)
+		let xhr = new XMLHttpRequest()
+		xhr.open('POST', '/postMethod/newBlog', true)
+		xhr.responseType = 'json'
+		xhr.setRequestHeader('Content-Type', 'application/x-javascript; charset=UTF-8')
+		xhr.onload = function(e){
+			if(this.response.ok == -2){
+				alert(' 没那麼简单 就能找到 聊得来的伴')
+			}
+		}
+		xhr.send(data)
+		// $.post('/postMethod/newBlog', data, function(data, status){
+		// 	console.info('helo wworld')
+		// })
+	},
 	render: function(){
 		let style1 = {'color': '#444', 'border': '1px solid #444'}
 		// let style1 = {'color': '#3E606F', 'border': '1px solid #3E606F'}
 		let style2 = {}
 		let stateTags = this.state.stateTags
-		// let handleSelect = this.handleSelect
 		let handleSelectTag = this.handleSelectTag
 		let chooseTag = this.state.chooseTag
 		let tagWrap = []
@@ -138,10 +169,9 @@ var westEgg = React.createClass({display: 'westEgg',
 				),
 				rce('div', {'className': 'westEgg-post'},
 					rce('div', {'className': 'westEgg-post-author'}, 
-						// 'author'
 						rce('input', {'placeholder': 'author', 'value': this.state.authorValue, 'onChange': this.handleAuthorChange})
 					),
-					rce('div', {'className': 'westEgg-post-btn'},
+					rce('div', {'className': 'westEgg-post-btn', 'onClick': this.onPost},
 						'button'
 					)
 				)

@@ -8,7 +8,6 @@ var session = require('koa-session')
 var logger = require('koa-logger')
 var koaStatic = require('koa-static')
 var db = require('./mongo.js')
-
 // var views = require('koa-views')
 // var onerror = require('koa-onerror')
 // var fs = require('fs')
@@ -25,7 +24,14 @@ var postMethod = require('./routes/postMethod')
 app.keys = ['scret', 'keys'] //	key of session
 const opts = {'maxAge': 60 * 60 * 1000}//	maxAge of session
 app.use(session(app, opts))
-app.use(parser())
+app.use(parser({
+	// detectJSON: function (ctx) {
+	//     return /\.json$/i.test(ctx.path);
+	// },
+	extendTypes: {
+	    json: ['application/x-javascript'] // will parse application/x-javascript type body as a JSON string
+	  }
+}))
 app.use(json())
 // app.use(logger())
 

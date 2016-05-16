@@ -278,3 +278,94 @@ html, body, .blog{
 	max-width: 90%;
 	max-height: 300px;
 }
+
+.westEgg-sort{
+	width: 100%;
+	border: 1px solid #BFBFBF;
+	box-shadow: 2px 2px 3px #aaaaaa;
+	margin-bottom: 60px;
+	/*padding: 10px 0px 0px 0px;*/
+	/*display: flex;*/
+}
+
+.westEgg-sort-tag{
+	width: 100%;
+	padding: 2px 5px;
+	color: #444;
+	display: flex;
+	flex-direction: column;
+}
+
+.westEgg-sort-tag-div{
+	width: 100%;
+	display: flex;
+	padding: 5px 0;
+}
+
+.westEgg-sort-tag-div1{
+	width: 10%;
+	margin: auto;
+	color: #D1DBBD;
+	/*color: #01AA9D;*/
+}
+
+.westEgg-sort-tag-div2{
+	width: 90%;
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.westEgg-sort-tag-div2 div{
+	border: 1px solid #d1d1d1;
+	border-radius: 4px;
+	padding: 5px;
+	color: #d1d1d1;
+	cursor: pointer;
+	/*display: inline;*/
+	margin-right: 20px;
+	margin-top: 2px;
+	margin-bottom: 3px;
+}
+
+.westEgg-post{
+	width: 100%;
+	/*border: 1px solid #BFBFBF;*/
+	/*box-shadow: 2px 2px 3px #aaaaaa;*/
+	margin-bottom: 160px;
+	display: flex;
+}
+
+.westEgg-post-author{
+	height: 35px;
+	/*height: 7%;*/
+	width: 40%;
+}
+
+.westEgg-post-author input{
+	height: 100%;
+	width: 100%;
+	font-size: 15px;
+	border: 1px solid #BFBFBF;
+	box-shadow: 2px 2px 3px #BFBFBF;
+	padding: 0 7px;
+}
+
+.westEgg-post-btn{
+	margin-left: 2%;
+	height: 35px;
+	width: 12%;
+	border: 1px solid #d1d1d1;
+	border-radius: 4px;
+	text-align: center;
+	padding: 7px 0;
+	/*padding: 6px;*/
+	/*padding-top: 7px;*/
+	/*padding-left: 9px;*/
+	color: #d1d1d1;
+	cursor: pointer;
+}
+
+.westEgg-post-btn:hover{
+	color: #444;
+	border: 1px solid #444;
+}

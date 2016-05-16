@@ -6,9 +6,9 @@ const myName = '北冥有鱼吃'
 const SelectTag = {
 	front: ['html', 'css', 'javascript'],
 	back: ['koa', 'node'],
-	daily: [],
-	movies: [],
-	books: []
+	daily: ['daily'],
+	movies: ['recommend', 'nice', 'intend'],
+	books: ['novel']
 }
 
 var simulateData = []
@@ -16,32 +16,42 @@ for(let i=0; i<6; i++){
 	simulateData.push({
 		_id: '123',
 		name : 'Anouncing Event Calendar App',
+		author: 'beim',
 		date : '2016 05 12',
 		excerpt : 'I’ve been building side projects since the day that I began programming. However, only more recently have I taken my side projects seriously and tried to build something useful, something that people will actually use. Horu You may or may not know that just under 6 months ago I released' + '...',
 		tags : ['html', 'css', 'javascript']
 	})
 }
-for(let i=0; i<6; i++){
-	simulateData.push({
-		_id: '123',
-		name : 'Anouncing Event Calendar App',
-		date : '2016 05 12',
-		excerpt : 'I’ve been building side projects since the day that I began programming. However, only more recently have I taken my side projects seriously and tried to build something useful, something that people will actually use. Horu You may or may not know that just under 6 months ago I released' + '...',
-		tags : ['koa']
-	})
-}
-
 
 
 var westEgg = React.createClass({display: 'westEgg',
 	getInitialState: function(){
+		let stateTags = SelectTag
+		let stateTag = []
+		let chooseTag = {}
+		for (let i in SelectTag) {
+			if (SelectTag[i]) {
+				stateTag = stateTag.concat(SelectTag[i])
+			}
+		}
+		for (let i in stateTag) {
+			chooseTag[stateTag[i]] = 0
+		}
 		return{
-			titleValue: ''
+			titleValue: '',
+			authorValue: '',
+			stateTags: stateTags,
+			chooseTag: chooseTag
 		}
 	},
 	handleTitleChange: function(e){
 		this.setState({
 			titleValue: e.target.value
+		})
+	},
+	handleAuthorChange: function(e){
+		this.setState({
+			authorValue: e.target.value
 		})
 	},
 	handleAddImg: function(){
@@ -69,7 +79,43 @@ var westEgg = React.createClass({display: 'westEgg',
 		}
 		xhr.send(form)
 	},
+	handleSelectTag: function (e) {
+		let tagName = e.target.innerHTML
+		let chooseTag = this.state.chooseTag
+		if(chooseTag[tagName] != undefined){
+			chooseTag[tagName] = chooseTag[tagName] === 0 ? 1 : 0
+		}
+		this.setState({chooseTag: chooseTag})
+	},
 	render: function(){
+		let style1 = {'color': '#444', 'border': '1px solid #444'}
+		// let style1 = {'color': '#3E606F', 'border': '1px solid #3E606F'}
+		let style2 = {}
+		let stateTags = this.state.stateTags
+		// let handleSelect = this.handleSelect
+		let handleSelectTag = this.handleSelectTag
+		let chooseTag = this.state.chooseTag
+		let tagWrap = []
+		for(let i in stateTags){
+			let tagName = i
+			let tagDetail = stateTags[i]
+			let _tags = []
+			tagDetail.forEach(function (elem){
+				_tags.push(
+					rce('div', {'key': '_tagspush' + elem + i, 'onClick': handleSelectTag, 'style': chooseTag[elem] === 0 ? style2 : style1}, elem)
+				)
+			})
+			tagWrap.push(
+				rce('div', {'key': 'tagWrap-div' + i, 'className': 'westEgg-sort-tag-div'},
+					rce('div', {'key': 'tagWrap-div1' + i, 'className': 'westEgg-sort-tag-div1'}, 
+						rce('b', null, i)
+					),
+					rce('div', {'key': 'tagWrap-div2' + i, 'className': 'westEgg-sort-tag-div2'}, 
+						_tags
+					)
+				)
+			)
+		}
 		return(
 			rce('div', {'className': 'mainContainer-content', 'style': {'display': this.props.display === 1 ? 'block' : 'none'}},
 				rce('div', {'className': 'westEgg-title'},
@@ -85,8 +131,19 @@ var westEgg = React.createClass({display: 'westEgg',
 						rce('p' ,{'contentEditable': 'true', 'id': 'westEgg-body-edit-p'})
 					)
 				),
-				rce('div', {'className': 'westEgg-sort-tag'},
-					rce('div', null, '945')
+				rce('div', {'className': 'westEgg-sort'},
+					rce('div', {'className': 'westEgg-sort-tag'}, 
+						tagWrap
+					)
+				),
+				rce('div', {'className': 'westEgg-post'},
+					rce('div', {'className': 'westEgg-post-author'}, 
+						// 'author'
+						rce('input', {'placeholder': 'author', 'value': this.state.authorValue, 'onChange': this.handleAuthorChange})
+					),
+					rce('div', {'className': 'westEgg-post-btn'},
+						'button'
+					)
 				)
 			)
 		)
@@ -204,6 +261,10 @@ var total = React.createClass({display: 'total',
 		})
 	},
 	render : function(){
+		let _tags = []
+		for (let i in SelectTag) {
+			_tags.push(rce('div', {'key': '_tags'+i, 'className': 'fullstrip-tag', 'onClick': this.handleSelect}, i))
+		}
 		return(
 			rce('div', {'className': 'blog'},
 				rce('div', {'className': 'site-header'},
@@ -222,11 +283,7 @@ var total = React.createClass({display: 'total',
 					rce('div', {'className': 'fullstrip-container'},
 						rce('div', {'className': 'fullstrip-title'}, 
 							rce('div', {'className': 'fullstrip-super-tag', 'onClick': this.handleSelect}, 'Blog'),
-							rce('div', {'className': 'fullstrip-tag', 'onClick': this.handleSelect}, 'front'),
-							rce('div', {'className': 'fullstrip-tag', 'onClick': this.handleSelect}, 'back'),
-							rce('div', {'className': 'fullstrip-tag', 'onClick': this.handleSelect}, 'daily'),
-							rce('div', {'className': 'fullstrip-tag', 'onClick': this.handleSelect}, 'movies'),
-							rce('div', {'className': 'fullstrip-tag', 'onClick': this.handleSelect}, 'books')
+							_tags
 						)
 					)
 				),

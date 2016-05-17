@@ -397,7 +397,13 @@ var content = React.createClass({display : 'content',
 			if(this.response.ok == 1){
 				let comments = Object.assign([], _this.state.comments)
 				predata.floor = comments.length + 1
-				predata.date = Date.now
+				let _date = new Date()
+				let y = _date.getFullYear()
+				let m = (_date.getMonth() + 1) + ''
+				m = m.length == 1 ? '0' + m : m
+				let d = _date.getDate() + ''
+				d = d.length	 == 1 ? '0' + d : d
+				predata.date = (y + '-' + m + '-' + d)
 				comments.push(predata)
 				_this.setState({
 					comments: comments,

@@ -26,6 +26,26 @@ for(let i=0; i<6; i++){
 
 var westEgg = React.createClass({display: 'westEgg',
 	getInitialState: function(){
+		// let stateTags = SelectTag
+		// let stateTag = []
+		// let chooseTag = {}
+		// for (let i in SelectTag) {
+		// 	if (SelectTag[i]) {
+		// 		stateTag = stateTag.concat(SelectTag[i])
+		// 	}
+		// }
+		// for (let i in stateTag) {
+		// 	chooseTag[stateTag[i]] = 0
+		// }
+		// return{
+		// 	titleValue: '',
+		// 	authorValue: '',
+		// 	stateTags: stateTags,
+		// 	chooseTag: chooseTag
+		// }
+		return this.init()
+	},
+	init: function(){
 		let stateTags = SelectTag
 		let stateTag = []
 		let chooseTag = {}
@@ -43,6 +63,7 @@ var westEgg = React.createClass({display: 'westEgg',
 			stateTags: stateTags,
 			chooseTag: chooseTag
 		}
+		
 	},
 	handleTitleChange: function(e){
 		this.setState({
@@ -88,6 +109,7 @@ var westEgg = React.createClass({display: 'westEgg',
 		this.setState({chooseTag: chooseTag})
 	},
 	onPost: function(){
+		let _this = this
 		let title = this.state.titleValue
 		let author = this.state.authorValue
 		// let _date = new Date()
@@ -123,6 +145,14 @@ var westEgg = React.createClass({display: 'westEgg',
 		xhr.onload = function(e){
 			if(this.response.ok == -2){
 				alert(' 没那麼简单 就能找到 聊得来的伴')
+			}
+			else if(this.response.ok == 0){
+				alert('sorry ~~~post failed')
+			}
+			else if(this.response.ok == 1){
+				_this.props.handleChangeDisplay.call(null, 'blogList')
+				_this.setState(_this.init())
+				document.getElementById('westEgg-body-edit-p').innerHTML = ''
 			}
 		}
 		xhr.send(data)
@@ -199,10 +229,17 @@ var content = React.createClass({display : 'content',
 			currentNum: 1,
 			totalNum: 1,
 			blog: '',
-			onePageNum: 5
+			hasZaned: false,
+			onePageNum: 5,
+			nickname: '',
+			email: '',
+			comments: []
 		}
 	},
 	componentDidMount : function(){
+		this.getBlogList()
+	},
+	getBlogList: function(){
 		let _this = this
 		let xhr = new XMLHttpRequest()
 		let onePageNum = this.state.onePageNum
@@ -242,19 +279,35 @@ var content = React.createClass({display : 'content',
 			currentNum: Math.ceil(simuData.length / onePageNum) ? 1 : 0,
 			totalNum: Math.ceil(simuData.length / onePageNum)
 		})
+		if(nextProps.shouldRefreshBlogList){
+			this.getBlogList()
+			this.props.blogListDidRefreshed()
+		}
 
 	},
 	shouldComponentUpdate: function(nextProps, nextState){
 		if(this.state.blog !== nextState.blog){
-			let article = nextState.blog.article
-			let div = document.getElementById('blog')
-			div.innerHTML = article
+			this.showBlogArticle(nextState)
 		}
 		return true
 	},
 	// componentWillUpdate: function(nextProps, nextState){
 	// 	console.info('will')
 	// },
+	componentDidUpdate: function(prevProps, prevState){
+		if(this.state.comments.length !== prevState.comments.length){
+			let divs = document.getElementsByClassName('aBlog-footer-comment-content')
+			let comments = Object.assign([], this.state.comments)
+			comments.forEach((value, index) => {
+				divs[index].innerHTML = value.content
+			})
+		}
+
+	},
+	showBlogArticle: function(nextState){
+		this.setState({hasZaned: false})
+		document.getElementById('blog-article').innerHTML = nextState.blog.article
+	},
 	handlePrev: function(){
 		if(this.state.currentNum > 1){
 			this.setState({
@@ -282,12 +335,79 @@ var content = React.createClass({display : 'content',
 		xhr.responseType = 'json'
 		xhr.onload = function(e){
 			if(this.response.ok == 1){
+				let blog = this.response.data
+				blog.date = blog.date.substring(0, 10)
 				_this.setState({
-					blog: this.response.data
+					blog: blog,
+					comments: blog.comments
 				})
 			}
 		}
 		xhr.send(id)
+	},
+	zan: function(){
+		if(!this.state.hasZaned){
+			let _this = this
+			let id = JSON.stringify({_id: this.state.blog._id})
+			let xhr = new XMLHttpRequest()
+			xhr.open('POST', 'postMethod/zan', true)
+			xhr.setRequestHeader('Content-Type', 'application/x-javascript; charset=UTF-8')
+			xhr.responseType = 'json'
+			xhr.onload = function(e){
+				if(this.response.ok == 1){
+					// console.info('zan success')
+					let blog = _this.state.blog
+					blog.zan += 1
+					_this.setState({blog: blog, hasZaned: true})
+				}
+			}
+			xhr.send(id)
+		}
+	},
+	onNicknameChange: function(e){
+		this.setState({nickname: e.target.value})
+	},
+	onEmailChange: function(e){
+		this.setState({email: e.target.value})
+	},
+	handlePostComment: function(){
+		let _this = this
+		let content = document.getElementById('aBlog-footer-edit-p').innerHTML
+		let index = content.indexOf('<div>') 
+		if(index > 0){
+			let contentArray = [...content]
+			contentArray.splice(index, 0, '</div>')
+			content = contentArray.join('')
+			content = '<div>' + content
+		}
+		let name = this.state.nickname
+		let email = this.state.email
+		let predata = {
+			_id: this.state.blog._id,
+			content: content,
+			name: name,
+			email: email
+		}
+		let data = JSON.stringify(predata)
+		let xhr = new XMLHttpRequest()
+		xhr.open('POST', '/postMethod/comment', true)
+		xhr.setRequestHeader('Content-Type', 'application/x-javascript; charset=UTF-8')
+		xhr.responseType = 'json'
+		xhr.onload = function(e){
+			if(this.response.ok == 1){
+				let comments = Object.assign([], _this.state.comments)
+				predata.floor = comments.length + 1
+				predata.date = Date.now
+				comments.push(predata)
+				_this.setState({
+					comments: comments,
+					email: '',
+					nickname: ''
+				})
+				document.getElementById('aBlog-footer-edit-p').innerHTML = ''
+			}
+		}
+		xhr.send(data)
 	},
 	render : function(){
 		let data = this.state.showData
@@ -318,6 +438,28 @@ var content = React.createClass({display : 'content',
 		}.bind(this))
 		let style1 = {'color': 'white', 'border': '1px solid white'}
 		let style2 = {}
+
+		let comments = this.state.comments
+		let aBlogFooterComment = comments.map((value, index) => {
+			let date = value.date.substring(2, 10)
+
+			return rce('div', {'key': 'comment' + index, 'className': 'aBlog-footer'},
+				rce('div', {'className': 'aBlog-footer-comment'},
+					rce('div', {'className': 'aBlog-footer-comment-info'},
+						rce('div', {'className': 'aBlog-footer-comment-info-floor'},
+							rce('div', null, value.floor)
+						),
+						rce('div', {'className': 'aBlog-footer-comment-info-name'},
+							rce('div', null, value.name)
+						),
+						rce('div', {'className': 'aBlog-footer-comment-info-name'},
+							rce('div', null, date)
+						)
+					),
+					rce('div', {'className': 'aBlog-footer-comment-content'}, 'content')
+				)
+			)
+		})
 		return (
 			rce('div', {'style': {'display': this.props.display === 0 || this.props.display === 2 ? 'block' : 'none'}}, 
 				rce('div', {'className': 'mainContainer-content', 'style': {'display': this.props.display === 0 ? 'block' : 'none'}},
@@ -329,8 +471,35 @@ var content = React.createClass({display : 'content',
 					)
 				),
 				rce('div', {'className': 'mainContenter-content', 'style': {'display': this.props.display === 2 ? 'block' : 'none'}},
-					rce('div', {'className': 'blog', 'id': 'blog'})
-					// rce('div', null, this.state.blog.article)
+					rce('div', {'className': 'aBlog', 'id': 'blog'},
+						rce('h2', null, this.state.blog.title),
+						rce('br', null),
+						rce('div', {'className': 'blog-article', 'id': 'blog-article'}),
+						rce('br', null),
+						rce('div', {'className': 'blog-info'},
+							rce('div', {'className': 'blog-info-zan', 'onClick': this.zan}, '有用: ' + this.state.blog.zan),
+							rce('div', {'className': 'blog-info-tags'}, '标签: ' + this.state.blog.tags),
+							rce('div', {'className': 'blog-info-date'}, this.state.blog.date   )
+						)
+					),
+					rce('div', {'className': 'aBlog-footer'},
+						// rce('div', null, 'footer')
+						rce('div', {'className': 'aBlog-footer-label'}, 'Comment : '),
+						rce('div', {'className': 'aBlog-footer-edit'},
+							rce('p' ,{'contentEditable': 'true', 'id': 'aBlog-footer-edit-p'})
+						),
+						rce('div', {'className': 'aBlog-footer-info-post-wraper'},
+							rce('div', {'className': 'aBlog-footer-info'},
+								rce('input', {'type': 'text', 'placeholder': 'nickname *', 'value': this.state.nickname, 'onChange': this.onNicknameChange}),
+								rce('input', {'type': 'text', 'placeholder': 'Email ', 'value': this.state.email, 'onChange': this.onEmailChange})
+							),
+							rce('div', {'className': 'aBlog-footer-post', 'onClick': this.handlePostComment},
+								rce('div', null, 'post')
+							)
+						)
+					),
+					aBlogFooterComment
+
 				)
 			)
 		)
@@ -341,6 +510,7 @@ var total = React.createClass({display: 'total',
 	getInitialState: function(){
 		return{
 			select: 'Blog',
+			shouldRefreshBlogList: false,
 			display: 0 //0 blog list  1 secret  2 blog
 		}
 	},
@@ -359,9 +529,19 @@ var total = React.createClass({display: 'total',
 		}
 		else if (e === 'blogList') {
 			nextDisplay = 0
+			if(this.state.display != nextDisplay){
+				this.setState({
+					shouldRefreshBlogList: true
+				})
+			}
 		}
 		this.setState({
 			display: nextDisplay
+		})
+	},
+	blogListDidRefreshed: function(){
+		this.setState({
+			shouldRefreshBlogList: false
 		})
 	},
 	render : function(){
@@ -393,8 +573,14 @@ var total = React.createClass({display: 'total',
 				),
 				rce('div', {'className': 'mainContainer'},
 					// rce('div', {'className': 'mainContainer-content'},
-						rce(content, {'select': this.state.select, 'display': this.state.display, 'handleChangeDisplay': this.handleChangeDisplay}),
-						rce(westEgg, {'display': this.state.display})
+						rce(content, {
+							'select': this.state.select,
+							'display': this.state.display, 
+							'handleChangeDisplay': this.handleChangeDisplay, 
+							'shouldRefreshBlogList': this.state.shouldRefreshBlogList, 
+							'blogListDidRefreshed': this.blogListDidRefreshed
+						}),
+						rce(westEgg, {'display': this.state.display, 'handleChangeDisplay': this.handleChangeDisplay})
 					// )
 				)
 			)

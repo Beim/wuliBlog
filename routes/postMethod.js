@@ -6,7 +6,7 @@ var fs = require('fs')
 var os = require('os')
 var path = require('path')
 const db = require('../mongo.js')
-const postAuthentication = ['beim', '北冥有鱼吃']
+const postAuthentication = ['beim', '北冥有鱼吃', 'test']
 
 
 router.post('/:name', function *(next) {
@@ -47,12 +47,36 @@ router.post('/:name', function *(next) {
 			}
 		}
 	}
+
 	else if (this.params.name == 'blog'){
 		let limit = this.request.body
 		let response = yield db.search['blog'](limit)
 		this.body = {
 			ok: 1,
 			data: response
+		}
+	}
+
+	else if (this.params.name == 'zan'){
+		let limit = this.request.body
+		let response = yield db.update['zan'](limit)
+		this.body = {
+			ok: response
+		}
+	}
+	
+	else if (this.params.name == 'comment'){
+		let limit = {
+			_id: this.request.body._id
+		}
+		let data = {
+			content: this.request.body.content,
+			name: this.request.body.name,
+			email: this.request.body.email
+		}
+		let response = yield db.insert['comment'](limit, data)
+		this.body = {
+			ok: response
 		}
 	}
 	return yield next

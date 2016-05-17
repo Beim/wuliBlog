@@ -75,6 +75,7 @@ html, body, .blog{
 .fullstrip-container{
 	height: 100%;
 	display: flex;
+	display: -webkit-flex; /* Safari */
 	align-items: center;
 }
 
@@ -176,6 +177,7 @@ html, body, .blog{
 	text-align: center;
 	/*position: relative;*/
 	display: flex;
+	display: -webkit-flex; /* Safari */
 	justify-content: space-between;
 	margin-bottom: 17%;
 }
@@ -293,12 +295,14 @@ html, body, .blog{
 	padding: 2px 5px;
 	color: #444;
 	display: flex;
+	display: -webkit-flex; /* Safari */
 	flex-direction: column;
 }
 
 .westEgg-sort-tag-div{
 	width: 100%;
 	display: flex;
+	display: -webkit-flex; /* Safari */
 	padding: 5px 0;
 }
 
@@ -312,6 +316,7 @@ html, body, .blog{
 .westEgg-sort-tag-div2{
 	width: 90%;
 	display: flex;
+	display: -webkit-flex; /* Safari */
 	flex-wrap: wrap;
 }
 
@@ -333,6 +338,7 @@ html, body, .blog{
 	/*box-shadow: 2px 2px 3px #aaaaaa;*/
 	margin-bottom: 160px;
 	display: flex;
+	display: -webkit-flex; /* Safari */
 }
 
 .westEgg-post-author{
@@ -387,6 +393,7 @@ html, body, .blog{
 .blog-info{
 	width: 100%;
 	display: flex;
+	display: -webkit-flex; /* Safari */
 	flex-wrap: wrap;
 	align-items: center;
 }
@@ -429,12 +436,14 @@ html, body, .blog{
 
 .aBlog-footer-info-post-wraper{
 	display: flex;
+	display: -webkit-flex; /* Safari */
 }
 
 .aBlog-footer-info{
 	padding-bottom: 0;
 	width: 70%;
 	display: flex;
+	display: -webkit-flex; /* Safari */
 	flex-direction: column;
 }
 
@@ -457,6 +466,7 @@ html, body, .blog{
 	padding-right: 18px;*/
 	/*display: inline;*/
 	display: flex;
+	display: -webkit-flex; /* Safari */
 	font-size: 26px;
 	/*text-align: center;*/
 	cursor: pointer;
@@ -473,6 +483,7 @@ html, body, .blog{
 
 .aBlog-footer-comment{
 	display: flex;
+	display: -webkit-flex; /* Safari */
 }
 
 .aBlog-footer-comment-info{
@@ -486,6 +497,7 @@ html, body, .blog{
 	font-size: 20px;
 	font-weight: bold;
 	display: flex;
+	display: -webkit-flex; /* Safari */
 	/*margin: auto;*/
 	/*text-align: center;*/
 	color: #444;
@@ -499,6 +511,7 @@ html, body, .blog{
 .aBlog-footer-comment-info-name{
 	width: 80px;
 	display: flex;
+	display: -webkit-flex; /* Safari */
 	margin-top: 10px;
 }
 

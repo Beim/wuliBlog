@@ -115,7 +115,6 @@ exports.update = {
 					res(0)
 				}
 				else{
-					console.log(doc.zan)
 					doc.zan += 1
 					doc.save((err2) => {
 						if(err2){

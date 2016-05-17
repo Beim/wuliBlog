@@ -51,8 +51,8 @@ koaRouter.use('/postMethod', postMethod.routes(), postMethod.allowedMethods())
 
 app.use(koaRouter.routes())
 
-app.on('error', function (err, ctx) {
-  logger.error('server error', err, ctx)
-})
+// app.on('error', function (err, ctx) {
+//   logger.error('server error', err, ctx)
+// })
 
 module.exports = app

@@ -4,9 +4,9 @@ var db = mongoose.connect("mongodb://127.0.0.1:27017/blogTest")
 db.connection.on("error",function(error){
 	console.log("connection error : " + error)
 });
-db.connection.on("open",function(){
-	console.log("------- 数据库连接成功！-------")
-});
+// db.connection.on("open",function(){
+// 	console.log("------- 数据库连接成功！-------")
+// });
 
 let blogSchema = new mongoose.Schema({
 	title: String,
@@ -42,10 +42,39 @@ exports.insert = {
 					res(0)
 				}
 				else{
-					console.log('create success : \n' + doc)
 					res(1)
 				}
 
+			})
+		})
+	}
+}
+
+exports.search = {
+	blogList: (limit, skip = null) => {
+		return new Promise((res, rej) => {
+			blogModel.find(limit, skip, (err, doc) => {
+				if(err){
+					console.log('find err : ' + err)
+					res(0)
+				}
+				else{
+					res(doc)
+				}
+			})
+			
+		})
+	},
+	blog: (limit, skip = null) => {
+		return new Promise((res, rej) => {
+			blogModel.findOne(limit, skip, (err, doc) => {
+				if(err){
+					console.log('find err : ' + err)
+					res(0)
+				}
+				else{
+					res(doc)
+				}
 			})
 		})
 	}

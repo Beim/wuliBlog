@@ -103,8 +103,8 @@ var westEgg = React.createClass({display: 'westEgg',
 			article = '<div>' + article
 		}
 		let excerpt = article.substring(5, article.indexOf('</div>'))
-		if(excerpt.length > 140){
-			excerpt = excerpt.substring(0, 140) + '...'
+		if(excerpt.length > 250){
+			excerpt = excerpt.substring(0, 250) + '...'
 		}
 		let tags = this.state.chooseTag
 		var data = {
@@ -197,15 +197,29 @@ var content = React.createClass({display : 'content',
 			data: [],
 			showData : [],
 			currentNum: 1,
-			totalNum: 1
+			totalNum: 1,
+			blog: '',
+			onePageNum: 5
 		}
 	},
 	componentDidMount : function(){
-		this.setState({
-			data: simulateData,
-			showData: simulateData,
-			totalNum: Math.ceil(simulateData.length / 5)
-		})
+		let _this = this
+		let xhr = new XMLHttpRequest()
+		let onePageNum = this.state.onePageNum
+		xhr.open('GET', '/getMethod/blogList', true)
+		xhr.responseType = 'json'
+		xhr.onload = function(e){
+			if(this.response.ok == 1){
+				// console.info(this.response)
+				simulateData = this.response.data
+				_this.setState({
+					data: simulateData,
+					showData: simulateData,
+					totalNum: Math.ceil(simulateData.length / onePageNum)
+				})
+			}
+		}
+		xhr.send()
 	},
 	componentWillReceiveProps: function(nextProps){
 		let simuData = []
@@ -222,13 +236,25 @@ var content = React.createClass({display : 'content',
 				}
 			}
 		})
+		let onePageNum = this.state.onePageNum
 		this.setState({
 			showData: simuData,
-			currentNum: Math.ceil(simuData.length / 5) ? 1 : 0,
-			totalNum: Math.ceil(simuData.length / 5)
+			currentNum: Math.ceil(simuData.length / onePageNum) ? 1 : 0,
+			totalNum: Math.ceil(simuData.length / onePageNum)
 		})
 
 	},
+	shouldComponentUpdate: function(nextProps, nextState){
+		if(this.state.blog !== nextState.blog){
+			let article = nextState.blog.article
+			let div = document.getElementById('blog')
+			div.innerHTML = article
+		}
+		return true
+	},
+	// componentWillUpdate: function(nextProps, nextState){
+	// 	console.info('will')
+	// },
 	handlePrev: function(){
 		if(this.state.currentNum > 1){
 			this.setState({
@@ -245,37 +271,66 @@ var content = React.createClass({display : 'content',
 			$('html, body').animate({scrollTop: '0px'}, 500)
 		}
 	},
+	handleShowBlog: function(e){
+		let _this = this
+		let id = e.target.getAttribute('data-myid')
+		id =  JSON.stringify({_id: id})
+		this.props.handleChangeDisplay.call(null, 'showBlog')
+		let xhr = new XMLHttpRequest()
+		xhr.open('POST', '/postMethod/blog', true)
+		xhr.setRequestHeader('Content-Type', 'application/x-javascript; charset=UTF-8')
+		xhr.responseType = 'json'
+		xhr.onload = function(e){
+			if(this.response.ok == 1){
+				_this.setState({
+					blog: this.response.data
+				})
+			}
+		}
+		xhr.send(id)
+	},
 	render : function(){
 		let data = this.state.showData
 		let wraps = data.map(function(value, index){
-			if(value)
-			return rce('div', {'key' : 'wraps' + index, 'className': 'post-wrap', 'style': {'display': (index<5*this.state.currentNum && index>=5*(this.state.currentNum-1)) ? 'block' : 'none' }},
-				rce('h1', {'className': 'post-name'},
-					rce('a', {'href': '#'}, value.name)
-				),
-				rce('div', {'className': 'post-date'}, '#' + value.date),
-				rce('div', {'className': 'post-excerpt'},
-					rce('p', null, value.excerpt + '...')
-				),
-				rce('div', {'className': 'post-tags'},
-					rce('span', {'className': 'post-tag'}, 'tags:'),
-					value.tags.map(function(value1, index1){
-						return rce('span', {'key': 'tags' + Date() + index1, 'className': 'post-tag'},
-							rce('a', {'href': '#'}, value1)
-						)
-					})
+			if(value){
+				let author = value.author
+				if(author.indexOf(':') != -1){
+					author = author.substring(0, author.indexOf(':'))
+				}
+				return rce('div', {'key' : 'wraps' + index, 'className': 'post-wrap', 'style': {'display': (index<5*this.state.currentNum && index>=5*(this.state.currentNum-1)) ? 'block' : 'none' }},
+					rce('h1', {'className': 'post-name'},
+						rce('a', {'href': '#', 'onClick': this.handleShowBlog, 'data-myid': value._id}, value.title)
+					),
+					rce('div', {'className': 'post-date'}, '#' + value.date + ' By: ' + author),
+					rce('div', {'className': 'post-excerpt'},
+						rce('p', null, value.excerpt)
+					),
+					rce('div', {'className': 'post-tags'},
+						rce('span', {'className': 'post-tag'}, 'tags:'),
+						value.tags.map(function(value1, index1){
+							return rce('span', {'key': 'tags' + Date() + index1, 'className': 'post-tag'},
+								rce('a', {'href': '#'}, value1)
+							)
+						})
+					)
 				)
-			)
+			}
 		}.bind(this))
 		let style1 = {'color': 'white', 'border': '1px solid white'}
 		let style2 = {}
 		return (
-			rce('div', {'className': 'mainContainer-content', 'style': {'display': this.props.display === 0 ? 'block' : 'none'}},
-				wraps,
-				rce('div', {'className': 'pagination'},
-					rce('div', {'className': 'previous', 'style': this.state.currentNum <=1 ? style1 : style2, 'onClick': this.handlePrev}, '← Newer Posts'),
-					rce('span', {'className': 'page_number'}, `Page: ${this.state.currentNum} of ${this.state.totalNum}`),
-					rce('div', {'className': 'next', 'style': this.state.currentNum >= this.state.totalNum ? style1 : style2, 'onClick': this.handleNext}, 'Older Posts →')
+			rce('div', {'style': {'display': this.props.display === 0 || this.props.display === 2 ? 'block' : 'none'}}, 
+				rce('div', {'className': 'mainContainer-content', 'style': {'display': this.props.display === 0 ? 'block' : 'none'}},
+					wraps,
+					rce('div', {'className': 'pagination'},
+						rce('div', {'className': 'previous', 'style': this.state.currentNum <=1 ? style1 : style2, 'onClick': this.handlePrev}, '← Newer Posts'),
+						rce('span', {'className': 'page_number'}, `Page: ${this.state.currentNum} of ${this.state.totalNum}`),
+						rce('div', {'className': 'next', 'style': this.state.currentNum >= this.state.totalNum ? style1 : style2, 'onClick': this.handleNext}, 'Older Posts →')
+					)
+				),
+				rce('div', {'className': 'mainContenter-content', 'style': {'display': this.props.display === 2 ? 'block' : 'none'}},
+					rce('div', {'className': 'blog', 'id': 'blog'})
+					// rce('div', null, this.state.blog.article)
 				)
 			)
 		)
@@ -286,17 +341,25 @@ var total = React.createClass({display: 'total',
 	getInitialState: function(){
 		return{
 			select: 'Blog',
-			display: 1
+			display: 0 //0 blog list  1 secret  2 blog
 		}
 	},
 	handleSelect: function(e){
+		this.handleChangeDisplay.call(null, 'blogList')
 		this.setState({
 			select: e.target.innerHTML
 		})
 	},
-	handleChangeDisplay: function(){
-		let nextDisplay = this.state.display === 0 ? 1 : 0
-		// console.info('display' + nextDisplay)
+	handleChangeDisplay: function(e, nextDisplay = null){
+		if(e === 'secret'){
+			nextDisplay = this.state.display === 0 ? 1 : 0
+		}
+		else if (e === 'showBlog'){
+			nextDisplay = 2
+		}
+		else if (e === 'blogList') {
+			nextDisplay = 0
+		}
 		this.setState({
 			display: nextDisplay
 		})
@@ -311,7 +374,7 @@ var total = React.createClass({display: 'total',
 				rce('div', {'className': 'site-header'},
 					rce('a', {'className': 'site-title', 'href': 'https://github.com/Beim'}, myName),
 					rce('nav', {'className': 'site-nav'}, 
-						rce('a', {'className': 'site-link', 'href': '#', 'style': {'color': 'white'}, 'onClick': this.handleChangeDisplay}, 'secret'),
+						rce('a', {'className': 'site-link', 'href': '#', 'style': {'color': 'white'}, 'onClick': this.handleChangeDisplay.bind(null, 'secret')}, 'secret'),
 						rce('a',{'className': 'site-link', 'href': '../index.html'}, 'HOME'),
 						rce('a',{'className': 'site-link', 'href': '../about.html'}, 'ABOUT'),
 						rce('a',{'className': 'site-link', 'href': '../blog.html'}, 'BLOG'),
@@ -330,7 +393,7 @@ var total = React.createClass({display: 'total',
 				),
 				rce('div', {'className': 'mainContainer'},
 					// rce('div', {'className': 'mainContainer-content'},
-						rce(content, {'select': this.state.select, 'display': this.state.display}),
+						rce(content, {'select': this.state.select, 'display': this.state.display, 'handleChangeDisplay': this.handleChangeDisplay}),
 						rce(westEgg, {'display': this.state.display})
 					// )
 				)

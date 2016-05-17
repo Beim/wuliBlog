@@ -5,7 +5,7 @@ var parse = require('co-body')
 var fs = require('fs')
 var os = require('os')
 var path = require('path')
-var db = require('../mongo.js')
+const db = require('../mongo.js')
 const postAuthentication = ['beim', '北冥有鱼吃']
 
 
@@ -45,6 +45,14 @@ router.post('/:name', function *(next) {
 			this.body = {
 				ok: response
 			}
+		}
+	}
+	else if (this.params.name == 'blog'){
+		let limit = this.request.body
+		let response = yield db.search['blog'](limit)
+		this.body = {
+			ok: 1,
+			data: response
 		}
 	}
 	return yield next

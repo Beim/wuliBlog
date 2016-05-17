@@ -26,23 +26,6 @@ for(let i=0; i<6; i++){
 
 var westEgg = React.createClass({display: 'westEgg',
 	getInitialState: function(){
-		// let stateTags = SelectTag
-		// let stateTag = []
-		// let chooseTag = {}
-		// for (let i in SelectTag) {
-		// 	if (SelectTag[i]) {
-		// 		stateTag = stateTag.concat(SelectTag[i])
-		// 	}
-		// }
-		// for (let i in stateTag) {
-		// 	chooseTag[stateTag[i]] = 0
-		// }
-		// return{
-		// 	titleValue: '',
-		// 	authorValue: '',
-		// 	stateTags: stateTags,
-		// 	chooseTag: chooseTag
-		// }
 		return this.init()
 	},
 	init: function(){
@@ -249,6 +232,7 @@ var content = React.createClass({display : 'content',
 			if(this.response.ok == 1){
 				// console.info(this.response)
 				simulateData = this.response.data
+				// console.info(simulateData[0].date)
 				_this.setState({
 					data: simulateData,
 					showData: simulateData,

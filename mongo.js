@@ -26,7 +26,7 @@ let blogSchema = new mongoose.Schema({
 	}]
 })
 let blogModel = mongoose.model('blogs', blogSchema)
-
+ 
 
 exports.insert = {
 	blog: (data) =>{
@@ -77,9 +77,9 @@ exports.insert = {
 }
 
 exports.search = {
-	blogList: (limit, skip = null) => {
+	blogList: (limit, skip = null, idx = null) => {
 		return new Promise((res, rej) => {
-			blogModel.find(limit, skip, (err, doc) => {
+			blogModel.find(limit, skip, idx,(err, doc) => {
 				if(err){
 					console.log('find err : ' + err)
 					res(0)

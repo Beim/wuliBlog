@@ -396,6 +396,11 @@ html, body, .blog{
 	display: -webkit-flex; /* Safari */
 	flex-wrap: wrap;
 	align-items: center;
+	margin-top: 20px;
+	/*border-top: 2px solid #eaeaea;*/
+	/*border-bottom: 2px solid #eaeaea;*/
+	border-top: 1px solid #B1B3B1;
+	border-bottom: 1px solid #B1B3B1;
 }
 
 .blog-info div{
@@ -417,7 +422,8 @@ html, body, .blog{
 
 .aBlog-footer-label{
 	padding-bottom: 5px;
-	color: #BFBFBF;
+	/*color: #BFBFBF;*/
+	color: #B1B3BF;
 }
 
 .aBlog-footer-edit{

@@ -8,7 +8,8 @@ router.get('/:name', function *(next){
 			'article': 0,
 			'__v': 0
 		}
-		let response = yield db.search['blogList'](null, skip)
+		let idx = {sort: {date: -1}}
+		let response = yield db.search['blogList'](null, skip, idx)
 		let ok = 0
 		if(!!response){
 			ok = 1

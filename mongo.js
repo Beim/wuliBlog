@@ -11,9 +11,17 @@ db.connection.on("open",function(){
 let blogSchema = new mongoose.Schema({
 	title: String,
 	author: String,
-	date: String,
+	date: {type: Date, default: Date.now},
 	article: String,
-	tags: Array
+	excerpt: String,
+	tags: Array,
+	display: {type: Boolean, default: true},
+	zan: {type: Number, default: 0},
+	comments: [{
+		name: String,
+		email: String,
+		date: Date
+	}]
 })
 let blogModel = mongoose.model('blogs', blogSchema)
 

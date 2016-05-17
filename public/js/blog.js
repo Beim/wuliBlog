@@ -90,17 +90,28 @@ var westEgg = React.createClass({display: 'westEgg',
 	onPost: function(){
 		let title = this.state.titleValue
 		let author = this.state.authorValue
-		let _date = new Date()
-		let m = (_date.getMonth() + "").length == 1 ? "0" + _date.getMonth() : _date.getMonth()
-		let d = (_date.getDate() + "").length == 1 ? "0" + _date.getDate() : _date.getDate()
-		let date = _date.getFullYear() + "-" + m + "-" + d
+		// let _date = new Date()
+		// let m = (_date.getMonth() + "").length == 1 ? "0" + _date.getMonth() : _date.getMonth()
+		// let d = (_date.getDate() + "").length == 1 ? "0" + _date.getDate() : _date.getDate()
+		// let date = _date.getFullYear() + "-" + m + "-" + d
 		let article = document.getElementById('westEgg-body-edit-p').innerHTML
+		let index = article.indexOf('<div>') 
+		if(index > 0){
+			let articleArray = [...article]
+			articleArray.splice(index, 0, '</div>')
+			article = articleArray.join('')
+			article = '<div>' + article
+		}
+		let excerpt = article.substring(5, article.indexOf('</div>'))
+		if(excerpt.length > 140){
+			excerpt = excerpt.substring(0, 140) + '...'
+		}
 		let tags = this.state.chooseTag
 		var data = {
 			'title': title,
 			'author': author,
-			'date': date,
 			'article': article,
+			'excerpt': excerpt,
 			'tags': tags
 		}
 		// data = JSON.parse(data)

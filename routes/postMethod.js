@@ -33,7 +33,7 @@ router.post('/:name', function *(next) {
 		let body = this.request.body
 		let author = body.author
 		if(author.indexOf(':') != -1){
-			author = author.slice(author.indexOf(':') + 1)
+			author = author.substring(0, author.indexOf(':'))
 		}
 		if(postAuthentication.indexOf(author) == -1){
 			this.body = {

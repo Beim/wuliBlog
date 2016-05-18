@@ -26,7 +26,11 @@ html, body, .blog{
 	/*display: block;*/
 }
 
-
+@media(max-width: 480px){
+	.site-header{
+		display: none;
+	}
+}
 
 .site-header{
 	padding: 17px 7% 17px 7%;
@@ -66,10 +70,21 @@ html, body, .blog{
 	/*background-size: cover;*/
 	background-size: 100% 100%;
 	background-repeat: no-repeat;
-	padding-left: 18%;
-	padding-right: 18%;
 	width: 100%;
 	height: 15%;
+}
+
+@media(min-width: 480px){
+	.fullstrip{
+		padding-left: 18%;
+		padding-right: 18%;
+	}
+}
+@media(max-width: 480px){
+	.fullstrip{
+		padding-left: 3%;
+		padding-right: 3%;
+	}
 }
 
 .fullstrip-container{
@@ -88,7 +103,7 @@ html, body, .blog{
 
 .fullstrip-title div{
 	color: #fff;
-	margin-right: 10%;
+	/*margin-right: 10%;*/
 	display: inline;
 	cursor:	pointer;
 	/*padding-right: 15%;*/
@@ -107,13 +122,34 @@ html, body, .blog{
 	/*color: #FCFAE1;*/
 	font-size: 20px;
 }
+@media(mim-width: 480px){
+	.fullstrip-title div{
+		margin-right: 10%;
+	}
+}
+@media(max-width: 480px){
+	.fullstrip-title div{
+		margin-right: 4%;
+	}
+}
 
 .mainContainer{
 	margin-top: 2%;
 	width: 100%;
 	height: 100%;
-	padding-left: 18%;
-	padding-right: 18%;
+}
+
+@media(min-width: 480px){
+	.mainContainer{
+		padding-left: 18%;
+		padding-right: 18%;
+	}
+}
+@media(max-width: 480px){
+	.mainContainer{
+		padding-left: 7%;
+		padding-right: 7%;
+	}
 }
 
 .mainContainer-content{
@@ -497,8 +533,7 @@ html, body, .blog{
 }
 
 .aBlog-footer-comment-info-floor{
-	height: 80px;
-	width: 80px;
+
 	border: 1px solid #d1d1d1;
 	font-size: 20px;
 	font-weight: bold;
@@ -509,13 +544,31 @@ html, body, .blog{
 	color: #444;
 	border-radius: 4px;
 }
+@media(min-width: 480px){
+	.aBlog-footer-comment-info-floor{
+		height: 80px;
+		width: 80px;
+	}
+	.aBlog-footer-comment-info-name{
+		width: 80px;
+	}
+}
+@media(max-width: 480px){
+	.aBlog-footer-comment-info-floor{
+		height: 50px;
+		width: 50px;
+	}
+	.aBlog-footer-comment-info-name{
+		width: 50px;
+		font-size: 13px;
+	}
+}
 
 .aBlog-footer-comment-info-floor div{
 	margin:	auto;
 }
 
 .aBlog-footer-comment-info-name{
-	width: 80px;
 	display: flex;
 	display: -webkit-flex; /* Safari */
 	margin-top: 10px;

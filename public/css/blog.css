@@ -115,14 +115,14 @@ html, body, .blog{
 
 .fullstrip-super-tag{
 	/*padding-right: 15%;*/
-	margin-right: 20%;
+	/*margin-right: 20%;*/
 }
 
 .fullstrip-tag{
 	/*color: #FCFAE1;*/
 	font-size: 20px;
 }
-@media(mim-width: 480px){
+@media(min-width: 480px){
 	.fullstrip-title div{
 		margin-right: 10%;
 	}

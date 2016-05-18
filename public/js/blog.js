@@ -338,11 +338,14 @@ var content = React.createClass({
 			contentArray.splice(index, 0, '</div>');
 			content = contentArray.join('');
 			content = '<div>' + content;
+		} else if (index == -1) {
+			content = '<div>' + content + '</div>';
 		}
 		var name = this.state.nickname;
 		var email = this.state.email;
 		var predata = {
 			_id: this.state.blog._id,
+			author: this.state.blog.author,
 			content: content,
 			name: name,
 			email: email
@@ -365,11 +368,17 @@ var content = React.createClass({
 				predata.date = y + '-' + m + '-' + d;
 				comments.push(predata);
 				_this.setState({
-					comments: comments,
-					email: '',
-					nickname: ''
+					comments: comments
 				});
 				document.getElementById('aBlog-footer-edit-p').innerHTML = '';
+			} else if (this.response.ok == 2) {
+				var blog = Object.assign({}, _this.state.blog);
+				blog.article += predata.content;
+				_this.setState({
+					blog: blog
+				});
+			} else {
+				alert('sorrty~');
 			}
 		};
 		xhr.send(data);

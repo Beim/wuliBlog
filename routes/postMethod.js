@@ -74,9 +74,17 @@ router.post('/:name', function *(next) {
 			name: this.request.body.name,
 			email: this.request.body.email
 		}
-		let response = yield db.insert['comment'](limit, data)
-		this.body = {
-			ok: response
+		if(this.request.body.name == this.request.body.author + ':update'){
+			let response = yield db.update['blogArticle'](limit, data)
+			this.body = {
+				ok: response
+			}	
+		}
+		else{
+			let response = yield db.insert['comment'](limit, data)
+			this.body = {
+				ok: response
+			}
 		}
 	}
 	return yield next

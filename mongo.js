@@ -127,5 +127,27 @@ exports.update = {
 				}
 			})
 		})
+	},
+
+	blogArticle: (limit, data) => {
+		return new Promise((res, rej) => {
+			blogModel.findOne(limit, (err, doc) => {
+				if(err){
+					console.log('find err : ' + err)
+					res(0)
+				}
+				else{
+					doc.article += data.content
+					doc.save((err2) => {
+						if(err2){
+							res(0)
+						}
+						else{
+							res(2)
+						}
+					})
+				}
+			})
+		})
 	}
 }

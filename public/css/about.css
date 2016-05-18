@@ -13,7 +13,11 @@ html, body, .about{
 	/*display: block;*/
 }
 
-
+@media(max-width: 480px){
+	.site-header{
+		display: none;
+	}
+}
 
 .site-header{
 	/*padding-left: 7%;*/
@@ -61,6 +65,18 @@ html, body, .about{
 	width: 100%;
 	height: 15%;
 }
+@media(min-width: 480px){
+	.fullstrip{
+		padding-left: 18%;
+		padding-right: 18%;
+	}
+}
+@media(max-width: 480px){
+	.fullstrip{
+		padding-left: 7%;
+		padding-right: 7%;
+	}
+}
 
 .fullstrip-container{
 	height: 100%;
@@ -77,32 +93,65 @@ html, body, .about{
 .mainContainer{
 	margin-top: 2%;
 	width: 100%;
-	padding-left: 18%;
-	padding-right: 18%;
+}
+@media(min-width: 480px){
+	.mainContainer{
+		padding-left: 18%;
+		padding-right: 18%;
+	}
+}
+@media(max-width: 480px){
+	.mainContainer{
+		padding-left: 7%;
+		padding-right: 7%;
+	}
 }
 
 .mainContainer-content{
 	width: 100%;
+	display: flex;
+	flex-wrap: wrap-reverse;
 }
 
-.mainContainer-left{
-	width: 20%;
-	float: left;
+@media(min-width: 480px){
+	.mainContainer-left{
+		width: 20%;
+		float: left;
+	}
+	.mainContainer-right{
+		width: 80%;
+		padding-left: 4%;
+		float: left;
+	}
 }
-
-.mainContainer-right{
-	width: 80%;
-	padding-left: 4%;
-	float: left;
+@media(max-width: 480px){
+	.mainContainer-left{
+		width: 100%;
+		/*float: left;*/
+	}
+	.mainContainer-right{
+		width: 100%;
+		margin-bottom: 100px;
+		/*padding-left: 4%;*/
+		/*float: left;*/
+	}
 }
 
 .myImage{
-	width: 100%;
 	border-radius: 45%;
 	border: 2px solid lightgreen;
 	margin-bottom: 20px;
 }
-
+@media(min-width: 480px){
+	.myImage{
+		width: 100%;
+	}
+}
+@media(max-width: 480px){
+	.myImage{
+		width: 50%;
+	}
+}
 .title{
 	width: 100%;
 	padding: 14px 15px;

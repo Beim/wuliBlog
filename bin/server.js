@@ -5,7 +5,7 @@
 var app = require('../app')
 var debug = require('debug')('demo:server')
 var http = require('http')
-var socket = require('../sockets/socket.js')
+// var socket = require('../sockets/socket.js')
 
 var port = normalizePort(process.env.PORT || '2333')
 // app.set('port', port)
@@ -18,7 +18,7 @@ var server = http.createServer(app.callback())
 /*
 *	connect io
 */
-socket(server)
+// socket(server)
 
 /*
 *	listen on privided port, on all netwok interfaces

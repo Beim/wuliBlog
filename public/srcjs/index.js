@@ -1,6 +1,6 @@
 'use strict'
 var rce = React.createElement.bind()
-var socket = io.connect('/')
+// var socket = io.connect('/')
 const myName = '北冥有鱼吃'
 React.initializeTouchEvents(true)
 

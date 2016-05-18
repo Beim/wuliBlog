@@ -3,7 +3,7 @@
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
 var rce = React.createElement.bind();
-var socket = io.connect('/');
+// var socket = io.connect('/')
 React.initializeTouchEvents(true);
 var myName = '北冥有鱼吃';
 var SelectTag = {

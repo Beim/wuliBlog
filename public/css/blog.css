@@ -26,7 +26,7 @@ html, body, .blog{
 	/*display: block;*/
 }
 
-@media(max-width: 480px){
+@media(max-width: 700px){
 	.site-header{
 		display: none;
 	}
@@ -74,13 +74,13 @@ html, body, .blog{
 	height: 15%;
 }
 
-@media(min-width: 480px){
+@media(min-width: 700px){
 	.fullstrip{
 		padding-left: 18%;
 		padding-right: 18%;
 	}
 }
-@media(max-width: 480px){
+@media(max-width: 700px){
 	.fullstrip{
 		padding-left: 3%;
 		padding-right: 3%;
@@ -122,12 +122,12 @@ html, body, .blog{
 	/*color: #FCFAE1;*/
 	font-size: 20px;
 }
-@media(min-width: 480px){
+@media(min-width: 700px){
 	.fullstrip-title div{
 		margin-right: 10%;
 	}
 }
-@media(max-width: 480px){
+@media(max-width: 700px){
 	.fullstrip-title div{
 		margin-right: 4%;
 	}
@@ -139,13 +139,13 @@ html, body, .blog{
 	height: 100%;
 }
 
-@media(min-width: 480px){
+@media(min-width: 700px){
 	.mainContainer{
 		padding-left: 18%;
 		padding-right: 18%;
 	}
 }
-@media(max-width: 480px){
+@media(max-width: 700px){
 	.mainContainer{
 		padding-left: 7%;
 		padding-right: 7%;
@@ -252,6 +252,26 @@ html, body, .blog{
 	color: #444;
 	border: 1px solid #444;
 }
+@media (min-width: 700px){
+	.about-me {
+		display: none;
+	}
+}
+@media (max-width: 700px){
+	.about-me div{
+		margin: auto;
+		font-size: 25px;
+		font-weight: bold;
+		color: #444;
+	}
+	.about-me div:hover{
+		/*margin: auto;*/
+		cursor: pointer;
+	}
+	
+}
+
+
 
 .westEgg-title{
 	height: 40px;
@@ -544,7 +564,7 @@ html, body, .blog{
 	color: #444;
 	border-radius: 4px;
 }
-@media(min-width: 480px){
+@media(min-width: 700px){
 	.aBlog-footer-comment-info-floor{
 		height: 80px;
 		width: 80px;
@@ -553,7 +573,7 @@ html, body, .blog{
 		width: 80px;
 	}
 }
-@media(max-width: 480px){
+@media(max-width: 700px){
 	.aBlog-footer-comment-info-floor{
 		height: 50px;
 		width: 50px;
@@ -583,5 +603,10 @@ html, body, .blog{
 	width: 80%;
 	border-left: 2px solid #eaeaea;
 	padding-left: 6%;
+}
+
+.no-comment{
+	text-align: center;
+	color: #B1B3B1;
 }
 

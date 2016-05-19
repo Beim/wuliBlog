@@ -4,11 +4,11 @@ var rce = React.createElement.bind()
 React.initializeTouchEvents(true)
 const myName = '北冥有鱼吃'
 const SelectTag = {
-	front: ['html', 'css', 'javascript'],
-	back: ['koa', 'node'],
-	daily: ['daily'],
-	movies: ['recommend', 'nice', 'intend'],
-	books: ['novel']
+	front: ['html', 'css', 'javascript', 'react', 'f-others'],
+	back: ['node', 'koa', 'es6', 'b-others'],
+	daily: ['nice', 'd-bad', 'between', 'd-others'],
+	movie: ['recommend', 'nice', 'intend', 'm-bad', 'm-others'],
+	book: ['novel', 'bk-others']
 }
 
 let getDate = () => {
@@ -22,7 +22,7 @@ let getDate = () => {
 }
 
 var simulateData = []
-for(let i=0; i<6; i++){
+for(let i=0; i<1; i++){
 	simulateData.push({
 		_id: '123',
 		name : 'Anouncing Event Calendar App',
@@ -191,7 +191,6 @@ var westEgg = React.createClass({display: 'westEgg',
 						rce('div', {'onClick': this.handleAddImg, 'type': 'file'}, 'Image'),
 						rce('input', {'type': 'file', 'id': 'fileInput', 'accept': 'image/gif, image/jpeg, image/x-png', 'style': {'display': 'none'}, 'onChange': this.onAddImg})
 					),
-					// rce('div', {'className': 'westEgg-body-nothing'}),
 					rce('div', {'className': 'westEgg-body-edit'},
 						rce('p' ,{'contentEditable': 'true', 'id': 'westEgg-body-edit-p'})
 					)
@@ -240,9 +239,7 @@ var content = React.createClass({display : 'content',
 		xhr.responseType = 'json'
 		xhr.onload = function(e){
 			if(this.response.ok == 1){
-				// console.info(this.response)
 				simulateData = this.response.data
-				// console.info(simulateData[0].date)
 				_this.setState({
 					data: simulateData,
 					showData: simulateData,
@@ -417,6 +414,9 @@ var content = React.createClass({display : 'content',
 		}
 		xhr.send(data)
 	},
+	toAbout: function(){
+		window.location = 'about.html'
+	},
 	render : function(){
 		let data = this.state.showData
 		let wraps = data.map(function(value, index){
@@ -425,6 +425,7 @@ var content = React.createClass({display : 'content',
 				if(author.indexOf(':') != -1){
 					author = author.substring(0, author.indexOf(':'))
 				}
+				value.date = value.date.substring(0, 10)
 				return rce('div', {'key' : 'wraps' + index, 'className': 'post-wrap', 'style': {'display': (index<5*this.state.currentNum && index>=5*(this.state.currentNum-1)) ? 'block' : 'none' }},
 					rce('h1', {'className': 'post-name'},
 						rce('a', {'href': '#', 'onClick': this.handleShowBlog, 'data-myid': value._id}, value.title)
@@ -446,7 +447,8 @@ var content = React.createClass({display : 'content',
 		}.bind(this))
 		let style1 = {'color': 'white', 'border': '1px solid white'}
 		let style2 = {}
-
+		let styleHasComment = {'display': 'none'}
+		let styleNoComment = {}
 		let comments = this.state.comments
 		let aBlogFooterComment = comments.map((value, index) => {
 			let date = value.date.substring(2, 10)
@@ -476,6 +478,9 @@ var content = React.createClass({display : 'content',
 						rce('div', {'className': 'previous', 'style': this.state.currentNum <=1 ? style1 : style2, 'onClick': this.handlePrev}, '← Newer Posts'),
 						rce('span', {'className': 'page_number'}, `Page: ${this.state.currentNum} of ${this.state.totalNum}`),
 						rce('div', {'className': 'next', 'style': this.state.currentNum >= this.state.totalNum ? style1 : style2, 'onClick': this.handleNext}, 'Older Posts →')
+					),
+					rce('div', {'className': 'pagination about-me'},
+						rce('div', {'onClick': this.toAbout}, 'About Me')
 					)
 				),
 				rce('div', {'className': 'mainContenter-content', 'style': {'display': this.props.display === 2 ? 'block' : 'none'}},
@@ -485,7 +490,7 @@ var content = React.createClass({display : 'content',
 						rce('div', {'className': 'blog-article', 'id': 'blog-article'}),
 						rce('br', null),
 						rce('div', {'className': 'blog-info'},
-							rce('div', {'className': 'blog-info-zan', 'onClick': this.zan}, '有用: ' + this.state.blog.zan),
+							rce('div', {'className': 'blog-info-zan', 'onClick': this.zan, 'onTouchStart': this.zan}, '有用: ' + this.state.blog.zan),
 							rce('div', {'className': 'blog-info-tags'}, '标签: ' + this.state.blog.tags),
 							rce('div', {'className': 'blog-info-date'}, this.state.blog.date   )
 						)
@@ -498,13 +503,16 @@ var content = React.createClass({display : 'content',
 						),
 						rce('div', {'className': 'aBlog-footer-info-post-wraper'},
 							rce('div', {'className': 'aBlog-footer-info'},
-								rce('input', {'type': 'text', 'placeholder': 'nickname *', 'value': this.state.nickname, 'onChange': this.onNicknameChange}),
-								rce('input', {'type': 'text', 'placeholder': 'Email ', 'value': this.state.email, 'onChange': this.onEmailChange})
+								rce('input', {'type': 'text', 'placeholder': '  nickname *', 'value': this.state.nickname, 'onChange': this.onNicknameChange}),
+								rce('input', {'type': 'email', 'placeholder': '  Email ', 'value': this.state.email, 'onChange': this.onEmailChange})
 							),
 							rce('div', {'className': 'aBlog-footer-post', 'onClick': this.handlePostComment},
 								rce('div', null, 'post')
 							)
 						)
+					),
+					rce('div', {'className': 'aBlog-footer', 'style': this.state.comments.length == 0 ? styleNoComment : styleHasComment},
+						rce('div', {'className': 'no-comment'}, 'no comment~')
 					),
 					aBlogFooterComment
 

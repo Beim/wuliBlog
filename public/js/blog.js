@@ -7,11 +7,11 @@ var rce = React.createElement.bind();
 React.initializeTouchEvents(true);
 var myName = '北冥有鱼吃';
 var SelectTag = {
-	front: ['html', 'css', 'javascript'],
-	back: ['koa', 'node'],
-	daily: ['daily'],
-	movies: ['recommend', 'nice', 'intend'],
-	books: ['novel']
+	front: ['html', 'css', 'javascript', 'react', 'f-others'],
+	back: ['node', 'koa', 'es6', 'b-others'],
+	daily: ['nice', 'd-bad', 'between', 'd-others'],
+	movie: ['recommend', 'nice', 'intend', 'm-bad', 'm-others'],
+	book: ['novel', 'bk-others']
 };
 
 var getDate = function getDate() {
@@ -25,7 +25,7 @@ var getDate = function getDate() {
 };
 
 var simulateData = [];
-for (var i = 0; i < 6; i++) {
+for (var i = 0; i < 1; i++) {
 	simulateData.push({
 		_id: '123',
 		name: 'Anouncing Event Calendar App',
@@ -176,9 +176,7 @@ var westEgg = React.createClass({
 		for (var _i3 in stateTags) {
 			_loop(_i3);
 		}
-		return rce('div', { 'className': 'mainContainer-content', 'style': { 'display': this.props.display === 1 ? 'block' : 'none' } }, rce('div', { 'className': 'westEgg-title' }, rce('input', { 'placeholder': 'Please fill the title', 'value': this.state.titleValue, 'onChange': this.handleTitleChange })), rce('div', { 'className': 'westEgg-body' }, rce('div', { 'className': 'westEgg-body-img' }, rce('div', { 'onClick': this.handleAddImg, 'type': 'file' }, 'Image'), rce('input', { 'type': 'file', 'id': 'fileInput', 'accept': 'image/gif, image/jpeg, image/x-png', 'style': { 'display': 'none' }, 'onChange': this.onAddImg })),
-		// rce('div', {'className': 'westEgg-body-nothing'}),
-		rce('div', { 'className': 'westEgg-body-edit' }, rce('p', { 'contentEditable': 'true', 'id': 'westEgg-body-edit-p' }))), rce('div', { 'className': 'westEgg-sort' }, rce('div', { 'className': 'westEgg-sort-tag' }, tagWrap)), rce('div', { 'className': 'westEgg-post' }, rce('div', { 'className': 'westEgg-post-author' }, rce('input', { 'placeholder': 'author', 'value': this.state.authorValue, 'onChange': this.handleAuthorChange })), rce('div', { 'className': 'westEgg-post-btn', 'onClick': this.onPost }, 'button')));
+		return rce('div', { 'className': 'mainContainer-content', 'style': { 'display': this.props.display === 1 ? 'block' : 'none' } }, rce('div', { 'className': 'westEgg-title' }, rce('input', { 'placeholder': 'Please fill the title', 'value': this.state.titleValue, 'onChange': this.handleTitleChange })), rce('div', { 'className': 'westEgg-body' }, rce('div', { 'className': 'westEgg-body-img' }, rce('div', { 'onClick': this.handleAddImg, 'type': 'file' }, 'Image'), rce('input', { 'type': 'file', 'id': 'fileInput', 'accept': 'image/gif, image/jpeg, image/x-png', 'style': { 'display': 'none' }, 'onChange': this.onAddImg })), rce('div', { 'className': 'westEgg-body-edit' }, rce('p', { 'contentEditable': 'true', 'id': 'westEgg-body-edit-p' }))), rce('div', { 'className': 'westEgg-sort' }, rce('div', { 'className': 'westEgg-sort-tag' }, tagWrap)), rce('div', { 'className': 'westEgg-post' }, rce('div', { 'className': 'westEgg-post-author' }, rce('input', { 'placeholder': 'author', 'value': this.state.authorValue, 'onChange': this.handleAuthorChange })), rce('div', { 'className': 'westEgg-post-btn', 'onClick': this.onPost }, 'button')));
 	}
 });
 
@@ -210,9 +208,7 @@ var content = React.createClass({
 		xhr.responseType = 'json';
 		xhr.onload = function (e) {
 			if (this.response.ok == 1) {
-				// console.info(this.response)
 				simulateData = this.response.data;
-				// console.info(simulateData[0].date)
 				_this.setState({
 					data: simulateData,
 					showData: simulateData,
@@ -389,6 +385,9 @@ var content = React.createClass({
 		};
 		xhr.send(data);
 	},
+	toAbout: function toAbout() {
+		window.location = 'about.html';
+	},
 	render: function render() {
 		var data = this.state.showData;
 		var wraps = data.map(function (value, index) {
@@ -397,6 +396,7 @@ var content = React.createClass({
 				if (author.indexOf(':') != -1) {
 					author = author.substring(0, author.indexOf(':'));
 				}
+				value.date = value.date.substring(0, 10);
 				return rce('div', { 'key': 'wraps' + index, 'className': 'post-wrap', 'style': { 'display': index < 5 * this.state.currentNum && index >= 5 * (this.state.currentNum - 1) ? 'block' : 'none' } }, rce('h1', { 'className': 'post-name' }, rce('a', { 'href': '#', 'onClick': this.handleShowBlog, 'data-myid': value._id }, value.title)), rce('div', { 'className': 'post-date' }, '#' + value.date + ' By: ' + author), rce('div', { 'className': 'post-excerpt' }, rce('p', null, value.excerpt)), rce('div', { 'className': 'post-tags' }, rce('span', { 'className': 'post-tag' }, 'tags:'), value.tags.map(function (value1, index1) {
 					return rce('span', { 'key': 'tags' + Date() + index1, 'className': 'post-tag' }, rce('a', { 'href': '#' }, value1));
 				})));
@@ -404,16 +404,17 @@ var content = React.createClass({
 		}.bind(this));
 		var style1 = { 'color': 'white', 'border': '1px solid white' };
 		var style2 = {};
-
+		var styleHasComment = { 'display': 'none' };
+		var styleNoComment = {};
 		var comments = this.state.comments;
 		var aBlogFooterComment = comments.map(function (value, index) {
 			var date = value.date.substring(2, 10);
 
 			return rce('div', { 'key': 'comment' + index, 'className': 'aBlog-footer' }, rce('div', { 'className': 'aBlog-footer-comment' }, rce('div', { 'className': 'aBlog-footer-comment-info' }, rce('div', { 'className': 'aBlog-footer-comment-info-floor' }, rce('div', null, value.floor)), rce('div', { 'className': 'aBlog-footer-comment-info-name' }, rce('div', null, value.name)), rce('div', { 'className': 'aBlog-footer-comment-info-name' }, rce('div', null, date))), rce('div', { 'className': 'aBlog-footer-comment-content' }, 'content')));
 		});
-		return rce('div', { 'style': { 'display': this.props.display === 0 || this.props.display === 2 ? 'block' : 'none' } }, rce('div', { 'className': 'mainContainer-content', 'style': { 'display': this.props.display === 0 ? 'block' : 'none' } }, wraps, rce('div', { 'className': 'pagination' }, rce('div', { 'className': 'previous', 'style': this.state.currentNum <= 1 ? style1 : style2, 'onClick': this.handlePrev }, '← Newer Posts'), rce('span', { 'className': 'page_number' }, 'Page: ' + this.state.currentNum + ' of ' + this.state.totalNum), rce('div', { 'className': 'next', 'style': this.state.currentNum >= this.state.totalNum ? style1 : style2, 'onClick': this.handleNext }, 'Older Posts →'))), rce('div', { 'className': 'mainContenter-content', 'style': { 'display': this.props.display === 2 ? 'block' : 'none' } }, rce('div', { 'className': 'aBlog', 'id': 'blog' }, rce('h2', null, this.state.blog.title), rce('br', null), rce('div', { 'className': 'blog-article', 'id': 'blog-article' }), rce('br', null), rce('div', { 'className': 'blog-info' }, rce('div', { 'className': 'blog-info-zan', 'onClick': this.zan }, '有用: ' + this.state.blog.zan), rce('div', { 'className': 'blog-info-tags' }, '标签: ' + this.state.blog.tags), rce('div', { 'className': 'blog-info-date' }, this.state.blog.date))), rce('div', { 'className': 'aBlog-footer' },
+		return rce('div', { 'style': { 'display': this.props.display === 0 || this.props.display === 2 ? 'block' : 'none' } }, rce('div', { 'className': 'mainContainer-content', 'style': { 'display': this.props.display === 0 ? 'block' : 'none' } }, wraps, rce('div', { 'className': 'pagination' }, rce('div', { 'className': 'previous', 'style': this.state.currentNum <= 1 ? style1 : style2, 'onClick': this.handlePrev }, '← Newer Posts'), rce('span', { 'className': 'page_number' }, 'Page: ' + this.state.currentNum + ' of ' + this.state.totalNum), rce('div', { 'className': 'next', 'style': this.state.currentNum >= this.state.totalNum ? style1 : style2, 'onClick': this.handleNext }, 'Older Posts →')), rce('div', { 'className': 'pagination about-me' }, rce('div', { 'onClick': this.toAbout }, 'About Me'))), rce('div', { 'className': 'mainContenter-content', 'style': { 'display': this.props.display === 2 ? 'block' : 'none' } }, rce('div', { 'className': 'aBlog', 'id': 'blog' }, rce('h2', null, this.state.blog.title), rce('br', null), rce('div', { 'className': 'blog-article', 'id': 'blog-article' }), rce('br', null), rce('div', { 'className': 'blog-info' }, rce('div', { 'className': 'blog-info-zan', 'onClick': this.zan, 'onTouchStart': this.zan }, '有用: ' + this.state.blog.zan), rce('div', { 'className': 'blog-info-tags' }, '标签: ' + this.state.blog.tags), rce('div', { 'className': 'blog-info-date' }, this.state.blog.date))), rce('div', { 'className': 'aBlog-footer' },
 		// rce('div', null, 'footer')
-		rce('div', { 'className': 'aBlog-footer-label' }, 'Comment : '), rce('div', { 'className': 'aBlog-footer-edit' }, rce('p', { 'contentEditable': 'true', 'id': 'aBlog-footer-edit-p' })), rce('div', { 'className': 'aBlog-footer-info-post-wraper' }, rce('div', { 'className': 'aBlog-footer-info' }, rce('input', { 'type': 'text', 'placeholder': 'nickname *', 'value': this.state.nickname, 'onChange': this.onNicknameChange }), rce('input', { 'type': 'text', 'placeholder': 'Email ', 'value': this.state.email, 'onChange': this.onEmailChange })), rce('div', { 'className': 'aBlog-footer-post', 'onClick': this.handlePostComment }, rce('div', null, 'post')))), aBlogFooterComment));
+		rce('div', { 'className': 'aBlog-footer-label' }, 'Comment : '), rce('div', { 'className': 'aBlog-footer-edit' }, rce('p', { 'contentEditable': 'true', 'id': 'aBlog-footer-edit-p' })), rce('div', { 'className': 'aBlog-footer-info-post-wraper' }, rce('div', { 'className': 'aBlog-footer-info' }, rce('input', { 'type': 'text', 'placeholder': '  nickname *', 'value': this.state.nickname, 'onChange': this.onNicknameChange }), rce('input', { 'type': 'email', 'placeholder': '  Email ', 'value': this.state.email, 'onChange': this.onEmailChange })), rce('div', { 'className': 'aBlog-footer-post', 'onClick': this.handlePostComment }, rce('div', null, 'post')))), rce('div', { 'className': 'aBlog-footer', 'style': this.state.comments.length == 0 ? styleNoComment : styleHasComment }, rce('div', { 'className': 'no-comment' }, 'no comment~')), aBlogFooterComment));
 	}
 });
 

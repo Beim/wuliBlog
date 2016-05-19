@@ -8,6 +8,9 @@ var total = React.createClass({display: 'total',
 	handleClickMyImg : function(){
 		window.open('https://github.com/Beim')
 	},
+	toBlog: function(){
+		window.location = 'blog.html'
+	},
 	render : function(){
 		return(
 			rce('div',{'className': 'about'},
@@ -52,6 +55,8 @@ var total = React.createClass({display: 'total',
 							)
 						),
 						rce('div', {'className': 'mainContainer-right'},
+							rce('h2', {'className': 'to-blog', 'onClick': this.toBlog, 'onTouchStart': this.toBlog}, 'To my Blog'),
+							rce('br', null),
 							rce('h2', null, 'Who are you?'),
 							rce('p', null, 'who are you'),
 							rce('h2', null, 'Where are you ?'),

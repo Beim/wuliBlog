@@ -151,3 +151,19 @@ exports.update = {
 		})
 	}
 }
+
+exports.delete = {
+	blog: (limit) => {
+		return new Promise((res, rej) => {
+			blogModel.remove(limit, (err) => {
+				if(err){
+					console.log('remove err : ' + err)
+					res(0)
+				}
+				else{
+					res(3)
+				}
+			})
+		})
+	}
+}

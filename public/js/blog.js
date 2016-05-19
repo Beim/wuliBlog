@@ -391,13 +391,15 @@ var content = React.createClass({
 						_this.setState({
 							blog: blog
 						});
+					} else if (this.response.ok == 3) {
+						window.location = 'blog.html';
 					} else {
 						alert('sorrty~');
 					}
 				};
+				xhr.send(data);
 			})();
 		}
-		xhr.send(data);
 	},
 	toAbout: function toAbout() {
 		window.location = 'about.html';

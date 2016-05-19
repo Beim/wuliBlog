@@ -81,6 +81,12 @@ router.post('/:name', function *(next) {
 				ok: response
 			}	
 		}
+		else if(this.request.body.name == this.request.body.author + ':delete'){
+			let response = yield db.delete['blog'](limit)
+			this.body = {
+				ok: response
+			}
+		}
 		else{
 			let response = yield db.insert['comment'](limit, data)
 			this.body = {

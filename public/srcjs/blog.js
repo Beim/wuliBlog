@@ -11,6 +11,16 @@ const SelectTag = {
 	books: ['novel']
 }
 
+let getDate = () => {
+	let _date = new Date()
+	let y = _date.getFullYear()
+	let m = (_date.getMonth() + 1) + ''
+	m = m.length == 1 ? '0' + m : m
+	let d = _date.getDate() + ''
+	d = d.length	 == 1 ? '0' + d : d
+	return _date = y + '-' + m + '-' + d
+}
+
 var simulateData = []
 for(let i=0; i<6; i++){
 	simulateData.push({
@@ -369,12 +379,14 @@ var content = React.createClass({display : 'content',
 		}
 		let name = this.state.nickname
 		let email = this.state.email
+		let _date = getDate()
 		let predata = {
 			_id: this.state.blog._id,
 			author: this.state.blog.author,
 			content: content,
 			name: name,
-			email: email
+			email: email,
+			date: _date
 		}
 		let data = JSON.stringify(predata)
 		let xhr = new XMLHttpRequest()
@@ -385,13 +397,6 @@ var content = React.createClass({display : 'content',
 			if(this.response.ok == 1){
 				let comments = Object.assign([], _this.state.comments)
 				predata.floor = comments.length + 1
-				let _date = new Date()
-				let y = _date.getFullYear()
-				let m = (_date.getMonth() + 1) + ''
-				m = m.length == 1 ? '0' + m : m
-				let d = _date.getDate() + ''
-				d = d.length	 == 1 ? '0' + d : d
-				predata.date = (y + '-' + m + '-' + d)
 				comments.push(predata)
 				_this.setState({
 					comments: comments
@@ -400,6 +405,7 @@ var content = React.createClass({display : 'content',
 			}
 			else if(this.response.ok == 2){
 				let blog = Object.assign({}, _this.state.blog)
+				predata.content = `</br><div>--------${predata.author} 修改于 ${predata.date}--------</div></br>` + predata.content
 				blog.article += predata.content
 				_this.setState({
 					blog: blog

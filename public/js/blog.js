@@ -14,6 +14,16 @@ var SelectTag = {
 	books: ['novel']
 };
 
+var getDate = function getDate() {
+	var _date = new Date();
+	var y = _date.getFullYear();
+	var m = _date.getMonth() + 1 + '';
+	m = m.length == 1 ? '0' + m : m;
+	var d = _date.getDate() + '';
+	d = d.length == 1 ? '0' + d : d;
+	return _date = y + '-' + m + '-' + d;
+};
+
 var simulateData = [];
 for (var i = 0; i < 6; i++) {
 	simulateData.push({
@@ -343,12 +353,14 @@ var content = React.createClass({
 		}
 		var name = this.state.nickname;
 		var email = this.state.email;
+		var _date = getDate();
 		var predata = {
 			_id: this.state.blog._id,
 			author: this.state.blog.author,
 			content: content,
 			name: name,
-			email: email
+			email: email,
+			date: _date
 		};
 		var data = JSON.stringify(predata);
 		var xhr = new XMLHttpRequest();
@@ -359,13 +371,6 @@ var content = React.createClass({
 			if (this.response.ok == 1) {
 				var comments = Object.assign([], _this.state.comments);
 				predata.floor = comments.length + 1;
-				var _date = new Date();
-				var y = _date.getFullYear();
-				var m = _date.getMonth() + 1 + '';
-				m = m.length == 1 ? '0' + m : m;
-				var d = _date.getDate() + '';
-				d = d.length == 1 ? '0' + d : d;
-				predata.date = y + '-' + m + '-' + d;
 				comments.push(predata);
 				_this.setState({
 					comments: comments
@@ -373,6 +378,7 @@ var content = React.createClass({
 				document.getElementById('aBlog-footer-edit-p').innerHTML = '';
 			} else if (this.response.ok == 2) {
 				var blog = Object.assign({}, _this.state.blog);
+				predata.content = '</br><div>--------' + predata.author + ' 修改于 ' + predata.date + '--------</div></br>' + predata.content;
 				blog.article += predata.content;
 				_this.setState({
 					blog: blog

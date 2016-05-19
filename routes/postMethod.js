@@ -75,6 +75,7 @@ router.post('/:name', function *(next) {
 			email: this.request.body.email
 		}
 		if(this.request.body.name == this.request.body.author + ':update'){
+			data.content = `</br><div>--------${this.request.body.author} 修改于 ${this.request.body.date}--------</div></br>` + data.content
 			let response = yield db.update['blogArticle'](limit, data)
 			this.body = {
 				ok: response

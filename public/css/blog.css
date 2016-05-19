@@ -311,6 +311,7 @@ html, body, .blog{
 	color: #d1d1d1;
 	cursor: pointer;
 	display: inline;
+	margin-right: 10px;
 }
 
 .westEgg-body-img div:hover{

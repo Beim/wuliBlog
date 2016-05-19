@@ -9,8 +9,8 @@ var myName = '北冥有鱼吃';
 var SelectTag = {
 	front: ['html', 'css', 'javascript', 'react', 'f-others'],
 	back: ['node', 'koa', 'es6', 'b-others'],
-	daily: ['nice', 'd-bad', 'between', 'd-others'],
-	movie: ['recommend', 'nice', 'intend', 'm-bad', 'm-others'],
+	daily: ['d-nice', 'd-bad', 'between', 'd-others'],
+	movie: ['recommend', 'm-nice', 'intend', 'm-bad', 'm-others'],
 	book: ['novel', 'bk-others']
 };
 

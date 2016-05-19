@@ -336,53 +336,61 @@ var content = React.createClass({
 		this.setState({ email: e.target.value });
 	},
 	handlePostComment: function handlePostComment() {
-		var _this = this;
-		var content = document.getElementById('aBlog-footer-edit-p').innerHTML;
-		var index = content.indexOf('<div>');
-		if (index > 0) {
-			var contentArray = [].concat(_toConsumableArray(content));
-			contentArray.splice(index, 0, '</div>');
-			content = contentArray.join('');
-			content = '<div>' + content;
-		} else if (index == -1) {
-			content = '<div>' + content + '</div>';
+		var _this4 = this;
+
+		if (this.state.nickname == '' || this.state.nickname == '昵称不能为空*') {
+			this.setState({ nickname: '昵称不能为空*' });
+		} else {
+			(function () {
+				var _this = _this4;
+				var content = document.getElementById('aBlog-footer-edit-p').innerHTML;
+				var index = content.indexOf('<div>');
+				if (index > 0) {
+					var contentArray = [].concat(_toConsumableArray(content));
+					contentArray.splice(index, 0, '</div>');
+					content = contentArray.join('');
+					content = '<div>' + content;
+				} else if (index == -1) {
+					content = '<div>' + content + '</div>';
+				}
+				var name = _this4.state.nickname;
+				var email = _this4.state.email;
+				var _date = getDate();
+				var predata = {
+					_id: _this4.state.blog._id,
+					author: _this4.state.blog.author,
+					content: content,
+					name: name,
+					email: email,
+					date: _date
+				};
+				var data = JSON.stringify(predata);
+				var xhr = new XMLHttpRequest();
+				xhr.open('POST', '/postMethod/comment', true);
+				xhr.setRequestHeader('Content-Type', 'application/x-javascript; charset=UTF-8');
+				xhr.responseType = 'json';
+				xhr.onload = function (e) {
+					if (this.response.ok == 1) {
+						var comments = Object.assign([], _this.state.comments);
+						predata.floor = comments.length + 1;
+						comments.push(predata);
+						_this.setState({
+							comments: comments
+						});
+						document.getElementById('aBlog-footer-edit-p').innerHTML = '';
+					} else if (this.response.ok == 2) {
+						var blog = Object.assign({}, _this.state.blog);
+						predata.content = '</br><div>--------' + predata.author + ' 修改于 ' + predata.date + '--------</div></br>' + predata.content;
+						blog.article += predata.content;
+						_this.setState({
+							blog: blog
+						});
+					} else {
+						alert('sorrty~');
+					}
+				};
+			})();
 		}
-		var name = this.state.nickname;
-		var email = this.state.email;
-		var _date = getDate();
-		var predata = {
-			_id: this.state.blog._id,
-			author: this.state.blog.author,
-			content: content,
-			name: name,
-			email: email,
-			date: _date
-		};
-		var data = JSON.stringify(predata);
-		var xhr = new XMLHttpRequest();
-		xhr.open('POST', '/postMethod/comment', true);
-		xhr.setRequestHeader('Content-Type', 'application/x-javascript; charset=UTF-8');
-		xhr.responseType = 'json';
-		xhr.onload = function (e) {
-			if (this.response.ok == 1) {
-				var comments = Object.assign([], _this.state.comments);
-				predata.floor = comments.length + 1;
-				comments.push(predata);
-				_this.setState({
-					comments: comments
-				});
-				document.getElementById('aBlog-footer-edit-p').innerHTML = '';
-			} else if (this.response.ok == 2) {
-				var blog = Object.assign({}, _this.state.blog);
-				predata.content = '</br><div>--------' + predata.author + ' 修改于 ' + predata.date + '--------</div></br>' + predata.content;
-				blog.article += predata.content;
-				_this.setState({
-					blog: blog
-				});
-			} else {
-				alert('sorrty~');
-			}
-		};
 		xhr.send(data);
 	},
 	toAbout: function toAbout() {

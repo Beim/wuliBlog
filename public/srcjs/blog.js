@@ -362,54 +362,59 @@ var content = React.createClass({display : 'content',
 		this.setState({email: e.target.value})
 	},
 	handlePostComment: function(){
-		let _this = this
-		let content = document.getElementById('aBlog-footer-edit-p').innerHTML
-		let index = content.indexOf('<div>') 
-		if(index > 0){
-			let contentArray = [...content]
-			contentArray.splice(index, 0, '</div>')
-			content = contentArray.join('')
-			content = '<div>' + content
+		if(this.state.nickname == '' || this.state.nickname == '昵称不能为空*'){
+			this.setState({nickname: '昵称不能为空*'})
 		}
-		else if (index == -1) {
-			content = '<div>' + content + '</div>'
-		}
-		let name = this.state.nickname
-		let email = this.state.email
-		let _date = getDate()
-		let predata = {
-			_id: this.state.blog._id,
-			author: this.state.blog.author,
-			content: content,
-			name: name,
-			email: email,
-			date: _date
-		}
-		let data = JSON.stringify(predata)
-		let xhr = new XMLHttpRequest()
-		xhr.open('POST', '/postMethod/comment', true)
-		xhr.setRequestHeader('Content-Type', 'application/x-javascript; charset=UTF-8')
-		xhr.responseType = 'json'
-		xhr.onload = function(e){
-			if(this.response.ok == 1){
-				let comments = Object.assign([], _this.state.comments)
-				predata.floor = comments.length + 1
-				comments.push(predata)
-				_this.setState({
-					comments: comments
-				})
-				document.getElementById('aBlog-footer-edit-p').innerHTML = ''
+		else{
+			let _this = this
+			let content = document.getElementById('aBlog-footer-edit-p').innerHTML
+			let index = content.indexOf('<div>') 
+			if(index > 0){
+				let contentArray = [...content]
+				contentArray.splice(index, 0, '</div>')
+				content = contentArray.join('')
+				content = '<div>' + content
 			}
-			else if(this.response.ok == 2){
-				let blog = Object.assign({}, _this.state.blog)
-				predata.content = `</br><div>--------${predata.author} 修改于 ${predata.date}--------</div></br>` + predata.content
-				blog.article += predata.content
-				_this.setState({
-					blog: blog
-				})
+			else if (index == -1) {
+				content = '<div>' + content + '</div>'
 			}
-			else{
-				alert('sorrty~')
+			let name = this.state.nickname
+			let email = this.state.email
+			let _date = getDate()
+			let predata = {
+				_id: this.state.blog._id,
+				author: this.state.blog.author,
+				content: content,
+				name: name,
+				email: email,
+				date: _date
+			}
+			let data = JSON.stringify(predata)
+			let xhr = new XMLHttpRequest()
+			xhr.open('POST', '/postMethod/comment', true)
+			xhr.setRequestHeader('Content-Type', 'application/x-javascript; charset=UTF-8')
+			xhr.responseType = 'json'
+			xhr.onload = function(e){
+				if(this.response.ok == 1){
+					let comments = Object.assign([], _this.state.comments)
+					predata.floor = comments.length + 1
+					comments.push(predata)
+					_this.setState({
+						comments: comments
+					})
+					document.getElementById('aBlog-footer-edit-p').innerHTML = ''
+				}
+				else if(this.response.ok == 2){
+					let blog = Object.assign({}, _this.state.blog)
+					predata.content = `</br><div>--------${predata.author} 修改于 ${predata.date}--------</div></br>` + predata.content
+					blog.article += predata.content
+					_this.setState({
+						blog: blog
+					})
+				}
+				else{
+					alert('sorrty~')
+				}
 			}
 		}
 		xhr.send(data)

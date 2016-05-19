@@ -156,17 +156,9 @@ var westEgg = React.createClass({
 	},
 	handleAddPre: function handleAddPre() {
 		console.info('add pre');
-		var preHTML = '<div><pre class=" language-javascript" style="padding: 0em 0em 0.5em; word-spacing: normal; list-style-type: none; border: none; text-shadow: white 0px 1px; font-family: Consolas, Monaco, \'Andale Mono\', monospace; direction: ltr; font-size: 12px; tab-size: 4; overflow: auto; letter-spacing: -0.12px; line-height: 21.6px; background: rgb(245, 242, 240);"><br></pre></div>';
+		var preHTML = '<div><pre class=" language-javascript" style="padding: 0em 0em 0.5em; word-spacing: normal; list-style-type: none; border: none; text-shadow: white 0px 1px; font-family: Consolas, Monaco, \'Andale Mono\', monospace; direction: ltr; tab-size: 4; overflow: auto; letter-spacing: -0.12px; line-height: 21.6px; background: rgb(245, 242, 240);"><font color="#708090"><span style="font-size: 14.4px;">#</span></font></pre></div>';
 		var p = document.getElementById('westEgg-body-edit-p');
 		p.innerHTML += '<div>&nbsp;&nbsp;</div>' + preHTML + '<div>&nbsp;&nbsp;</div>';
-		// let url = this.response
-		// let p = document.getElementById('westEgg-body-edit-p')
-		// let div = document.createElement('div')
-		// let img = document.createElement('img')
-		// img.src = url
-		// div.appendChild(img)
-		// p.appendChild(div)
-		// p.lastChild.focus()
 	},
 	render: function render() {
 		var style1 = { 'color': '#444', 'border': '1px solid #444' };

@@ -242,6 +242,18 @@ var content = React.createClass({display : 'content',
 	},
 	componentDidMount : function(){
 		this.getBlogList()
+		$(window).scroll(function(){
+			if($(window).scrollTop() > 100){
+				$('#aBlog-goTop').fadeIn(1000)
+			}
+			else{
+				$('#aBlog-goTop').fadeOut(1000)
+			}
+		})
+		$('#aBlog-goTop').click(function(){
+			$('body, html').animate({scrollTop: 0}, 300)
+			return false
+		})
 	},
 	getBlogList: function(){
 		let _this = this
@@ -534,7 +546,10 @@ var content = React.createClass({display : 'content',
 					rce('div', {'className': 'aBlog-footer', 'style': this.state.comments.length == 0 ? styleNoComment : styleHasComment},
 						rce('div', {'className': 'no-comment'}, 'no comment~')
 					),
-					aBlogFooterComment
+					aBlogFooterComment,
+					rce('div',{'className': 'aBlog-goTop', 'id': 'aBlog-goTop'},
+						rce('a', {'href': 'javascript: ;', })
+					)
 
 				)
 			)

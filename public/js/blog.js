@@ -209,6 +209,17 @@ var content = React.createClass({
 	},
 	componentDidMount: function componentDidMount() {
 		this.getBlogList();
+		$(window).scroll(function () {
+			if ($(window).scrollTop() > 100) {
+				$('#aBlog-goTop').fadeIn(1000);
+			} else {
+				$('#aBlog-goTop').fadeOut(1000);
+			}
+		});
+		$('#aBlog-goTop').click(function () {
+			$('body, html').animate({ scrollTop: 0 }, 300);
+			return false;
+		});
 	},
 	getBlogList: function getBlogList() {
 		var _this = this;
@@ -434,7 +445,7 @@ var content = React.createClass({
 		});
 		return rce('div', { 'style': { 'display': this.props.display === 0 || this.props.display === 2 ? 'block' : 'none' } }, rce('div', { 'className': 'mainContainer-content', 'style': { 'display': this.props.display === 0 ? 'block' : 'none' } }, wraps, rce('div', { 'className': 'pagination' }, rce('div', { 'className': 'previous', 'style': this.state.currentNum <= 1 ? style1 : style2, 'onClick': this.handlePrev }, '← Newer Posts'), rce('span', { 'className': 'page_number' }, 'Page: ' + this.state.currentNum + ' of ' + this.state.totalNum), rce('div', { 'className': 'next', 'style': this.state.currentNum >= this.state.totalNum ? style1 : style2, 'onClick': this.handleNext }, 'Older Posts →')), rce('div', { 'className': 'pagination about-me' }, rce('div', { 'onClick': this.toAbout }, 'About Me'))), rce('div', { 'className': 'mainContenter-content', 'style': { 'display': this.props.display === 2 ? 'block' : 'none' } }, rce('div', { 'className': 'aBlog', 'id': 'blog' }, rce('h2', null, this.state.blog.title), rce('br', null), rce('div', { 'className': 'blog-article', 'id': 'blog-article' }), rce('br', null), rce('div', { 'className': 'blog-info' }, rce('div', { 'className': 'blog-info-zan', 'onClick': this.zan, 'onTouchStart': this.zan }, '有用: ' + this.state.blog.zan), rce('div', { 'className': 'blog-info-tags' }, '标签: ' + this.state.blog.tags), rce('div', { 'className': 'blog-info-date' }, this.state.blog.date))), rce('div', { 'className': 'aBlog-footer' },
 		// rce('div', null, 'footer')
-		rce('div', { 'className': 'aBlog-footer-label' }, 'Comment : '), rce('div', { 'className': 'aBlog-footer-edit' }, rce('p', { 'contentEditable': 'true', 'id': 'aBlog-footer-edit-p' })), rce('div', { 'className': 'aBlog-footer-info-post-wraper' }, rce('div', { 'className': 'aBlog-footer-info' }, rce('input', { 'type': 'text', 'placeholder': '  nickname *', 'value': this.state.nickname, 'onChange': this.onNicknameChange }), rce('input', { 'type': 'email', 'placeholder': '  Email ', 'value': this.state.email, 'onChange': this.onEmailChange })), rce('div', { 'className': 'aBlog-footer-post', 'onClick': this.handlePostComment }, rce('div', null, 'post')))), rce('div', { 'className': 'aBlog-footer', 'style': this.state.comments.length == 0 ? styleNoComment : styleHasComment }, rce('div', { 'className': 'no-comment' }, 'no comment~')), aBlogFooterComment));
+		rce('div', { 'className': 'aBlog-footer-label' }, 'Comment : '), rce('div', { 'className': 'aBlog-footer-edit' }, rce('p', { 'contentEditable': 'true', 'id': 'aBlog-footer-edit-p' })), rce('div', { 'className': 'aBlog-footer-info-post-wraper' }, rce('div', { 'className': 'aBlog-footer-info' }, rce('input', { 'type': 'text', 'placeholder': '  nickname *', 'value': this.state.nickname, 'onChange': this.onNicknameChange }), rce('input', { 'type': 'email', 'placeholder': '  Email ', 'value': this.state.email, 'onChange': this.onEmailChange })), rce('div', { 'className': 'aBlog-footer-post', 'onClick': this.handlePostComment }, rce('div', null, 'post')))), rce('div', { 'className': 'aBlog-footer', 'style': this.state.comments.length == 0 ? styleNoComment : styleHasComment }, rce('div', { 'className': 'no-comment' }, 'no comment~')), aBlogFooterComment, rce('div', { 'className': 'aBlog-goTop', 'id': 'aBlog-goTop' }, rce('a', { 'href': 'javascript: ;' }))));
 	}
 });
 

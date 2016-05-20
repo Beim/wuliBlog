@@ -155,8 +155,12 @@ var westEgg = React.createClass({
 		// })
 	},
 	handleAddPre: function handleAddPre() {
-		console.info('add pre');
 		var preHTML = '<div><pre class=" language-javascript" style="padding: 0em 0em 0.5em; word-spacing: normal; list-style-type: none; border: none; text-shadow: white 0px 1px; font-family: Consolas, Monaco, \'Andale Mono\', monospace; direction: ltr; tab-size: 4; overflow: auto; letter-spacing: -0.12px; line-height: 21.6px; background: rgb(245, 242, 240);"><font color="#708090"><span style="font-size: 14.4px;">#</span></font></pre></div>';
+		var p = document.getElementById('westEgg-body-edit-p');
+		p.innerHTML += '<div>&nbsp;&nbsp;</div>' + preHTML + '<div>&nbsp;&nbsp;</div>';
+	},
+	handleAddH2: function handleAddH2() {
+		var preHTML = '<div><h2><font color="#444"><span>#</span></font></h2></div>';
 		var p = document.getElementById('westEgg-body-edit-p');
 		p.innerHTML += '<div>&nbsp;&nbsp;</div>' + preHTML + '<div>&nbsp;&nbsp;</div>';
 	},
@@ -182,7 +186,7 @@ var westEgg = React.createClass({
 		for (var _i3 in stateTags) {
 			_loop(_i3);
 		}
-		return rce('div', { 'className': 'mainContainer-content', 'style': { 'display': this.props.display === 1 ? 'block' : 'none' } }, rce('div', { 'className': 'westEgg-title' }, rce('input', { 'placeholder': 'Please fill the title', 'value': this.state.titleValue, 'onChange': this.handleTitleChange })), rce('div', { 'className': 'westEgg-body' }, rce('div', { 'className': 'westEgg-body-img' }, rce('div', { 'onClick': this.handleAddImg, 'type': 'file' }, 'Image'), rce('input', { 'type': 'file', 'id': 'fileInput', 'accept': 'image/gif, image/jpeg, image/x-png', 'style': { 'display': 'none' }, 'onChange': this.onAddImg }), rce('div', { 'onClick': this.handleAddPre }, 'AddPre')), rce('div', { 'className': 'westEgg-body-edit' }, rce('p', { 'contentEditable': 'true', 'id': 'westEgg-body-edit-p' }))), rce('div', { 'className': 'westEgg-sort' }, rce('div', { 'className': 'westEgg-sort-tag' }, tagWrap)), rce('div', { 'className': 'westEgg-post' }, rce('div', { 'className': 'westEgg-post-author' }, rce('input', { 'placeholder': 'author', 'value': this.state.authorValue, 'onChange': this.handleAuthorChange })), rce('div', { 'className': 'westEgg-post-btn', 'onClick': this.onPost }, 'button')));
+		return rce('div', { 'className': 'mainContainer-content', 'style': { 'display': this.props.display === 1 ? 'block' : 'none' } }, rce('div', { 'className': 'westEgg-title' }, rce('input', { 'placeholder': 'Please fill the title', 'value': this.state.titleValue, 'onChange': this.handleTitleChange })), rce('div', { 'className': 'westEgg-body' }, rce('div', { 'className': 'westEgg-body-img' }, rce('div', { 'onClick': this.handleAddImg, 'type': 'file' }, 'Image'), rce('input', { 'type': 'file', 'id': 'fileInput', 'accept': 'image/gif, image/jpeg, image/x-png', 'style': { 'display': 'none' }, 'onChange': this.onAddImg }), rce('div', { 'onClick': this.handleAddPre }, 'AddPre'), rce('div', { 'onClick': this.handleAddH2 }, 'AddH2')), rce('div', { 'className': 'westEgg-body-edit' }, rce('p', { 'contentEditable': 'true', 'id': 'westEgg-body-edit-p' }))), rce('div', { 'className': 'westEgg-sort' }, rce('div', { 'className': 'westEgg-sort-tag' }, tagWrap)), rce('div', { 'className': 'westEgg-post' }, rce('div', { 'className': 'westEgg-post-author' }, rce('input', { 'placeholder': 'author', 'value': this.state.authorValue, 'onChange': this.handleAuthorChange })), rce('div', { 'className': 'westEgg-post-btn', 'onClick': this.onPost }, 'button')));
 	}
 });
 

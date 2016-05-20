@@ -154,8 +154,12 @@ var westEgg = React.createClass({display: 'westEgg',
 		// })
 	},
 	handleAddPre: function(){
-		console.info('add pre')
 		let preHTML = `<div><pre class=" language-javascript" style="padding: 0em 0em 0.5em; word-spacing: normal; list-style-type: none; border: none; text-shadow: white 0px 1px; font-family: Consolas, Monaco, 'Andale Mono', monospace; direction: ltr; tab-size: 4; overflow: auto; letter-spacing: -0.12px; line-height: 21.6px; background: rgb(245, 242, 240);"><font color="#708090"><span style="font-size: 14.4px;">#</span></font></pre></div>`
+		let p = document.getElementById('westEgg-body-edit-p')
+		p.innerHTML += '<div>&nbsp;&nbsp;</div>'	 + preHTML + '<div>&nbsp;&nbsp;</div>'		
+	},
+	handleAddH2: function(){
+		let preHTML = `<div><h2><font color="#444"><span>#</span></font></h2></div>`
 		let p = document.getElementById('westEgg-body-edit-p')
 		p.innerHTML += '<div>&nbsp;&nbsp;</div>'	 + preHTML + '<div>&nbsp;&nbsp;</div>'		
 	},
@@ -196,7 +200,8 @@ var westEgg = React.createClass({display: 'westEgg',
 					rce('div', {'className': 'westEgg-body-img'},
 						rce('div', {'onClick': this.handleAddImg, 'type': 'file'}, 'Image'),
 						rce('input', {'type': 'file', 'id': 'fileInput', 'accept': 'image/gif, image/jpeg, image/x-png', 'style': {'display': 'none'}, 'onChange': this.onAddImg}),
-						rce('div', {'onClick': this.handleAddPre }, 'AddPre')
+						rce('div', {'onClick': this.handleAddPre }, 'AddPre'),
+						rce('div', {'onClick': this.handleAddH2 }, 'AddH2')
 					),
 					rce('div', {'className': 'westEgg-body-edit'},
 						rce('p' ,{'contentEditable': 'true', 'id': 'westEgg-body-edit-p'})

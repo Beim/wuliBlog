@@ -256,22 +256,24 @@ var content = React.createClass({display : 'content',
 		})
 	},
 	getBlogList: function(){
-		let _this = this
-		let xhr = new XMLHttpRequest()
-		let onePageNum = this.state.onePageNum
-		xhr.open('GET', '/getMethod/blogList', true)
-		xhr.responseType = 'json'
-		xhr.onload = function(e){
-			if(this.response.ok == 1){
-				simulateData = this.response.data
-				_this.setState({
-					data: simulateData,
-					showData: simulateData,
-					totalNum: Math.ceil(simulateData.length / onePageNum)
-				})
+		if(this.state.showData.length == 0){
+			let _this = this
+			let xhr = new XMLHttpRequest()
+			let onePageNum = this.state.onePageNum
+			xhr.open('GET', '/getMethod/blogList', true)
+			xhr.responseType = 'json'
+			xhr.onload = function(e){
+				if(this.response.ok == 1){
+					simulateData = this.response.data
+					_this.setState({
+						data: simulateData,
+						showData: simulateData,
+						totalNum: Math.ceil(simulateData.length / onePageNum)
+					})
+				}
 			}
+			xhr.send()
 		}
-		xhr.send()
 	},
 	componentWillReceiveProps: function(nextProps){
 		let simuData = []

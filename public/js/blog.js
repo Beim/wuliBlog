@@ -222,22 +222,28 @@ var content = React.createClass({
 		});
 	},
 	getBlogList: function getBlogList() {
-		var _this = this;
-		var xhr = new XMLHttpRequest();
-		var onePageNum = this.state.onePageNum;
-		xhr.open('GET', '/getMethod/blogList', true);
-		xhr.responseType = 'json';
-		xhr.onload = function (e) {
-			if (this.response.ok == 1) {
-				simulateData = this.response.data;
-				_this.setState({
-					data: simulateData,
-					showData: simulateData,
-					totalNum: Math.ceil(simulateData.length / onePageNum)
-				});
-			}
-		};
-		xhr.send();
+		var _this2 = this;
+
+		if (this.state.showData.length == 0) {
+			(function () {
+				var _this = _this2;
+				var xhr = new XMLHttpRequest();
+				var onePageNum = _this2.state.onePageNum;
+				xhr.open('GET', '/getMethod/blogList', true);
+				xhr.responseType = 'json';
+				xhr.onload = function (e) {
+					if (this.response.ok == 1) {
+						simulateData = this.response.data;
+						_this.setState({
+							data: simulateData,
+							showData: simulateData,
+							totalNum: Math.ceil(simulateData.length / onePageNum)
+						});
+					}
+				};
+				xhr.send();
+			})();
+		}
 	},
 	componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
 		var simuData = [];
@@ -274,12 +280,12 @@ var content = React.createClass({
 	// 	console.info('will')
 	// },
 	componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
-		var _this2 = this;
+		var _this3 = this;
 
 		if (this.state.comments.length !== prevState.comments.length) {
 			(function () {
 				var divs = document.getElementsByClassName('aBlog-footer-comment-content');
-				var comments = Object.assign([], _this2.state.comments);
+				var comments = Object.assign([], _this3.state.comments);
 				comments.forEach(function (value, index) {
 					divs[index].innerHTML = value.content;
 				});
@@ -328,12 +334,12 @@ var content = React.createClass({
 		xhr.send(id);
 	},
 	zan: function zan() {
-		var _this3 = this;
+		var _this4 = this;
 
 		if (!this.state.hasZaned) {
 			(function () {
-				var _this = _this3;
-				var id = JSON.stringify({ _id: _this3.state.blog._id });
+				var _this = _this4;
+				var id = JSON.stringify({ _id: _this4.state.blog._id });
 				var xhr = new XMLHttpRequest();
 				xhr.open('POST', 'postMethod/zan', true);
 				xhr.setRequestHeader('Content-Type', 'application/x-javascript; charset=UTF-8');
@@ -357,13 +363,13 @@ var content = React.createClass({
 		this.setState({ email: e.target.value });
 	},
 	handlePostComment: function handlePostComment() {
-		var _this4 = this;
+		var _this5 = this;
 
 		if (this.state.nickname == '' || this.state.nickname == '昵称不能为空*') {
 			this.setState({ nickname: '昵称不能为空*' });
 		} else {
 			(function () {
-				var _this = _this4;
+				var _this = _this5;
 				var content = document.getElementById('aBlog-footer-edit-p').innerHTML;
 				var index = content.indexOf('<div>');
 				if (index > 0) {
@@ -374,12 +380,12 @@ var content = React.createClass({
 				} else if (index == -1) {
 					content = '<div>' + content + '</div>';
 				}
-				var name = _this4.state.nickname;
-				var email = _this4.state.email;
+				var name = _this5.state.nickname;
+				var email = _this5.state.email;
 				var _date = getDate();
 				var predata = {
-					_id: _this4.state.blog._id,
-					author: _this4.state.blog.author,
+					_id: _this5.state.blog._id,
+					author: _this5.state.blog.author,
 					content: content,
 					name: name,
 					email: email,

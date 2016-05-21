@@ -5,7 +5,7 @@ React.initializeTouchEvents(true)
 const myName = '北冥有鱼吃'
 const SelectTag = {
 	front: ['html', 'css', 'javascript', 'react', 'f-others'],
-	back: ['node', 'koa', 'es6', 'b-others'],
+	back: ['node', 'koa', 'es6', 'mongo', 'b-others'],
 	daily: ['d-nice', 'd-bad', 'between', 'd-others'],
 	movie: ['recommend', 'm-nice', 'intend', 'm-bad', 'm-others'],
 	other: ['tech', 'o-others']

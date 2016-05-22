@@ -173,7 +173,16 @@ html, body, .blog{
 
 .post-name{
 	padding: 9px 0 0;
-	font-size: 36px;
+}
+@media (min-width: 700px){
+	.post-name{
+		font-size: 36px;
+	}
+}
+@media (max-width: 700px){
+	.post-name{
+		font-size: 20px;
+	}
 }
 
 .post-name a{
@@ -192,8 +201,19 @@ html, body, .blog{
 }
 
 .post-excerpt{
+	width: 100%;
 	font-size: 18px;
 	padding-bottom: 1%;
+}
+@media (min-width: 700px){
+	.post-excerpt {
+		display: block;
+	}
+}
+@media (max-width: 700px){
+	.post-excerpt {
+		display: none;
+	}
 }
 
 .post-tag{

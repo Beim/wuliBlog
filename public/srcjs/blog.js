@@ -465,9 +465,9 @@ var content = React.createClass({display : 'content',
 						rce('a', {'href': '#', 'onClick': this.handleShowBlog, 'data-myid': value._id}, value.title)
 					),
 					rce('div', {'className': 'post-date'}, '#' + value.date + ' By: ' + author),
-					rce('div', {'className': 'post-excerpt'},
-						rce('p', null, value.excerpt)
-					),
+					rce('div', {'className': 'post-excerpt'}, value.excerpt),
+					// 	rce('p', null, value.excerpt)
+					// ),
 					rce('div', {'className': 'post-tags'},
 						rce('span', {'className': 'post-tag'}, 'tags:'),
 						value.tags.map(function(value1, index1){

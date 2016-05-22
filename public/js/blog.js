@@ -434,7 +434,10 @@ var content = React.createClass({
 					author = author.substring(0, author.indexOf(':'));
 				}
 				value.date = value.date.substring(0, 10);
-				return rce('div', { 'key': 'wraps' + index, 'className': 'post-wrap', 'style': { 'display': index < 5 * this.state.currentNum && index >= 5 * (this.state.currentNum - 1) ? 'block' : 'none' } }, rce('h1', { 'className': 'post-name' }, rce('a', { 'href': '#', 'onClick': this.handleShowBlog, 'data-myid': value._id }, value.title)), rce('div', { 'className': 'post-date' }, '#' + value.date + ' By: ' + author), rce('div', { 'className': 'post-excerpt' }, rce('p', null, value.excerpt)), rce('div', { 'className': 'post-tags' }, rce('span', { 'className': 'post-tag' }, 'tags:'), value.tags.map(function (value1, index1) {
+				return rce('div', { 'key': 'wraps' + index, 'className': 'post-wrap', 'style': { 'display': index < 5 * this.state.currentNum && index >= 5 * (this.state.currentNum - 1) ? 'block' : 'none' } }, rce('h1', { 'className': 'post-name' }, rce('a', { 'href': '#', 'onClick': this.handleShowBlog, 'data-myid': value._id }, value.title)), rce('div', { 'className': 'post-date' }, '#' + value.date + ' By: ' + author), rce('div', { 'className': 'post-excerpt' }, value.excerpt),
+				// 	rce('p', null, value.excerpt)
+				// ),
+				rce('div', { 'className': 'post-tags' }, rce('span', { 'className': 'post-tag' }, 'tags:'), value.tags.map(function (value1, index1) {
 					return rce('span', { 'key': 'tags' + Date() + index1, 'className': 'post-tag' }, rce('a', { 'href': '#' }, value1));
 				})));
 			}

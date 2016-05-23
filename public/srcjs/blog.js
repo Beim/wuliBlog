@@ -568,6 +568,7 @@ var total = React.createClass({display: 'total',
 	getInitialState: function(){
 		return{
 			select: 'Blog',
+			isSideShow: false,
 			shouldRefreshBlogList: false,
 			styleDisplayNone: {},
 			display: 0 //0 blog list  1 secret  2 blog
@@ -615,6 +616,21 @@ var total = React.createClass({display: 'total',
 		styleDisplayNone[currentTag] = 0
 		this.setState({'styleDisplayNone': styleDisplayNone})
 	},
+	showSide: function(){
+		console.info('show side')
+		if(this.state.isSideShow){
+			document.getElementById('site-side').style.left = '-40%'
+			document.getElementById('blogContent').style.left = 0
+			document.getElementById('site-hide').style.display = 'none'
+			this.setState({isSideShow: false})
+		}
+		else{
+			document.getElementById('site-side').style.left = 0 
+			document.getElementById('blogContent').style.left = '40%'
+			document.getElementById('site-hide').style.display = 'block'
+			this.setState({isSideShow: true})
+		}
+	},
 	render : function(){
 		let style1 = {'display': 'none'}//styleDisplayNone !== 1
 		let style2 = {'opacity': '1'}//styleDisplayNone === 1
@@ -632,37 +648,44 @@ var total = React.createClass({display: 'total',
 		}
 		return(
 			rce('div', {'className': 'blog'},
-				rce('div', {'className': 'site-header'},
-					rce('a', {'className': 'site-title', 'href': 'https://github.com/Beim'}, myName),
-					rce('nav', {'className': 'site-nav'}, 
-						rce('a', {'className': 'site-link', 'href': '#', 'style': {'color': 'white'}, 'onClick': this.handleChangeDisplay.bind(null, 'secret')}, 'secret'),
-						rce('a',{'className': 'site-link', 'href': '../index.html'}, 'HOME'),
-						rce('a',{'className': 'site-link', 'href': '../about.html'}, 'ABOUT'),
-						rce('a',{'className': 'site-link', 'href': '../blog.html'}, 'BLOG'),
-						rce('a',{'className': 'site-link', 'href': '#'}, 'TieBa'),
-						rce('a',{'className': 'site-link', 'href': '#'}, 'CharRoom'),
-						rce('a',{'className': 'site-link', 'href': '#'}, 'MORE')
-					)
-				),
-				rce('div', {'className': 'fullstrip'},
-					rce('div', {'className': 'fullstrip-container'},
-						rce('div', {'className': 'fullstrip-title'}, 
-							rce('div', {'className': 'fullstrip-super-tag fullstrip-title-div', 'onClick': this.handleSelect}, 'Blog'),
-							_tags
+				rce('div', {'className': 'site-side', 'id': 'site-side'}, 'hello'),
+				rce('div', {'className': 'site-hide', 'id': 'site-hide', 'onClick': this.showSide}),
+				rce('div', {'className': 'blogContent', 'id': 'blogContent'},
+					rce('div', {'className': 'site-header'},
+						rce('a', {'className': 'site-title', 'href': 'https://github.com/Beim'}, myName),
+						rce('nav', {'className': 'site-nav'}, 
+							rce('a', {'className': 'site-link', 'href': '#', 'style': {'color': 'white'}, 'onClick': this.handleChangeDisplay.bind(null, 'secret')}, 'secret'),
+							rce('a',{'className': 'site-link', 'href': '../index.html'}, 'HOME'),
+							rce('a',{'className': 'site-link', 'href': '../about.html'}, 'ABOUT'),
+							rce('a',{'className': 'site-link', 'href': '../blog.html'}, 'BLOG'),
+							rce('a',{'className': 'site-link', 'href': '#'}, 'TieBa'),
+							rce('a',{'className': 'site-link', 'href': '#'}, 'CharRoom'),
+							rce('a',{'className': 'site-link', 'href': '#'}, 'MORE')
 						)
+					),
+					rce('div', {'className': 'fullstrip'},
+						rce('div', {'className': 'fullstrip-container'},
+							rce('div', {'className': 'fullstrip-title-mob'}, 
+								rce('div', {'className': 'fullstrip-super-tag fullstrip-title-div', 'onClick': this.showSide}, 'Blog')
+							),
+							rce('div', {'className': 'fullstrip-title'}, 
+								rce('div', {'className': 'fullstrip-super-tag fullstrip-title-div', 'onClick': this.handleSelect}, 'Blog'),
+								_tags
+							)
+						)
+					),
+					rce('div', {'className': 'mainContainer'},
+						// rce('div', {'className': 'mainContainer-content'},
+							rce(content, {
+								'select': this.state.select,
+								'display': this.state.display, 
+								'handleChangeDisplay': this.handleChangeDisplay, 
+								'shouldRefreshBlogList': this.state.shouldRefreshBlogList, 
+								'blogListDidRefreshed': this.blogListDidRefreshed
+							}),
+							rce(westEgg, {'display': this.state.display, 'handleChangeDisplay': this.handleChangeDisplay})
+						// )
 					)
-				),
-				rce('div', {'className': 'mainContainer'},
-					// rce('div', {'className': 'mainContainer-content'},
-						rce(content, {
-							'select': this.state.select,
-							'display': this.state.display, 
-							'handleChangeDisplay': this.handleChangeDisplay, 
-							'shouldRefreshBlogList': this.state.shouldRefreshBlogList, 
-							'blogListDidRefreshed': this.blogListDidRefreshed
-						}),
-						rce(westEgg, {'display': this.state.display, 'handleChangeDisplay': this.handleChangeDisplay})
-					// )
 				)
 			)
 		)

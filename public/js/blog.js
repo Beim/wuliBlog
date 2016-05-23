@@ -468,6 +468,7 @@ var total = React.createClass({
 	getInitialState: function getInitialState() {
 		return {
 			select: 'Blog',
+			isSideShow: false,
 			shouldRefreshBlogList: false,
 			styleDisplayNone: {},
 			display: 0 //0 blog list  1 secret  2 blog
@@ -515,6 +516,20 @@ var total = React.createClass({
 		styleDisplayNone[currentTag] = 0;
 		this.setState({ 'styleDisplayNone': styleDisplayNone });
 	},
+	showSide: function showSide() {
+		console.info('show side');
+		if (this.state.isSideShow) {
+			document.getElementById('site-side').style.left = '-40%';
+			document.getElementById('blogContent').style.left = 0;
+			document.getElementById('site-hide').style.display = 'none';
+			this.setState({ isSideShow: false });
+		} else {
+			document.getElementById('site-side').style.left = 0;
+			document.getElementById('blogContent').style.left = '40%';
+			document.getElementById('site-hide').style.display = 'block';
+			this.setState({ isSideShow: true });
+		}
+	},
 	render: function render() {
 		var style1 = { 'display': 'none' }; //styleDisplayNone !== 1
 		var style2 = { 'opacity': '1' }; //styleDisplayNone === 1
@@ -527,7 +542,7 @@ var total = React.createClass({
 			}
 			_tags.push(rce('div', { 'key': '_tags' + _i5, 'className': 'fullstrip-title-div', 'style': this.state.styleDisplayNone[_i5] !== 1 ? style2 : style3, 'onMouseOverCapture': this.handleMouseOver, 'onMouseLeave': this.handleMouseLeave }, rce('div', { 'className': 'fullstrip-tag', 'onClick': this.handleSelect }, _i5), _subTags));
 		}
-		return rce('div', { 'className': 'blog' }, rce('div', { 'className': 'site-header' }, rce('a', { 'className': 'site-title', 'href': 'https://github.com/Beim' }, myName), rce('nav', { 'className': 'site-nav' }, rce('a', { 'className': 'site-link', 'href': '#', 'style': { 'color': 'white' }, 'onClick': this.handleChangeDisplay.bind(null, 'secret') }, 'secret'), rce('a', { 'className': 'site-link', 'href': '../index.html' }, 'HOME'), rce('a', { 'className': 'site-link', 'href': '../about.html' }, 'ABOUT'), rce('a', { 'className': 'site-link', 'href': '../blog.html' }, 'BLOG'), rce('a', { 'className': 'site-link', 'href': '#' }, 'TieBa'), rce('a', { 'className': 'site-link', 'href': '#' }, 'CharRoom'), rce('a', { 'className': 'site-link', 'href': '#' }, 'MORE'))), rce('div', { 'className': 'fullstrip' }, rce('div', { 'className': 'fullstrip-container' }, rce('div', { 'className': 'fullstrip-title' }, rce('div', { 'className': 'fullstrip-super-tag fullstrip-title-div', 'onClick': this.handleSelect }, 'Blog'), _tags))), rce('div', { 'className': 'mainContainer' },
+		return rce('div', { 'className': 'blog' }, rce('div', { 'className': 'site-side', 'id': 'site-side' }, 'hello'), rce('div', { 'className': 'site-hide', 'id': 'site-hide', 'onClick': this.showSide }), rce('div', { 'className': 'blogContent', 'id': 'blogContent' }, rce('div', { 'className': 'site-header' }, rce('a', { 'className': 'site-title', 'href': 'https://github.com/Beim' }, myName), rce('nav', { 'className': 'site-nav' }, rce('a', { 'className': 'site-link', 'href': '#', 'style': { 'color': 'white' }, 'onClick': this.handleChangeDisplay.bind(null, 'secret') }, 'secret'), rce('a', { 'className': 'site-link', 'href': '../index.html' }, 'HOME'), rce('a', { 'className': 'site-link', 'href': '../about.html' }, 'ABOUT'), rce('a', { 'className': 'site-link', 'href': '../blog.html' }, 'BLOG'), rce('a', { 'className': 'site-link', 'href': '#' }, 'TieBa'), rce('a', { 'className': 'site-link', 'href': '#' }, 'CharRoom'), rce('a', { 'className': 'site-link', 'href': '#' }, 'MORE'))), rce('div', { 'className': 'fullstrip' }, rce('div', { 'className': 'fullstrip-container' }, rce('div', { 'className': 'fullstrip-title-mob' }, rce('div', { 'className': 'fullstrip-super-tag fullstrip-title-div', 'onClick': this.showSide }, 'Blog')), rce('div', { 'className': 'fullstrip-title' }, rce('div', { 'className': 'fullstrip-super-tag fullstrip-title-div', 'onClick': this.handleSelect }, 'Blog'), _tags))), rce('div', { 'className': 'mainContainer' },
 		// rce('div', {'className': 'mainContainer-content'},
 		rce(content, {
 			'select': this.state.select,
@@ -537,7 +552,7 @@ var total = React.createClass({
 			'blogListDidRefreshed': this.blogListDidRefreshed
 		}), rce(westEgg, { 'display': this.state.display, 'handleChangeDisplay': this.handleChangeDisplay })
 		// )
-		));
+		)));
 	}
 });
 

@@ -281,12 +281,17 @@ var content = React.createClass({display : 'content',
 			if(nextProps.select === 'Blog'){
 				simuData.push(value)
 			}
-			else{
+			else if(SelectTag[nextProps.select]){
 				for (let i=0; i < value.tags.length; i++) {
 					if (SelectTag[nextProps.select].indexOf(value.tags[i]) !== -1) {
 						simuData.push(value)
 						break
 					}
+				}
+			}
+			else{
+				if (value.tags.indexOf(nextProps.select) !== -1) {
+					simuData.push(value)
 				}
 			}
 		})
@@ -564,6 +569,7 @@ var total = React.createClass({display: 'total',
 		return{
 			select: 'Blog',
 			shouldRefreshBlogList: false,
+			styleDisplayNone: {},
 			display: 0 //0 blog list  1 secret  2 blog
 		}
 	},
@@ -597,10 +603,32 @@ var total = React.createClass({display: 'total',
 			shouldRefreshBlogList: false
 		})
 	},
+	handleMouseOver: function(e){
+		let styleDisplayNone = this.state.styleDisplayNone
+		let currentTag = e.target.parentNode.firstChild.innerHTML
+		styleDisplayNone[currentTag] = 1
+		this.setState({'styleDisplayNone': styleDisplayNone})
+	},
+	handleMouseLeave: function(e){
+		let styleDisplayNone = this.state.styleDisplayNone
+		let currentTag = e.target.parentNode.firstChild.innerHTML
+		styleDisplayNone[currentTag] = 0
+		this.setState({'styleDisplayNone': styleDisplayNone})
+	},
 	render : function(){
+		let style1 = {'display': 'none'}//styleDisplayNone !== 1
+		let style2 = {'opacity': '1'}//styleDisplayNone === 1
+		let style3 = {'background': 'rgba(0,0,0,0.4)'}
 		let _tags = []
 		for (let i in SelectTag) {
-			_tags.push(rce('div', {'key': '_tags'+i, 'className': 'fullstrip-tag', 'onClick': this.handleSelect}, i))
+			let _subTags = []
+			for(let j in SelectTag[i]){
+				_subTags.push(rce('div', {'className': 'fullstrip-tag-li', 'onClick': this.handleSelect,  'style': this.state.styleDisplayNone[i] !== 1 ? style1 : style2}, SelectTag[i][j]))
+			}
+			_tags.push(rce('div', {'key': '_tags'+i, 'className': 'fullstrip-title-div', 'style': this.state.styleDisplayNone[i] !== 1 ? style2 : style3, 'onMouseOverCapture': this.handleMouseOver, 'onMouseLeave': this.handleMouseLeave},
+				rce('div', {'className': 'fullstrip-tag', 'onClick': this.handleSelect}, i),
+				_subTags
+			))
 		}
 		return(
 			rce('div', {'className': 'blog'},
@@ -619,7 +647,7 @@ var total = React.createClass({display: 'total',
 				rce('div', {'className': 'fullstrip'},
 					rce('div', {'className': 'fullstrip-container'},
 						rce('div', {'className': 'fullstrip-title'}, 
-							rce('div', {'className': 'fullstrip-super-tag', 'onClick': this.handleSelect}, 'Blog'),
+							rce('div', {'className': 'fullstrip-super-tag fullstrip-title-div', 'onClick': this.handleSelect}, 'Blog'),
 							_tags
 						)
 					)

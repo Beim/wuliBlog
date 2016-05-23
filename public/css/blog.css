@@ -91,45 +91,54 @@ html, body, .blog{
 	height: 100%;
 	display: flex;
 	display: -webkit-flex; /* Safari */
-	align-items: center;
+	/*align-items: center;*/
 }
 
 .fullstrip-title{
+	margin-top: 6%;
 	font-size: 32px;
 	font-weight: bold;
 	color: #fff;
+	display: flex;
+	/*align-items: flex-start;*/
+	align-items: baseline;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	width: 100%;
+	/*order: 1;*/
+	z-index: 1;
 	/*margin-right: 3%;*/
 }
 
-.fullstrip-title div{
-	color: #fff;
-	/*margin-right: 10%;*/
-	display: inline;
-	cursor:	pointer;
-	/*padding-right: 15%;*/
-}
 
-.fullstrip-title div:hover{
+.fullstrip-title-div div{
+	padding: 0 5px 5px 5px;
+	/*opacity: 0.5;*/
+}
+.fullstrip-super-tag{
+	cursor: pointer;
+}
+.fullstrip-super-tag:hover{
 	color: #F6E497;
 }
-
-.fullstrip-super-tag{
-	/*padding-right: 15%;*/
-	/*margin-right: 20%;*/
-}
-
 .fullstrip-tag{
-	/*color: #FCFAE1;*/
+	cursor: pointer;
 	font-size: 20px;
 }
-@media(min-width: 700px){
-	.fullstrip-title div{
-		margin-right: 10%;
-	}
+.fullstrip-tag:hover{
+	color: #F6E497;
 }
-@media(max-width: 700px){
-	.fullstrip-title div{
-		margin-right: 4%;
+.fullstrip-tag-li{
+	font-size: 20px;
+	cursor: pointer;
+	/*padding: 5px;*/
+}
+.fullstrip-tag-li:hover{
+	color: #F6E497;
+}
+@media (max-width: 700px){
+	.fullstrip-tag-li{
+		display: none;
 	}
 }
 

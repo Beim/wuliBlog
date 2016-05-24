@@ -564,6 +564,62 @@ var content = React.createClass({display : 'content',
 	}
 })
 
+var side = React.createClass({display: 'side',
+	getInitialState: function(){
+		return {
+			'shouldSubtagShow': ''
+		}
+	},
+	handleHeaderClick: function(){
+		document.getElementById('site-title').click()
+	},
+	handleAllBlogClick: function(){
+		document.getElementById('allBlog').click()
+		this.setState({'shouldSubtagShow': 'blog'})
+	},
+	handleSelectMainTag: function(e){
+		this.props.handleSelect(e)
+		this.setState({'shouldSubtagShow': e.target.innerHTML})
+	},
+	render: function(){
+		let style1 = {'display': 'none'}
+		let style2 = {}
+		let _tags = []
+		for(let i in SelectTag){
+			let _subTags = []
+			for(let j in SelectTag[i]){
+				_subTags.push(rce('div', {'onTouchStart': this.props.handleSelect}, SelectTag[i][j]))
+			}
+			_tags.push(
+				rce('div', {'key': '_tags-mob' + i, 'className': 'side-content-wrap'},
+					rce('div', {'className': 'side-content-wrap-main'},
+						rce('div', {'onTouchStart': this.handleSelectMainTag}, i)
+					),
+					rce('div', {'className': 'side-content-wrap-sub', 'style': this.state.shouldSubtagShow == i ? style2 : style1},
+						_subTags
+					)
+				)
+			)
+		}
+		return(
+			rce('div', {'className': 'side-container'},
+				rce('div', {'className': 'side-header'},
+					rce('div', {'onTouchStart': this.handleHeaderClick}, myName)
+				),
+				rce('div', {'className': 'side-content'},
+					rce('div', {'className': 'side-content-wrap'},
+						rce('div', {'className': 'side-content-wrap-main'},
+							rce('div', {'onTouchStart': this.handleAllBlogClick}, 'All')
+						)
+					),
+					_tags
+				),
+				rce('div', {'className': 'side-footer'})
+			)
+		)
+	}
+})
+
 var total = React.createClass({display: 'total',
 	getInitialState: function(){
 		return{
@@ -617,16 +673,17 @@ var total = React.createClass({display: 'total',
 		this.setState({'styleDisplayNone': styleDisplayNone})
 	},
 	showSide: function(){
-		console.info('show side')
 		if(this.state.isSideShow){
-			document.getElementById('site-side').style.left = '-40%'
+			document.getElementById('site-side').style.left = '-50%'
+			document.getElementById('site-side').style.boxShadow = ''
 			document.getElementById('blogContent').style.left = 0
 			document.getElementById('site-hide').style.display = 'none'
 			this.setState({isSideShow: false})
 		}
 		else{
 			document.getElementById('site-side').style.left = 0 
-			document.getElementById('blogContent').style.left = '40%'
+			document.getElementById('site-side').style.boxShadow = '2px 0 2px #aaaaaa'
+			document.getElementById('blogContent').style.left = '50%'
 			document.getElementById('site-hide').style.display = 'block'
 			this.setState({isSideShow: true})
 		}
@@ -648,11 +705,13 @@ var total = React.createClass({display: 'total',
 		}
 		return(
 			rce('div', {'className': 'blog'},
-				rce('div', {'className': 'site-side', 'id': 'site-side'}, 'hello'),
+				rce('div', {'className': 'site-side', 'id': 'site-side'}, 
+					rce(side, {'handleSelect': this.handleSelect})
+				),
 				rce('div', {'className': 'site-hide', 'id': 'site-hide', 'onClick': this.showSide}),
 				rce('div', {'className': 'blogContent', 'id': 'blogContent'},
 					rce('div', {'className': 'site-header'},
-						rce('a', {'className': 'site-title', 'href': 'https://github.com/Beim'}, myName),
+						rce('a', {'className': 'site-title','id': 'site-title', 'href': 'https://github.com/Beim'}, myName),
 						rce('nav', {'className': 'site-nav'}, 
 							rce('a', {'className': 'site-link', 'href': '#', 'style': {'color': 'white'}, 'onClick': this.handleChangeDisplay.bind(null, 'secret')}, 'secret'),
 							rce('a',{'className': 'site-link', 'href': '../index.html'}, 'HOME'),
@@ -669,7 +728,7 @@ var total = React.createClass({display: 'total',
 								rce('div', {'className': 'fullstrip-super-tag fullstrip-title-div', 'onClick': this.showSide}, 'Blog')
 							),
 							rce('div', {'className': 'fullstrip-title'}, 
-								rce('div', {'className': 'fullstrip-super-tag fullstrip-title-div', 'onClick': this.handleSelect}, 'Blog'),
+								rce('div', {'className': 'fullstrip-super-tag fullstrip-title-div', 'id': 'allBlog', 'onClick': this.handleSelect}, 'Blog'),
 								_tags
 							)
 						)

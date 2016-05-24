@@ -462,6 +462,40 @@ var content = React.createClass({
 	}
 });
 
+var side = React.createClass({
+	displayName: 'side',
+	display: 'side',
+	getInitialState: function getInitialState() {
+		return {
+			'shouldSubtagShow': ''
+		};
+	},
+	handleHeaderClick: function handleHeaderClick() {
+		document.getElementById('site-title').click();
+	},
+	handleAllBlogClick: function handleAllBlogClick() {
+		document.getElementById('allBlog').click();
+		this.setState({ 'shouldSubtagShow': 'blog' });
+	},
+	handleSelectMainTag: function handleSelectMainTag(e) {
+		this.props.handleSelect(e);
+		this.setState({ 'shouldSubtagShow': e.target.innerHTML });
+	},
+	render: function render() {
+		var style1 = { 'display': 'none' };
+		var style2 = {};
+		var _tags = [];
+		for (var _i5 in SelectTag) {
+			var _subTags = [];
+			for (var j in SelectTag[_i5]) {
+				_subTags.push(rce('div', { 'onTouchStart': this.props.handleSelect }, SelectTag[_i5][j]));
+			}
+			_tags.push(rce('div', { 'key': '_tags-mob' + _i5, 'className': 'side-content-wrap' }, rce('div', { 'className': 'side-content-wrap-main' }, rce('div', { 'onTouchStart': this.handleSelectMainTag }, _i5)), rce('div', { 'className': 'side-content-wrap-sub', 'style': this.state.shouldSubtagShow == _i5 ? style2 : style1 }, _subTags)));
+		}
+		return rce('div', { 'className': 'side-container' }, rce('div', { 'className': 'side-header' }, rce('div', { 'onTouchStart': this.handleHeaderClick }, myName)), rce('div', { 'className': 'side-content' }, rce('div', { 'className': 'side-content-wrap' }, rce('div', { 'className': 'side-content-wrap-main' }, rce('div', { 'onTouchStart': this.handleAllBlogClick }, 'All'))), _tags), rce('div', { 'className': 'side-footer' }));
+	}
+});
+
 var total = React.createClass({
 	displayName: 'total',
 	display: 'total',
@@ -517,15 +551,16 @@ var total = React.createClass({
 		this.setState({ 'styleDisplayNone': styleDisplayNone });
 	},
 	showSide: function showSide() {
-		console.info('show side');
 		if (this.state.isSideShow) {
-			document.getElementById('site-side').style.left = '-40%';
+			document.getElementById('site-side').style.left = '-50%';
+			document.getElementById('site-side').style.boxShadow = '';
 			document.getElementById('blogContent').style.left = 0;
 			document.getElementById('site-hide').style.display = 'none';
 			this.setState({ isSideShow: false });
 		} else {
 			document.getElementById('site-side').style.left = 0;
-			document.getElementById('blogContent').style.left = '40%';
+			document.getElementById('site-side').style.boxShadow = '2px 0 2px #aaaaaa';
+			document.getElementById('blogContent').style.left = '50%';
 			document.getElementById('site-hide').style.display = 'block';
 			this.setState({ isSideShow: true });
 		}
@@ -535,14 +570,14 @@ var total = React.createClass({
 		var style2 = { 'opacity': '1' }; //styleDisplayNone === 1
 		var style3 = { 'background': 'rgba(0,0,0,0.4)' };
 		var _tags = [];
-		for (var _i5 in SelectTag) {
+		for (var _i6 in SelectTag) {
 			var _subTags = [];
-			for (var j in SelectTag[_i5]) {
-				_subTags.push(rce('div', { 'className': 'fullstrip-tag-li', 'onClick': this.handleSelect, 'style': this.state.styleDisplayNone[_i5] !== 1 ? style1 : style2 }, SelectTag[_i5][j]));
+			for (var j in SelectTag[_i6]) {
+				_subTags.push(rce('div', { 'className': 'fullstrip-tag-li', 'onClick': this.handleSelect, 'style': this.state.styleDisplayNone[_i6] !== 1 ? style1 : style2 }, SelectTag[_i6][j]));
 			}
-			_tags.push(rce('div', { 'key': '_tags' + _i5, 'className': 'fullstrip-title-div', 'style': this.state.styleDisplayNone[_i5] !== 1 ? style2 : style3, 'onMouseOverCapture': this.handleMouseOver, 'onMouseLeave': this.handleMouseLeave }, rce('div', { 'className': 'fullstrip-tag', 'onClick': this.handleSelect }, _i5), _subTags));
+			_tags.push(rce('div', { 'key': '_tags' + _i6, 'className': 'fullstrip-title-div', 'style': this.state.styleDisplayNone[_i6] !== 1 ? style2 : style3, 'onMouseOverCapture': this.handleMouseOver, 'onMouseLeave': this.handleMouseLeave }, rce('div', { 'className': 'fullstrip-tag', 'onClick': this.handleSelect }, _i6), _subTags));
 		}
-		return rce('div', { 'className': 'blog' }, rce('div', { 'className': 'site-side', 'id': 'site-side' }, 'hello'), rce('div', { 'className': 'site-hide', 'id': 'site-hide', 'onClick': this.showSide }), rce('div', { 'className': 'blogContent', 'id': 'blogContent' }, rce('div', { 'className': 'site-header' }, rce('a', { 'className': 'site-title', 'href': 'https://github.com/Beim' }, myName), rce('nav', { 'className': 'site-nav' }, rce('a', { 'className': 'site-link', 'href': '#', 'style': { 'color': 'white' }, 'onClick': this.handleChangeDisplay.bind(null, 'secret') }, 'secret'), rce('a', { 'className': 'site-link', 'href': '../index.html' }, 'HOME'), rce('a', { 'className': 'site-link', 'href': '../about.html' }, 'ABOUT'), rce('a', { 'className': 'site-link', 'href': '../blog.html' }, 'BLOG'), rce('a', { 'className': 'site-link', 'href': '#' }, 'TieBa'), rce('a', { 'className': 'site-link', 'href': '#' }, 'CharRoom'), rce('a', { 'className': 'site-link', 'href': '#' }, 'MORE'))), rce('div', { 'className': 'fullstrip' }, rce('div', { 'className': 'fullstrip-container' }, rce('div', { 'className': 'fullstrip-title-mob' }, rce('div', { 'className': 'fullstrip-super-tag fullstrip-title-div', 'onClick': this.showSide }, 'Blog')), rce('div', { 'className': 'fullstrip-title' }, rce('div', { 'className': 'fullstrip-super-tag fullstrip-title-div', 'onClick': this.handleSelect }, 'Blog'), _tags))), rce('div', { 'className': 'mainContainer' },
+		return rce('div', { 'className': 'blog' }, rce('div', { 'className': 'site-side', 'id': 'site-side' }, rce(side, { 'handleSelect': this.handleSelect })), rce('div', { 'className': 'site-hide', 'id': 'site-hide', 'onClick': this.showSide }), rce('div', { 'className': 'blogContent', 'id': 'blogContent' }, rce('div', { 'className': 'site-header' }, rce('a', { 'className': 'site-title', 'id': 'site-title', 'href': 'https://github.com/Beim' }, myName), rce('nav', { 'className': 'site-nav' }, rce('a', { 'className': 'site-link', 'href': '#', 'style': { 'color': 'white' }, 'onClick': this.handleChangeDisplay.bind(null, 'secret') }, 'secret'), rce('a', { 'className': 'site-link', 'href': '../index.html' }, 'HOME'), rce('a', { 'className': 'site-link', 'href': '../about.html' }, 'ABOUT'), rce('a', { 'className': 'site-link', 'href': '../blog.html' }, 'BLOG'), rce('a', { 'className': 'site-link', 'href': '#' }, 'TieBa'), rce('a', { 'className': 'site-link', 'href': '#' }, 'CharRoom'), rce('a', { 'className': 'site-link', 'href': '#' }, 'MORE'))), rce('div', { 'className': 'fullstrip' }, rce('div', { 'className': 'fullstrip-container' }, rce('div', { 'className': 'fullstrip-title-mob' }, rce('div', { 'className': 'fullstrip-super-tag fullstrip-title-div', 'onClick': this.showSide }, 'Blog')), rce('div', { 'className': 'fullstrip-title' }, rce('div', { 'className': 'fullstrip-super-tag fullstrip-title-div', 'id': 'allBlog', 'onClick': this.handleSelect }, 'Blog'), _tags))), rce('div', { 'className': 'mainContainer' },
 		// rce('div', {'className': 'mainContainer-content'},
 		rce(content, {
 			'select': this.state.select,

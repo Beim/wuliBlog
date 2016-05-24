@@ -492,6 +492,11 @@ html, body, .blog{
 	padding: 10px;
 }
 
+.aBlog h2{
+	padding-bottom: 10px;
+	border-bottom: 1px solid #BFBFBF;
+}
+
 .blog-article{
 	width: 100%;
 }

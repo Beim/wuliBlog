@@ -138,6 +138,7 @@ exports.update = {
 				}
 				else{
 					doc.article += data.content
+					doc.date = new Date
 					doc.save((err2) => {
 						if(err2){
 							res(0)

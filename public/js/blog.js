@@ -11,7 +11,7 @@ var SelectTag = {
 	back: ['node', 'koa', 'es6', 'mongo', 'b-others'],
 	daily: ['d-nice', 'd-bad', 'between', 'd-others'],
 	movie: ['recommend', 'm-nice', 'intend', 'm-bad', 'm-others'],
-	other: ['tech', 'o-others']
+	other: ['tech', 'linux', 'o-others']
 };
 
 var getDate = function getDate() {

@@ -267,29 +267,35 @@ var content = React.createClass({
 		}
 	},
 	componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
-		var simuData = [];
-		this.state.data.forEach(function (value) {
-			if (nextProps.select === 'Blog') {
-				simuData.push(value);
-			} else if (SelectTag[nextProps.select]) {
-				for (var _i4 = 0; _i4 < value.tags.length; _i4++) {
-					if (SelectTag[nextProps.select].indexOf(value.tags[_i4]) !== -1) {
+		var _this3 = this;
+
+		if (this.props.select !== nextProps.select) {
+			(function () {
+				var simuData = [];
+				_this3.state.data.forEach(function (value) {
+					if (nextProps.select === 'Blog') {
 						simuData.push(value);
-						break;
+					} else if (SelectTag[nextProps.select]) {
+						for (var _i4 = 0; _i4 < value.tags.length; _i4++) {
+							if (SelectTag[nextProps.select].indexOf(value.tags[_i4]) !== -1) {
+								simuData.push(value);
+								break;
+							}
+						}
+					} else {
+						if (value.tags.indexOf(nextProps.select) !== -1) {
+							simuData.push(value);
+						}
 					}
-				}
-			} else {
-				if (value.tags.indexOf(nextProps.select) !== -1) {
-					simuData.push(value);
-				}
-			}
-		});
-		var onePageNum = this.state.onePageNum;
-		this.setState({
-			showData: simuData,
-			currentNum: Math.ceil(simuData.length / onePageNum) ? 1 : 0,
-			totalNum: Math.ceil(simuData.length / onePageNum)
-		});
+				});
+				var onePageNum = _this3.state.onePageNum;
+				_this3.setState({
+					showData: simuData,
+					currentNum: Math.ceil(simuData.length / onePageNum) ? 1 : 0,
+					totalNum: Math.ceil(simuData.length / onePageNum)
+				});
+			})();
+		}
 		if (nextProps.shouldRefreshBlogList) {
 			this.getBlogList();
 			this.props.blogListDidRefreshed();
@@ -305,12 +311,12 @@ var content = React.createClass({
 	// 	console.info('will')
 	// },
 	componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
-		var _this3 = this;
+		var _this4 = this;
 
 		if (this.state.comments.length !== prevState.comments.length) {
 			(function () {
 				var divs = document.getElementsByClassName('aBlog-footer-comment-content');
-				var comments = Object.assign([], _this3.state.comments);
+				var comments = Object.assign([], _this4.state.comments);
 				comments.forEach(function (value, index) {
 					divs[index].innerHTML = value.content;
 				});
@@ -363,12 +369,12 @@ var content = React.createClass({
 		xhr.send(id);
 	},
 	zan: function zan() {
-		var _this4 = this;
+		var _this5 = this;
 
 		if (!this.state.hasZaned) {
 			(function () {
-				var _this = _this4;
-				var id = JSON.stringify({ _id: _this4.state.blog._id });
+				var _this = _this5;
+				var id = JSON.stringify({ _id: _this5.state.blog._id });
 				var xhr = new XMLHttpRequest();
 				xhr.open('POST', 'postMethod/zan', true);
 				xhr.setRequestHeader('Content-Type', 'application/x-javascript; charset=UTF-8');
@@ -392,13 +398,13 @@ var content = React.createClass({
 		this.setState({ email: e.target.value });
 	},
 	handlePostComment: function handlePostComment() {
-		var _this5 = this;
+		var _this6 = this;
 
 		if (this.state.nickname == '' || this.state.nickname == '昵称不能为空*') {
 			this.setState({ nickname: '昵称不能为空*' });
 		} else {
 			(function () {
-				var _this = _this5;
+				var _this = _this6;
 				var content = document.getElementById('aBlog-footer-edit-p').innerHTML;
 				var index = content.indexOf('<div>');
 				if (index > 0) {
@@ -409,12 +415,12 @@ var content = React.createClass({
 				} else if (index == -1) {
 					content = '<div>' + content + '</div>';
 				}
-				var name = _this5.state.nickname;
-				var email = _this5.state.email;
+				var name = _this6.state.nickname;
+				var email = _this6.state.email;
 				var _date = getDate();
 				var predata = {
-					_id: _this5.state.blog._id,
-					author: _this5.state.blog.author,
+					_id: _this6.state.blog._id,
+					author: _this6.state.blog.author,
 					content: content,
 					name: name,
 					email: email,

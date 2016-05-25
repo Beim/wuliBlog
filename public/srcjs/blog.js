@@ -299,31 +299,33 @@ var content = React.createClass({display : 'content',
 		}
 	},
 	componentWillReceiveProps: function(nextProps){
-		let simuData = []
-		this.state.data.forEach(function(value){
-			if(nextProps.select === 'Blog'){
-				simuData.push(value)
-			}
-			else if(SelectTag[nextProps.select]){
-				for (let i=0; i < value.tags.length; i++) {
-					if (SelectTag[nextProps.select].indexOf(value.tags[i]) !== -1) {
-						simuData.push(value)
-						break
-					}
-				}
-			}
-			else{
-				if (value.tags.indexOf(nextProps.select) !== -1) {
+		if(this.props.select !== nextProps.select){
+			let simuData = []
+			this.state.data.forEach(function(value){
+				if(nextProps.select === 'Blog'){
 					simuData.push(value)
 				}
-			}
-		})
-		let onePageNum = this.state.onePageNum
-		this.setState({
-			showData: simuData,
-			currentNum: Math.ceil(simuData.length / onePageNum) ? 1 : 0,
-			totalNum: Math.ceil(simuData.length / onePageNum)
-		})
+				else if(SelectTag[nextProps.select]){
+					for (let i=0; i < value.tags.length; i++) {
+						if (SelectTag[nextProps.select].indexOf(value.tags[i]) !== -1) {
+							simuData.push(value)
+							break
+						}
+					}
+				}
+				else{
+					if (value.tags.indexOf(nextProps.select) !== -1) {
+						simuData.push(value)
+					}
+				}
+			})
+			let onePageNum = this.state.onePageNum
+			this.setState({
+				showData: simuData,
+				currentNum: Math.ceil(simuData.length / onePageNum) ? 1 : 0,
+				totalNum: Math.ceil(simuData.length / onePageNum)
+			})
+		}
 		if(nextProps.shouldRefreshBlogList){
 			this.getBlogList()
 			this.props.blogListDidRefreshed()

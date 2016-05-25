@@ -11,8 +11,8 @@ const SelectTag = {
 	other: ['tech', 'linux', 'o-others']
 }
 
-const changeHref = (e) => {
-	window.location.href = e
+const changeHash = (e) => {
+	window.location.hash = e
 }
 
 let getDate = () => {
@@ -254,11 +254,8 @@ var content = React.createClass({display : 'content',
 		}
 	},
 	componentDidMount : function(){
-		if(window.location.hash){
-			this.handleHashChange()
-		}
-		window.onhashchange = this.handleHashChange
 		this.getBlogList()
+		window.onhashchange = this.handleHashChange
 		$(window).scroll(function(){
 			if($(window).scrollTop() > 100){
 				$('#aBlog-goTop').fadeIn(1000)
@@ -271,6 +268,14 @@ var content = React.createClass({display : 'content',
 			$('body, html').animate({scrollTop: 0}, 300)
 			return false
 		})
+	},
+	directToHash: function(){
+		if(window.location.hash){
+			this.handleHashChange()
+		}
+		else{
+			changeHash('#!/list/Blog')
+		}
 	},
 	getBlogList: function(){
 		if(this.state.showData.length == 0){
@@ -287,6 +292,7 @@ var content = React.createClass({display : 'content',
 						showData: simulateData,
 						totalNum: Math.ceil(simulateData.length / onePageNum)
 					})
+					_this.directToHash()
 				}
 			}
 			xhr.send()
@@ -657,7 +663,7 @@ var total = React.createClass({display: 'total',
 			this.setState({
 				select: e.target.innerHTML
 			})
-			changeHref('#!/list/' + e.target.innerHTML)
+			changeHash('#!/list/' + e.target.innerHTML)
 		}
 		else{
 			this.setState({

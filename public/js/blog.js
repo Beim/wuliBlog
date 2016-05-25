@@ -14,8 +14,8 @@ var SelectTag = {
 	other: ['tech', 'linux', 'o-others']
 };
 
-var changeHref = function changeHref(e) {
-	window.location.href = e;
+var changeHash = function changeHash(e) {
+	window.location.hash = e;
 };
 
 var getDate = function getDate() {
@@ -220,11 +220,8 @@ var content = React.createClass({
 		}
 	},
 	componentDidMount: function componentDidMount() {
-		if (window.location.hash) {
-			this.handleHashChange();
-		}
-		window.onhashchange = this.handleHashChange;
 		this.getBlogList();
+		window.onhashchange = this.handleHashChange;
 		$(window).scroll(function () {
 			if ($(window).scrollTop() > 100) {
 				$('#aBlog-goTop').fadeIn(1000);
@@ -236,6 +233,13 @@ var content = React.createClass({
 			$('body, html').animate({ scrollTop: 0 }, 300);
 			return false;
 		});
+	},
+	directToHash: function directToHash() {
+		if (window.location.hash) {
+			this.handleHashChange();
+		} else {
+			changeHash('#!/list/Blog');
+		}
 	},
 	getBlogList: function getBlogList() {
 		var _this2 = this;
@@ -255,6 +259,7 @@ var content = React.createClass({
 							showData: simulateData,
 							totalNum: Math.ceil(simulateData.length / onePageNum)
 						});
+						_this.directToHash();
 					}
 				};
 				xhr.send();
@@ -539,7 +544,7 @@ var total = React.createClass({
 			this.setState({
 				select: e.target.innerHTML
 			});
-			changeHref('#!/list/' + e.target.innerHTML);
+			changeHash('#!/list/' + e.target.innerHTML);
 		} else {
 			this.setState({
 				select: select

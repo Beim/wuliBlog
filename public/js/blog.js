@@ -14,6 +14,10 @@ var SelectTag = {
 	other: ['tech', 'linux', 'o-others']
 };
 
+var changeHref = function changeHref(e) {
+	window.location.href = e;
+};
+
 var getDate = function getDate() {
 	var _date = new Date();
 	var y = _date.getFullYear();
@@ -207,7 +211,24 @@ var content = React.createClass({
 			comments: []
 		};
 	},
+	handleHashChange: function handleHashChange() {
+		var hashArr = window.location.hash.split('/');
+		if (hashArr[1] === 'article') {
+			this.handleShowBlog(null, hashArr[2]);
+		} else if (hashArr[1] === 'list') {
+			this.props.handleSelect(null, hashArr[2]);
+		}
+	},
 	componentDidMount: function componentDidMount() {
+		if (window.location.hash) {
+			var hashArr = window.location.hash.split('/');
+			if (hashArr[1] === 'article') {
+				this.handleShowBlog(null, hashArr[2]);
+			} else if (hashArr[1] === 'list') {
+				this.props.handleSelect(null, hashArr[2]);
+			}
+		}
+		window.onhashchange = this.handleHashChange;
 		this.getBlogList();
 		$(window).scroll(function () {
 			if ($(window).scrollTop() > 100) {
@@ -317,8 +338,12 @@ var content = React.createClass({
 		}
 	},
 	handleShowBlog: function handleShowBlog(e) {
+		var id = arguments.length <= 1 || arguments[1] === undefined ? '' : arguments[1];
+
 		var _this = this;
-		var id = e.target.getAttribute('data-myid');
+		if (!!e) {
+			id = e.target.getAttribute('data-myid');
+		}
 		id = JSON.stringify({ _id: id });
 		this.props.handleChangeDisplay.call(null, 'showBlog');
 		var xhr = new XMLHttpRequest();
@@ -438,11 +463,13 @@ var content = React.createClass({
 					author = author.substring(0, author.indexOf(':'));
 				}
 				value.date = value.date.substring(0, 10);
-				return rce('div', { 'key': 'wraps' + index, 'className': 'post-wrap', 'style': { 'display': index < 5 * this.state.currentNum && index >= 5 * (this.state.currentNum - 1) ? 'block' : 'none' } }, rce('h1', { 'className': 'post-name' }, rce('a', { 'href': '#', 'onClick': this.handleShowBlog, 'data-myid': value._id }, value.title)), rce('div', { 'className': 'post-date' }, '#' + value.date + ' By: ' + author), rce('div', { 'className': 'post-excerpt' }, value.excerpt),
+				return rce('div', { 'key': 'wraps' + index, 'className': 'post-wrap', 'style': { 'display': index < 5 * this.state.currentNum && index >= 5 * (this.state.currentNum - 1) ? 'block' : 'none' } }, rce('h1', { 'className': 'post-name' }, rce('a', { 'href': '#!/article/' + value._id, /*'onClick': this.handleShowBlog,*/'data-myid': value._id }, value.title)), rce('div', { 'className': 'post-date' }, '#' + value.date + ' By: ' + author), rce('div', { 'className': 'post-excerpt' }, value.excerpt),
 				// 	rce('p', null, value.excerpt)
 				// ),
 				rce('div', { 'className': 'post-tags' }, rce('span', { 'className': 'post-tag' }, 'tags:'), value.tags.map(function (value1, index1) {
-					return rce('span', { 'key': 'tags' + Date() + index1, 'className': 'post-tag' }, rce('a', { 'href': '#' }, value1));
+					return rce('span', { 'key': 'tags' + Date() + index1, 'className': 'post-tag' },
+					// rce('a', {'href': '#'}, value1)
+					value1);
 				})));
 			}
 		}.bind(this));
@@ -505,14 +532,24 @@ var total = React.createClass({
 			isSideShow: false,
 			shouldRefreshBlogList: false,
 			styleDisplayNone: {},
+
 			display: 0 //0 blog list  1 secret  2 blog
 		};
 	},
 	handleSelect: function handleSelect(e) {
+		var select = arguments.length <= 1 || arguments[1] === undefined ? 'Blog' : arguments[1];
+
 		this.handleChangeDisplay.call(null, 'blogList');
-		this.setState({
-			select: e.target.innerHTML
-		});
+		if (!!e) {
+			this.setState({
+				select: e.target.innerHTML
+			});
+			changeHref('#!/list/' + e.target.innerHTML);
+		} else {
+			this.setState({
+				select: select
+			});
+		}
 	},
 	handleChangeDisplay: function handleChangeDisplay(e) {
 		var nextDisplay = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
@@ -581,6 +618,7 @@ var total = React.createClass({
 		// rce('div', {'className': 'mainContainer-content'},
 		rce(content, {
 			'select': this.state.select,
+			'handleSelect': this.handleSelect,
 			'display': this.state.display,
 			'handleChangeDisplay': this.handleChangeDisplay,
 			'shouldRefreshBlogList': this.state.shouldRefreshBlogList,

@@ -11,6 +11,10 @@ const SelectTag = {
 	other: ['tech', 'linux', 'o-others']
 }
 
+const changeHref = (e) => {
+	window.location.href = e
+}
+
 let getDate = () => {
 	let _date = new Date()
 	let y = _date.getFullYear()
@@ -240,7 +244,26 @@ var content = React.createClass({display : 'content',
 			comments: []
 		}
 	},
+	handleHashChange: function(){
+		let hashArr = window.location.hash.split('/')
+		if(hashArr[1] === 'article'){
+			this.handleShowBlog(null, hashArr[2])
+		}
+		else if (hashArr[1] === 'list'){
+			this.props.handleSelect(null, hashArr[2])
+		}
+	},
 	componentDidMount : function(){
+		if(window.location.hash){
+			let hashArr = window.location.hash.split('/')
+			if(hashArr[1] === 'article'){
+				this.handleShowBlog(null, hashArr[2])
+			}
+			else if (hashArr[1] === 'list'){
+				this.props.handleSelect(null, hashArr[2])
+			}
+		}
+		window.onhashchange = this.handleHashChange
 		this.getBlogList()
 		$(window).scroll(function(){
 			if($(window).scrollTop() > 100){
@@ -346,9 +369,11 @@ var content = React.createClass({display : 'content',
 			$('html, body').animate({scrollTop: '0px'}, 500)
 		}
 	},
-	handleShowBlog: function(e){
+	handleShowBlog: function(e, id = ''){
 		let _this = this
-		let id = e.target.getAttribute('data-myid')
+		if(!!e){
+			id = e.target.getAttribute('data-myid')
+		}
 		id =  JSON.stringify({_id: id})
 		this.props.handleChangeDisplay.call(null, 'showBlog')
 		let xhr = new XMLHttpRequest()
@@ -467,7 +492,7 @@ var content = React.createClass({display : 'content',
 				value.date = value.date.substring(0, 10)
 				return rce('div', {'key' : 'wraps' + index, 'className': 'post-wrap', 'style': {'display': (index<5*this.state.currentNum && index>=5*(this.state.currentNum-1)) ? 'block' : 'none' }},
 					rce('h1', {'className': 'post-name'},
-						rce('a', {'href': '#', 'onClick': this.handleShowBlog, 'data-myid': value._id}, value.title)
+						rce('a', {'href': '#!/article/'+value._id, /*'onClick': this.handleShowBlog,*/ 'data-myid': value._id}, value.title)
 					),
 					rce('div', {'className': 'post-date'}, '#' + value.date + ' By: ' + author),
 					rce('div', {'className': 'post-excerpt'}, value.excerpt),
@@ -477,7 +502,8 @@ var content = React.createClass({display : 'content',
 						rce('span', {'className': 'post-tag'}, 'tags:'),
 						value.tags.map(function(value1, index1){
 							return rce('span', {'key': 'tags' + Date() + index1, 'className': 'post-tag'},
-								rce('a', {'href': '#'}, value1)
+								// rce('a', {'href': '#'}, value1)
+								value1
 							)
 						})
 					)
@@ -627,14 +653,23 @@ var total = React.createClass({display: 'total',
 			isSideShow: false,
 			shouldRefreshBlogList: false,
 			styleDisplayNone: {},
+
 			display: 0 //0 blog list  1 secret  2 blog
 		}
 	},
-	handleSelect: function(e){
+	handleSelect: function(e, select = 'Blog'){
 		this.handleChangeDisplay.call(null, 'blogList')
-		this.setState({
-			select: e.target.innerHTML
-		})
+		if(!!e){
+			this.setState({
+				select: e.target.innerHTML
+			})
+			changeHref('#!/list/' + e.target.innerHTML)
+		}
+		else{
+			this.setState({
+				select: select
+			})
+		}
 	},
 	handleChangeDisplay: function(e, nextDisplay = null){
 		if(e === 'secret'){
@@ -737,6 +772,7 @@ var total = React.createClass({display: 'total',
 						// rce('div', {'className': 'mainContainer-content'},
 							rce(content, {
 								'select': this.state.select,
+								'handleSelect': this.handleSelect,
 								'display': this.state.display, 
 								'handleChangeDisplay': this.handleChangeDisplay, 
 								'shouldRefreshBlogList': this.state.shouldRefreshBlogList, 

@@ -255,13 +255,7 @@ var content = React.createClass({display : 'content',
 	},
 	componentDidMount : function(){
 		if(window.location.hash){
-			let hashArr = window.location.hash.split('/')
-			if(hashArr[1] === 'article'){
-				this.handleShowBlog(null, hashArr[2])
-			}
-			else if (hashArr[1] === 'list'){
-				this.props.handleSelect(null, hashArr[2])
-			}
+			this.handleHashChange()
 		}
 		window.onhashchange = this.handleHashChange
 		this.getBlogList()

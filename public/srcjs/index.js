@@ -28,7 +28,7 @@ var total = React.createClass({display:'total',
 					rce('div', {'className': 'homepage-null'}),
 					rce('div', {'className': 'homepage-content'}, 
 						rce('div', {'className': 'homepage-main'}, myName),
-						rce('div', {'className': 'homepage-sub'}, 'power by beim the one')
+						rce('div', {'className': 'homepage-sub'}, 'powered by beim')
 					)
 				)
 			)

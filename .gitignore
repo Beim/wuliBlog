@@ -1,5 +1,4 @@
-#忽略所有.test结尾的文件
-.test
 #忽略public/img/save/目录下的所有文件
 public/img/save/
+#ignore * in node_modules/
 node_modules/

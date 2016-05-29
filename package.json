@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node bin/server.js",
-    "build": "babel public/srcjs -d public/js"
+    "build": "babel public/srcjs -d public/js",
+    "webpack": "webpack",
+    "watch": "webpack --watch"
   },
   "repository": {
     "type": "git",

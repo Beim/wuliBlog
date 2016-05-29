@@ -1,14 +1,11 @@
-let React = require('react')
-const rce = React.createElement.bind()
+let AppDispatcher = require('../dispatcher/AppDispatcher')
 
-let MyButton = (props) => {
-	let num = props.num
-	return (
-		rce('div', null,
-			rce('div', null, num),
-			rce('button', {'onClick': props.onClick}, 'addNum')
-		)
-	)
+let ButtonActions = {
+	addNum: function () {
+		AppDispatcher.dispatch({
+			actionType: 'ADD_NUM'
+		})
+	}
 }
 
-module.exports = MyButton
+module.exports = ButtonActions

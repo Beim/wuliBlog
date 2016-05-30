@@ -20,7 +20,7 @@ a:hover{
 	/*text-decoration: underline;*/
 }
 
-html, body, .blog{
+html, body, .blog, .main{
 	height: 100%;
 	width: 100%;
 	/*display: block;*/

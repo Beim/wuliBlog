@@ -49,12 +49,13 @@
 	var React = __webpack_require__(1);
 	var ReactDOM = __webpack_require__(38);
 	var rce = React.createElement.bind();
-	var MyButtonController = __webpack_require__(168);
+	// let MyButtonController = require('../components/MyButtonController.js')
+	var TotalController = __webpack_require__(168);
 	var total = React.createClass({
 		displayName: 'total',
 		display: 'total',
 		render: function render() {
-			return rce(MyButtonController, null);
+			return rce(TotalController, null);
 		}
 	});
 
@@ -20336,41 +20337,135 @@
 
 	var React = __webpack_require__(1);
 	var rce = React.createElement.bind();
-	var MyButton = __webpack_require__(169);
-	var ButtonActions = __webpack_require__(170);
-	var NumStore = __webpack_require__(175);
+	var Total = __webpack_require__(169);
+	var TotalActions = __webpack_require__(188);
+	var TotalStore = __webpack_require__(177);
 
-	var MyButtonController = React.createClass({
-		displayName: 'MyButtonController',
-		display: 'MyButtonController',
+	var TotalController = React.createClass({ displayName: 'TotalController',
 		getInitialState: function getInitialState() {
 			return {
-				num: NumStore.getNum()
+				myName: TotalStore.getMyName(),
+				SelectTag: TotalStore.getSelectTag(),
+				select: TotalStore.getSelect(),
+				isSideShow: TotalStore.getIsSideShow(),
+				shouldRefreshBlogList: TotalStore.getShouldRefreshBlogList(),
+				styleDisplayNone: TotalStore.getStyleDisplayNone(),
+				display: TotalStore.getDisplay() //0 blog list  1 secret  2 blog
 			};
-		},
-		componentDidMount: function componentDidMount() {
-			NumStore.addChangeListener(this._onChange);
-		},
-		componentWillUnmount: function componentWillUnmount() {
-			NumStore.removeChangeListener(this._onChange);
 		},
 		_onChange: function _onChange() {
 			this.setState({
-				num: NumStore.getNum()
+				isSideShow: TotalStore.getIsSideShow(),
+				shouldRefreshBlogList: TotalStore.getShouldRefreshBlogList(),
+				styleDisplayNone: TotalStore.getStyleDisplayNone(),
+				display: TotalStore.getDisplay(),
+				select: TotalStore.getSelect()
 			});
 		},
-		addNum: function addNum() {
-			ButtonActions.addNum();
+		componentDidMount: function componentDidMount() {
+			TotalStore.addChangeListener(this._onChange);
+		},
+		componentWillUnmount: function componentWillUnmount() {
+			TotalStore.removeChangeListener(this._onChange);
+		},
+		handleSelect: function handleSelect(e) {
+			var select = arguments.length <= 1 || arguments[1] === undefined ? 'Blog' : arguments[1];
+
+			TotalActions.handleSelect(e, select);
+			TotalActions.handleChangeDisplay.call(null, 'blogList');
+			// this.handleChangeDisplay.call(null, 'blogList')
+			// if(!!e){
+			// 	this.setState({
+			// 		select: e.target.innerHTML
+			// 	})
+			// 	changeHash('#!/list/' + e.target.innerHTML)
+			// }
+			// else{
+			// 	this.setState({
+			// 		select: select
+			// 	})
+			// }
+		},
+		handleChangeDisplay: function handleChangeDisplay(e) {
+			var nextDisplay = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+
+			TotalActions.handleChangeDisplay(e, nextDisplay);
+			// if(e === 'secret'){
+			// 	nextDisplay = this.state.display === 0 ? 1 : 0
+			// }
+			// else if (e === 'showBlog'){
+			// 	nextDisplay = 2
+			// }
+			// else if (e === 'blogList') {
+			// 	nextDisplay = 0
+			// 	if(this.state.display != nextDisplay){
+			// 		this.setState({
+			// 			shouldRefreshBlogList: true
+			// 		})
+			// 	}
+			// }
+			// this.setState({
+			// 	display: nextDisplay
+			// })
+		},
+		blogListDidRefreshed: function blogListDidRefreshed() {
+			TotalActions.blogListDidRefreshed();
+			// this.setState({
+			// 	shouldRefreshBlogList: false
+			// })
+		},
+		handleMouseOver: function handleMouseOver(e) {
+			TotalActions.handleMouseOver(e);
+			// let styleDisplayNone = this.state.styleDisplayNone
+			// let currentTag = e.target.parentNode.firstChild.innerHTML
+			// styleDisplayNone[currentTag] = 1
+			// this.setState({'styleDisplayNone': styleDisplayNone})
+		},
+		handleMouseLeave: function handleMouseLeave(e) {
+			TotalActions.handleMouseLeave(e);
+			// let styleDisplayNone = this.state.styleDisplayNone
+			// let currentTag = e.target.parentNode.firstChild.innerHTML
+			// styleDisplayNone[currentTag] = 0
+			// this.setState({'styleDisplayNone': styleDisplayNone})
+		},
+		showSide: function showSide() {
+			TotalActions.showSide();
+			// if(this.state.isSideShow){
+			// 	document.getElementById('site-side').style.left = '-50%'
+			// 	document.getElementById('site-side').style.boxShadow = ''
+			// 	document.getElementById('blogContent').style.left = 0
+			// 	document.getElementById('site-hide').style.display = 'none'
+			// 	this.setState({isSideShow: false})
+			// }
+			// else{
+			// 	document.getElementById('site-side').style.left = 0
+			// 	document.getElementById('site-side').style.boxShadow = '2px 0 2px #aaaaaa'
+			// 	document.getElementById('blogContent').style.left = '50%'
+			// 	document.getElementById('site-hide').style.display = 'block'
+			// 	this.setState({isSideShow: true})
+			// }
 		},
 		render: function render() {
-			return MyButton({
-				num: this.state.num,
-				onClick: this.addNum
+			return Total({
+				myName: this.state.myName,
+				select: this.state.select,
+				styleDisplayNone: this.state.styleDisplayNone,
+				display: this.state.display,
+				shouldRefreshBlogList: this.state.shouldRefreshBlogList,
+				SelectTag: this.state.SelectTag,
+
+				handleSelect: this.handleSelect,
+				showSide: this.showSide,
+				handleChangeDisplay: this.handleChangeDisplay,
+				blogListDidRefreshed: this.blogListDidRefreshed,
+				handleMouseOver: this.handleMouseOver,
+				handleMouseLeave: this.handleMouseLeave
+
 			});
 		}
 	});
 
-	module.exports = MyButtonController;
+	module.exports = TotalController;
 
 /***/ },
 /* 169 */
@@ -20380,13 +20475,46 @@
 
 	var React = __webpack_require__(1);
 	var rce = React.createElement.bind();
+	var SideController = __webpack_require__(170);
+	var WestEggController = __webpack_require__(181);
+	var ContentController = __webpack_require__(184);
 
-	var MyButton = function MyButton(props) {
-		var num = props.num;
-		return rce('div', null, rce('div', null, num), rce('button', { 'onClick': props.onClick }, 'addNum'));
+	var Total = function Total(props) {
+		var SelectTag = props.SelectTag;
+		var handleSelect = props.handleSelect;
+		var showSide = props.showSide;
+		var myName = props.myName;
+		var handleChangeDisplay = props.handleChangeDisplay;
+		var select = props.select;
+		var display = props.display;
+		var shouldRefreshBlogList = props.shouldRefreshBlogList;
+		var blogListDidRefreshed = props.blogListDidRefreshed;
+		var styleDisplayNone = props.styleDisplayNone;
+		var handleMouseOver = props.handleMouseOver;
+		var handleMouseLeave = props.handleMouseLeave;
+
+		var style1 = { 'display': 'none' }; //styleDisplayNone !== 1
+		var style2 = { 'opacity': '1' }; //styleDisplayNone === 1
+		var style3 = { 'background': 'rgba(0,0,0,0.4)' };
+		var _tags = [];
+		for (var i in SelectTag) {
+			var _subTags = [];
+			for (var j in SelectTag[i]) {
+				_subTags.push(rce('div', { 'key': '_subTags' + i + j, 'className': 'fullstrip-tag-li', 'onClick': handleSelect, 'style': styleDisplayNone[i] !== 1 ? style1 : style2 }, SelectTag[i][j]));
+			}
+			_tags.push(rce('div', { 'key': '_tags' + i, 'className': 'fullstrip-title-div', 'style': styleDisplayNone[i] !== 1 ? style2 : style3, 'onMouseOverCapture': handleMouseOver, 'onMouseLeave': handleMouseLeave }, rce('div', { 'className': 'fullstrip-tag', 'onClick': handleSelect }, i), _subTags));
+		}
+		return rce('div', { 'className': 'blog' }, rce('div', { 'className': 'site-side', 'id': 'site-side' }, rce(SideController, { 'handleSelect': handleSelect, 'SelectTag': SelectTag, 'myName': myName })), rce('div', { 'className': 'site-hide', 'id': 'site-hide', 'onClick': showSide }), rce('div', { 'className': 'blogContent', 'id': 'blogContent' }, rce('div', { 'className': 'site-header' }, rce('a', { 'className': 'site-title', 'id': 'site-title', 'href': 'https://github.com/Beim' }, myName), rce('nav', { 'className': 'site-nav' }, rce('a', { 'className': 'site-link', 'href': '#', 'style': { 'color': 'white' }, 'onClick': handleChangeDisplay.bind(null, 'secret') }, 'secret'), rce('a', { 'className': 'site-link', 'href': '../index.html' }, 'HOME'), rce('a', { 'className': 'site-link', 'href': '../about.html' }, 'ABOUT'), rce('a', { 'className': 'site-link', 'href': '../blog.html' }, 'BLOG'), rce('a', { 'className': 'site-link', 'href': '#' }, 'TieBa'), rce('a', { 'className': 'site-link', 'href': '#' }, 'CharRoom'), rce('a', { 'className': 'site-link', 'href': '#' }, 'MORE'))), rce('div', { 'className': 'fullstrip' }, rce('div', { 'className': 'fullstrip-container' }, rce('div', { 'className': 'fullstrip-title-mob' }, rce('div', { 'className': 'fullstrip-super-tag fullstrip-title-div', 'onClick': showSide }, 'Blog')), rce('div', { 'className': 'fullstrip-title' }, rce('div', { 'className': 'fullstrip-super-tag fullstrip-title-div', 'id': 'allBlog', 'onClick': handleSelect }, 'Blog'), _tags))), rce('div', { 'className': 'mainContainer' }, rce(ContentController, {
+			'select': select,
+			'handleSelect': handleSelect,
+			'display': display,
+			'handleChangeDisplay': handleChangeDisplay,
+			'shouldRefreshBlogList': shouldRefreshBlogList,
+			'blogListDidRefreshed': blogListDidRefreshed
+		}), rce(WestEggController, { 'display': display, 'handleChangeDisplay': handleChangeDisplay }))));
 	};
 
-	module.exports = MyButton;
+	module.exports = Total;
 
 /***/ },
 /* 170 */
@@ -20394,17 +20522,58 @@
 
 	'use strict';
 
-	var AppDispatcher = __webpack_require__(171);
+	var React = __webpack_require__(1);
+	var rce = React.createElement.bind();
 
-	var ButtonActions = {
-		addNum: function addNum() {
-			AppDispatcher.dispatch({
-				actionType: 'ADD_NUM'
+	var Side = __webpack_require__(171);
+	var SideActions = __webpack_require__(172);
+	var SideStore = __webpack_require__(179);
+
+	var SideController = React.createClass({
+		displayName: 'SideController',
+		display: 'SideController',
+		getInitialState: function getInitialState() {
+			return {
+				'shouldSubtagShow': SideStore.getShouldSubtagShow()
+			};
+		},
+		_onChange: function _onChange() {
+			this.setState({
+				shouldSubtagShow: SideStore.getShouldSubtagShow()
+			});
+		},
+		componentDidMount: function componentDidMount() {
+			SideStore.addChangeListener(this._onChange);
+		},
+		componentWillUnmount: function componentWillUnmount() {
+			SideStore.removeChangeListener(this._onChange);
+		},
+		handleHeaderClick: function handleHeaderClick() {
+			SideActions.handleHeaderClick();
+		},
+		handleAllBlogClick: function handleAllBlogClick() {
+			SideActions.handleAllBlogClick();
+			document.getElementById('allBlog').click();
+			// this.setState({'shouldSubtagShow': 'blog'})
+		},
+		handleSelectMainTag: function handleSelectMainTag(e) {
+			this.props.handleSelect(e);
+			SideActions.handleSelectMainTag(e);
+		},
+		render: function render() {
+			return Side({
+				handleSelect: this.props.handleSelect,
+				handleSelectMainTag: this.handleSelectMainTag,
+				shouldSubtagShow: this.state.shouldSubtagShow,
+				handleHeaderClick: this.handleHeaderClick,
+				handleAllBlogClick: this.handleAllBlogClick,
+				SelectTag: this.props.SelectTag,
+				myName: this.props.myName
 			});
 		}
-	};
+	});
 
-	module.exports = ButtonActions;
+	module.exports = SideController;
 
 /***/ },
 /* 171 */
@@ -20412,15 +20581,159 @@
 
 	'use strict';
 
-	var Dispatcher = __webpack_require__(172).Dispatcher;
+	var React = __webpack_require__(1);
+	var rce = React.createElement.bind();
+
+	var Side = function Side(props) {
+		var handleSelect = props.handleSelect;
+		var handleSelectMainTag = props.handleSelectMainTag;
+		var shouldSubtagShow = props.shouldSubtagShow;
+		var handleHeaderClick = props.handleHeaderClick;
+		var handleAllBlogClick = props.handleAllBlogClick;
+		var SelectTag = props.SelectTag;
+		var myName = props.myName;
+
+		var style1 = { 'display': 'none' };
+		var style2 = {};
+		var _tags = [];
+
+		for (var i in SelectTag) {
+			var _subTags = [];
+			for (var j in SelectTag[i]) {
+				_subTags.push(rce('div', { 'key': '_subTags' + i + j, 'onTouchStart': handleSelect }, SelectTag[i][j]));
+			}
+			_tags.push(rce('div', { 'key': '_tags-mob' + i, 'className': 'side-content-wrap' }, rce('div', { 'className': 'side-content-wrap-main' }, rce('div', { 'onTouchStart': handleSelectMainTag }, i)), rce('div', { 'className': 'side-content-wrap-sub', 'style': shouldSubtagShow == i ? style2 : style1 }, _subTags)));
+		}
+		return rce('div', { 'className': 'side-container' }, rce('div', { 'className': 'side-header' }, rce('div', { 'onTouchStart': handleHeaderClick }, myName)), rce('div', { 'className': 'side-content' }, rce('div', { 'className': 'side-content-wrap' }, rce('div', { 'className': 'side-content-wrap-main' }, rce('div', { 'onTouchStart': handleAllBlogClick }, 'All'))), _tags), rce('div', { 'className': 'side-footer' }));
+	};
+
+	module.exports = Side;
+
+/***/ },
+/* 172 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var AppDispatcher = __webpack_require__(173);
+
+	var SideActions = {
+		handleHeaderClick: function handleHeaderClick() {
+			AppDispatcher.dispatch({
+				actionType: 'CLICK_HEADER'
+			});
+		},
+		handleAllBlogClick: function handleAllBlogClick() {
+			AppDispatcher.dispatch({
+				actionType: 'CLICK_ALL_BLOG'
+			});
+		},
+		handleSelectMainTag: function handleSelectMainTag(e) {
+			AppDispatcher.dispatch({
+				actionType: 'SELECT_MAIN_TAG',
+				e: e
+			});
+		}
+	};
+
+	module.exports = SideActions;
+
+/***/ },
+/* 173 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var Dispatcher = __webpack_require__(174).Dispatcher;
 	var AppDispatcher = new Dispatcher();
-	var NumStore = __webpack_require__(175);
+	var TotalStore = __webpack_require__(177);
+	var SideStore = __webpack_require__(179);
+	var WestEggStore = __webpack_require__(180);
+	var ContentStore = __webpack_require__(187);
 
 	AppDispatcher.register(function (action) {
 		switch (action.actionType) {
-			case 'ADD_NUM':
-				NumStore.addNumHandler();
-				NumStore.emitChange();
+			case 'SELECT':
+				TotalStore.handleSelect(action.e, action.select);
+				TotalStore.emitChange();
+				break;
+			case 'CHANGE_DISPLAY':
+				TotalStore.handleChangeDisplay(action.e, action.nextDisplay);
+				TotalStore.emitChange();
+				break;
+			case 'BLOGLIST_DID_REFRESHED':
+				TotalStore.blogListDidRefreshed();
+				TotalStore.emitChange();
+				break;
+			case 'MOUSE_OVER':
+				TotalStore.handleMouseOver(action.e);
+				TotalStore.emitChange();
+				break;
+			case 'MOUSE_LEAVE':
+				TotalStore.handleMouseLeave(action.e);
+				TotalStore.emitChange();
+				break;
+			case 'SHOW_SIDE':
+				TotalStore.showSide();
+				TotalStore.emitChange();
+				break;
+
+			case 'CLICK_HEADER':
+				SideStore.handleHeaderClick();
+				break;
+			case 'CLICK_ALL_BLOG':
+				SideStore.handleAllBlogClick();
+				SideStore.emitChange();
+				break;
+			case 'SELECT_MAIN_TAG':
+				SideStore.handleSelectMainTag(action.e);
+				SideStore.emitChange();
+				break;
+
+			case 'CHANGE_TITLE':
+				WestEggStore.handleTitleChange(action.e);
+				WestEggStore.emitChange();
+				break;
+			case 'CHANGE_AUTHOR':
+				WestEggStore.handleAuthorChange(action.e);
+				WestEggStore.emitChange();
+				break;
+			case 'SELECT_TAG':
+				WestEggStore.handleSelectTag(action.e);
+				WestEggStore.emitChange();
+				break;
+			case 'INIT_WESTEGG':
+				WestEggStore.init();
+				WestEggStore.emitChange();
+				break;
+
+			case 'GET_BLOG_LIST':
+				ContentStore.getBlogList(action.data, action.showData, action.totalNum);
+				ContentStore.emitChange();
+				break;
+			case 'CHANGE_SELECT':
+				ContentStore.changeSelect(action.showData, action.currentNum, action.totalNum);
+				ContentStore.emitChange();
+				break;
+			case 'CHANGE_ZAN_STATE':
+				ContentStore.changeZanState(action.hasZaned, action.blog);
+				ContentStore.emitChange();
+				break;
+			case 'CHANGE_CURRENT_NUM':
+				ContentStore.changeCurrentNum(action.currentNum);
+				ContentStore.emitChange();
+				break;
+			case 'SHOW_BLOG':
+				ContentStore.showBlog(action.blog, action.comments);
+				ContentStore.emitChange();
+				break;
+			case 'CHANGE_NICKNAME':
+				ContentStore.changeNickname(action.nickname);
+				ContentStore.emitChange();
+				break;
+			case 'CHANGE_EMAIL':
+				ContentStore.changeEmail(action.email);
+				ContentStore.emitChange();
 				break;
 			default:
 			// no op
@@ -20430,7 +20743,7 @@
 	module.exports = AppDispatcher;
 
 /***/ },
-/* 172 */
+/* 174 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20442,11 +20755,11 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 */
 
-	module.exports.Dispatcher = __webpack_require__(173);
+	module.exports.Dispatcher = __webpack_require__(175);
 
 
 /***/ },
-/* 173 */
+/* 175 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -20468,7 +20781,7 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-	var invariant = __webpack_require__(174);
+	var invariant = __webpack_require__(176);
 
 	var _prefix = 'ID_';
 
@@ -20683,7 +20996,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 174 */
+/* 176 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -20738,23 +21051,53 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 175 */
+/* 177 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var EventEmitter = __webpack_require__(176).EventEmitter;
+	var EventEmitter = __webpack_require__(178).EventEmitter;
 	var assign = __webpack_require__(4);
 
-	var NumStore = assign({}, EventEmitter.prototype, {
-		num: 0,
-
-		getNum: function getNum() {
-			return this.num;
+	var TotalStore = assign({}, EventEmitter.prototype, {
+		myName: '北冥有鱼吃',
+		select: 'Blog',
+		isSideShow: false,
+		shouldRefreshBlogList: false,
+		styleDisplayNone: {},
+		display: 0, //0 blog list  1 secret  2 blog
+		SelectTag: {
+			front: ['html', 'css', 'javascript', 'react', 'f-others'],
+			back: ['node', 'koa', 'es6', 'mongo', 'b-others'],
+			daily: ['d-nice', 'd-bad', 'between', 'd-others'],
+			movie: ['recommend', 'm-nice', 'intend', 'm-bad', 'm-others'],
+			other: ['tech', 'linux', 'o-others']
 		},
 
-		addNumHandler: function addNumHandler() {
-			this.num++;
+		changeHash: function changeHash(e) {
+			window.location.hash = e;
+		},
+
+		getMyName: function getMyName() {
+			return this.myName;
+		},
+		getSelect: function getSelect() {
+			return this.select;
+		},
+		getIsSideShow: function getIsSideShow() {
+			return this.isSideShow;
+		},
+		getShouldRefreshBlogList: function getShouldRefreshBlogList() {
+			return this.shouldRefreshBlogList;
+		},
+		getStyleDisplayNone: function getStyleDisplayNone() {
+			return this.styleDisplayNone;
+		},
+		getDisplay: function getDisplay() {
+			return this.display;
+		},
+		getSelectTag: function getSelectTag() {
+			return this.SelectTag;
 		},
 
 		emitChange: function emitChange() {
@@ -20767,13 +21110,77 @@
 
 		removeChangeListener: function removeChangeListener(callback) {
 			this.removeListener('change', callback);
+		},
+
+		handleSelect: function handleSelect(e, select) {
+			if (!!e) {
+				this.select = e.target.innerHTML;
+				this.changeHash('#!/list/' + e.target.innerHTML);
+			} else {
+				this.select = select;
+			}
+		},
+
+		handleChangeDisplay: function handleChangeDisplay(e, nextDisplay) {
+			if (e === 'secret') {
+				nextDisplay = this.display === 0 ? 1 : 0;
+			} else if (e === 'showBlog') {
+				nextDisplay = 2;
+			} else if (e === 'blogList') {
+				nextDisplay = 0;
+				if (this.display != nextDisplay) {
+					this.shouldRefreshBlogList = true;
+				}
+			}
+			this.display = nextDisplay;
+		},
+
+		blogListDidRefreshed: function blogListDidRefreshed() {
+			this.shouldRefreshBlogList = false;
+			// this.setState({
+			// 	shouldRefreshBlogList: false
+			// })
+		},
+
+		handleMouseOver: function handleMouseOver(e) {
+			var currentTag = e.target.parentNode.firstChild.innerHTML;
+			this.styleDisplayNone[currentTag] = 1;
+			// let styleDisplayNone = this.state.styleDisplayNone
+			// let currentTag = e.target.parentNode.firstChild.innerHTML
+			// styleDisplayNone[currentTag] = 1
+			// this.setState({'styleDisplayNone': styleDisplayNone})
+		},
+
+		handleMouseLeave: function handleMouseLeave(e) {
+			var currentTag = e.target.parentNode.firstChild.innerHTML;
+			this.styleDisplayNone[currentTag] = 0;
+			// let styleDisplayNone = this.state.styleDisplayNone
+			// let currentTag = e.target.parentNode.firstChild.innerHTML
+			// styleDisplayNone[currentTag] = 0
+			// this.setState({'styleDisplayNone': styleDisplayNone})
+		},
+
+		showSide: function showSide() {
+			if (this.isSideShow) {
+				document.getElementById('site-side').style.left = '-50%';
+				document.getElementById('site-side').style.boxShadow = '';
+				document.getElementById('blogContent').style.left = 0;
+				document.getElementById('site-hide').style.display = 'none';
+				this.isSideShow = false;
+			} else {
+				document.getElementById('site-side').style.left = 0;
+				document.getElementById('site-side').style.boxShadow = '2px 0 2px #aaaaaa';
+				document.getElementById('blogContent').style.left = '50%';
+				document.getElementById('site-hide').style.display = 'block';
+				this.isSideShow = true;
+			}
 		}
 	});
 
-	module.exports = NumStore;
+	module.exports = TotalStore;
 
 /***/ },
-/* 176 */
+/* 178 */
 /***/ function(module, exports) {
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -21075,6 +21482,1038 @@
 	  return arg === void 0;
 	}
 
+
+/***/ },
+/* 179 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var EventEmitter = __webpack_require__(178).EventEmitter;
+	var assign = __webpack_require__(4);
+
+	var SideStore = assign({}, EventEmitter.prototype, {
+		shouldSubtagShow: '',
+
+		getShouldSubtagShow: function getShouldSubtagShow() {
+			return this.shouldSubtagShow;
+		},
+
+		emitChange: function emitChange() {
+			this.emit('change');
+		},
+
+		addChangeListener: function addChangeListener(callback) {
+			this.on('change', callback);
+		},
+
+		removeChangeListener: function removeChangeListener(callback) {
+			this.removeListener('change', callback);
+		},
+
+		handleHeaderClick: function handleHeaderClick() {
+			document.getElementById('site-title').click();
+		},
+
+		handleAllBlogClick: function handleAllBlogClick() {
+			this.shouldSubtagShow = 'blog';
+		},
+
+		handleSelectMainTag: function handleSelectMainTag(e) {
+			this.shouldSubtagShow = e.target.innerHTML;
+			// this.props.handleSelect(e)
+			// this.setState({'shouldSubtagShow': e.target.innerHTML})
+		}
+	});
+
+	module.exports = SideStore;
+
+/***/ },
+/* 180 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var EventEmitter = __webpack_require__(178).EventEmitter;
+	var assign = __webpack_require__(4);
+	var TotalStore = __webpack_require__(177);
+
+	var WestEggStore = assign({}, EventEmitter.prototype, {
+		// SelectTag: TotalStore.getSelectTag(),
+		titleValue: '',
+		authorValue: '',
+		stateTags: TotalStore.getSelectTag(),
+		chooseTag: {},
+
+		getTitleValue: function getTitleValue() {
+			return this.titleValue;
+		},
+		getAuthorValue: function getAuthorValue() {
+			return this.authorValue;
+		},
+		getStateTags: function getStateTags() {
+			return this.stateTags;
+		},
+		getChooseTag: function getChooseTag() {
+			return this.chooseTag;
+		},
+
+		init: function init() {
+			var stateTags = this.stateTags;
+			var stateTag = [];
+			var chooseTag = {};
+			for (var i in stateTags) {
+				if (stateTags[i]) {
+					stateTag = stateTag.concat(stateTags[i]);
+				}
+			}
+			for (var _i in stateTag) {
+				chooseTag[stateTag[_i]] = 0;
+			}
+			this.titleValue = '';
+			this.authorValue = '';
+			this.stateTags = stateTags;
+			this.chooseTag = chooseTag;
+			return {
+				titleValue: '',
+				authorValue: '',
+				stateTags: stateTags,
+				chooseTag: chooseTag
+			};
+		},
+
+		emitChange: function emitChange() {
+			this.emit('change');
+		},
+
+		addChangeListener: function addChangeListener(callback) {
+			this.on('change', callback);
+		},
+
+		removeChangeListener: function removeChangeListener(callback) {
+			this.removeListener('change', callback);
+		},
+
+		handleTitleChange: function handleTitleChange(e) {
+			this.titleValue = e.target.value;
+		},
+
+		handleAuthorChange: function handleAuthorChange(e) {
+			this.authorValue = e.target.value;
+		},
+
+		handleSelectTag: function handleSelectTag(e) {
+			var tagName = e.target.innerHTML;
+			var chooseTag = this.chooseTag;
+			if (chooseTag[tagName] != undefined) {
+				chooseTag[tagName] = chooseTag[tagName] === 0 ? 1 : 0;
+			}
+			this.chooseTag = chooseTag;
+		}
+
+	});
+
+	module.exports = WestEggStore;
+
+/***/ },
+/* 181 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+	var React = __webpack_require__(1);
+	var rce = React.createElement.bind();
+
+	var WestEgg = __webpack_require__(182);
+	var WestEggActions = __webpack_require__(183);
+	var WestEggStore = __webpack_require__(180);
+
+	var WestEggController = React.createClass({
+		displayName: 'WestEggController',
+		display: 'WestEggController',
+		getInitialState: function getInitialState() {
+			return WestEggStore.init();
+		},
+
+		_onChange: function _onChange() {
+			this.setState({
+				titleValue: WestEggStore.getTitleValue(),
+				authorValue: WestEggStore.getAuthorValue(),
+				chooseTag: WestEggStore.getChooseTag()
+			});
+		},
+		componentDidMount: function componentDidMount() {
+			WestEggStore.addChangeListener(this._onChange);
+		},
+		componentWillUnmount: function componentWillUnmount() {
+			WestEggStore.removeChangeListener(this._onChange);
+		},
+
+		handleTitleChange: function handleTitleChange(e) {
+			WestEggActions.handleTitleChange(e);
+		},
+		handleAuthorChange: function handleAuthorChange(e) {
+			WestEggActions.handleAuthorChange(e);
+		},
+		handleAddImg: function handleAddImg() {
+			$('#fileInput').click();
+		},
+		onAddImg: function onAddImg(e) {
+			var fileObj = document.getElementById('fileInput').files[0];
+			var form = new FormData();
+			form.append('file', fileObj);
+			form.append('hello', 'world');
+
+			var xhr = new XMLHttpRequest();
+			xhr.open('post', 'postMethod/images', true);
+			xhr.responstType = 'text';
+			xhr.onload = function (e) {
+				var url = this.response;
+				var p = document.getElementById('westEgg-body-edit-p');
+				var div = document.createElement('div');
+				var img = document.createElement('img');
+				img.src = url;
+				div.appendChild(img);
+				p.appendChild(div);
+				p.lastChild.focus();
+			};
+			xhr.send(form);
+		},
+		handleSelectTag: function handleSelectTag(e) {
+			WestEggActions.handleSelectTag(e);
+		},
+		onPost: function onPost() {
+			var _this = this;
+			var title = this.state.titleValue;
+			var author = this.state.authorValue;
+			var article = document.getElementById('westEgg-body-edit-p').innerHTML;
+			var index = article.indexOf('<div>');
+			if (index > 0) {
+				var articleArray = [].concat(_toConsumableArray(article));
+				articleArray.splice(index, 0, '</div>');
+				article = articleArray.join('');
+				article = '<div>' + article;
+			}
+			var excerpt = article.substring(5, article.indexOf('</div>'));
+			if (excerpt.length > 250) {
+				excerpt = excerpt.substring(0, 250) + '...';
+			}
+			var tags = this.state.chooseTag;
+			var data = {
+				'title': title,
+				'author': author,
+				'article': article,
+				'excerpt': excerpt,
+				'tags': tags
+			};
+			data = JSON.stringify(data);
+			var xhr = new XMLHttpRequest();
+			xhr.open('POST', '/postMethod/newBlog', true);
+			xhr.responseType = 'json';
+			xhr.setRequestHeader('Content-Type', 'application/x-javascript; charset=UTF-8');
+			xhr.onload = function (e) {
+				if (this.response.ok == -2) {
+					alert(' 没那麼简单 就能找到 聊得来的伴');
+				} else if (this.response.ok == 0) {
+					alert('sorry ~~~post failed');
+				} else if (this.response.ok == 1) {
+					_this.props.handleChangeDisplay.call(null, 'blogList');
+					// _this.setState(_this.init())
+					WestEggActions.init();
+					document.getElementById('westEgg-body-edit-p').innerHTML = '';
+				}
+			};
+			xhr.send(data);
+		},
+		handleAddPre: function handleAddPre() {
+			var preHTML = '<div><pre class=" language-javascript" style="padding: 0em 0em 0.5em; word-spacing: normal; list-style-type: none; border: none; text-shadow: white 0px 1px; font-family: Consolas, Monaco, \'Andale Mono\', monospace; direction: ltr; tab-size: 4; overflow: auto; letter-spacing: -0.12px; line-height: 21.6px; background: rgb(245, 242, 240);"><font color="#708090"><span style="font-size: 14.4px;">#</span></font></pre></div>';
+			var p = document.getElementById('westEgg-body-edit-p');
+			p.innerHTML += '<div>&nbsp;&nbsp;</div>' + preHTML + '<div>&nbsp;&nbsp;</div>';
+		},
+		handleAddH2: function handleAddH2() {
+			var preHTML = '<div><h2><font color="#444"><span>#</span></font></h2></div>';
+			var p = document.getElementById('westEgg-body-edit-p');
+			p.innerHTML += '<div>&nbsp;&nbsp;</div>' + preHTML + '<div>&nbsp;&nbsp;</div>';
+		},
+
+		render: function render() {
+			return WestEgg({
+				stateTags: this.state.stateTags,
+				handleSelectTag: this.handleSelectTag,
+				chooseTag: this.state.chooseTag,
+				display: this.props.display,
+				titleValue: this.state.titleValue,
+				handleTitleChange: this.handleTitleChange,
+				handleAddImg: this.handleAddImg,
+				handleAddPre: this.handleAddPre,
+				handleAddH2: this.handleAddH2,
+				authorValue: this.state.authorValue,
+				onPost: this.onPost,
+				onAddImg: this.onAddImg,
+				handleAuthorChange: this.handleAuthorChange
+			});
+		}
+	});
+
+	module.exports = WestEggController;
+
+/***/ },
+/* 182 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var React = __webpack_require__(1);
+	var rce = React.createElement.bind();
+
+	var WestEgg = function WestEgg(props) {
+		var stateTags = props.stateTags;
+		var handleSelectTag = props.handleSelectTag;
+		var chooseTag = props.chooseTag;
+		var display = props.display;
+		var titleValue = props.titleValue;
+		var handleTitleChange = props.handleTitleChange;
+		var handleAddImg = props.handleAddImg;
+		var handleAddPre = props.handleAddPre;
+		var handleAddH2 = props.handleAddH2;
+		var authorValue = props.authorValue;
+		var onPost = props.onPost;
+		var onAddImg = props.onAddImg;
+		var handleAuthorChange = props.handleAuthorChange;
+
+		var style1 = { 'color': '#444', 'border': '1px solid #444' };
+		var style2 = {};
+		var tagWrap = [];
+
+		var _loop = function _loop(i) {
+			var tagName = i;
+			var tagDetail = stateTags[i];
+			var _tags = [];
+			tagDetail.forEach(function (elem) {
+				_tags.push(rce('div', { 'key': '_tagspush' + elem + i, 'onClick': handleSelectTag, 'style': chooseTag[elem] === 0 ? style2 : style1 }, elem));
+			});
+			tagWrap.push(rce('div', { 'key': 'tagWrap-div' + i, 'className': 'westEgg-sort-tag-div' }, rce('div', { 'key': 'tagWrap-div1' + i, 'className': 'westEgg-sort-tag-div1' }, rce('b', null, i)), rce('div', { 'key': 'tagWrap-div2' + i, 'className': 'westEgg-sort-tag-div2' }, _tags)));
+		};
+
+		for (var i in stateTags) {
+			_loop(i);
+		}
+
+		return rce('div', { 'className': 'mainContainer-content', 'style': { 'display': display === 1 ? 'block' : 'none' } }, rce('div', { 'className': 'westEgg-title' }, rce('input', { 'placeholder': 'Please fill the title', 'value': titleValue, 'onChange': handleTitleChange })), rce('div', { 'className': 'westEgg-body' }, rce('div', { 'className': 'westEgg-body-img' }, rce('div', { 'onClick': handleAddImg, 'type': 'file' }, 'Image'), rce('input', { 'type': 'file', 'id': 'fileInput', 'accept': 'image/gif, image/jpeg, image/x-png', 'style': { 'display': 'none' }, 'onChange': onAddImg }), rce('div', { 'onClick': handleAddPre }, 'AddPre'), rce('div', { 'onClick': handleAddH2 }, 'AddH2')), rce('div', { 'className': 'westEgg-body-edit' }, rce('p', { 'contentEditable': 'true', 'id': 'westEgg-body-edit-p' }))), rce('div', { 'className': 'westEgg-sort' }, rce('div', { 'className': 'westEgg-sort-tag' }, tagWrap)), rce('div', { 'className': 'westEgg-post' }, rce('div', { 'className': 'westEgg-post-author' }, rce('input', { 'placeholder': 'author', 'value': authorValue, 'onChange': handleAuthorChange })), rce('div', { 'className': 'westEgg-post-btn', 'onClick': onPost }, 'button')));
+	};
+
+	module.exports = WestEgg;
+
+/***/ },
+/* 183 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var AppDispatcher = __webpack_require__(173);
+
+	var WestEggActions = {
+		addNum: function addNum() {
+			AppDispatcher.dispatch({
+				actionType: 'ADD_NUM'
+			});
+		},
+		handleTitleChange: function handleTitleChange(e) {
+			AppDispatcher.dispatch({
+				actionType: 'CHANGE_TITLE',
+				e: e
+			});
+		},
+		handleAuthorChange: function handleAuthorChange(e) {
+			AppDispatcher.dispatch({
+				actionType: 'CHANGE_AUTHOR',
+				e: e
+			});
+		},
+		handleSelectTag: function handleSelectTag(e) {
+			AppDispatcher.dispatch({
+				actionType: 'SELECT_TAG',
+				e: e
+			});
+		},
+		init: function init() {
+			AppDispatcher.dispatch({
+				actionType: 'INIT_WESTEGG'
+			});
+		}
+	};
+
+	module.exports = WestEggActions;
+
+/***/ },
+/* 184 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var _React$createClass;
+
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+	var React = __webpack_require__(1);
+	var rce = React.createElement.bind();
+	var Content = __webpack_require__(185);
+	var ContentActions = __webpack_require__(186);
+	var ContentStore = __webpack_require__(187);
+	var TotalStore = __webpack_require__(177);
+
+	var changeHash = function changeHash(e) {
+		window.location.hash = e;
+	};
+
+	var getDate = function getDate() {
+		var _date = new Date();
+		var y = _date.getFullYear();
+		var m = _date.getMonth() + 1 + '';
+		m = m.length == 1 ? '0' + m : m;
+		var d = _date.getDate() + '';
+		d = d.length == 1 ? '0' + d : d;
+		return _date = y + '-' + m + '-' + d;
+	};
+
+	var simulateData = [];
+	for (var i = 0; i < 1; i++) {
+		simulateData.push({
+			_id: '123',
+			name: 'Anouncing Event Calendar App',
+			author: 'beim',
+			date: '2016 05 12',
+			excerpt: 'I’ve been building side projects since the day that I began programming. However, only more recently have I taken my side projects seriously and tried to build something useful, something that people will actually use. Horu You may or may not know that just under 6 months ago I released' + '...',
+			tags: ['html', 'css', 'javascript']
+		});
+	}
+
+	var ContentController = React.createClass((_React$createClass = {
+		displayName: 'ContentController',
+		display: 'ContentController',
+		getInitialState: function getInitialState() {
+			return {
+				data: ContentStore.getData(),
+				showData: ContentStore.getShowData(),
+				currentNum: ContentStore.getCurrentNum(),
+				totalNum: ContentStore.getTotalNum(),
+				blog: ContentStore.getBlog(),
+				hasZaned: ContentStore.getHasZaned(),
+				onePageNum: ContentStore.getOnePageNum(),
+				nickname: ContentStore.getNickname(),
+				email: ContentStore.getEmail(),
+				comments: ContentStore.getComments(),
+				SelectTag: TotalStore.getSelectTag()
+			};
+		},
+		componentWillMount: function componentWillMount() {
+
+			ContentStore.addChangeListener(this._onChange);
+		},
+		componentDidMount: function componentDidMount() {
+			console.info('123');
+			ContentStore.addChangeListener(this._onChange);
+		},
+		componentWillUnmount: function componentWillUnmount() {
+			ContentStore.removeChangeListener(this._onChange);
+		},
+		_onChange: function _onChange() {
+			this.setState({
+				data: ContentStore.getData(),
+				showData: ContentStore.getShowData(),
+				currentNum: ContentStore.getCurrentNum(),
+				totalNum: ContentStore.getTotalNum(),
+				blog: ContentStore.getBlog(),
+				hasZaned: ContentStore.getHasZaned(),
+				onePageNum: ContentStore.getOnePageNum(),
+				nickname: ContentStore.getNickname(),
+				email: ContentStore.getEmail(),
+				comments: ContentStore.getComments()
+			});
+		},
+
+		handleHashChange: function handleHashChange() {
+			var hashArr = window.location.hash.split('/');
+			if (hashArr[1] === 'article') {
+				this.handleShowBlog(null, hashArr[2]);
+			} else if (hashArr[1] === 'list') {
+				this.props.handleSelect(null, hashArr[2]);
+			}
+		}
+	}, _defineProperty(_React$createClass, 'componentDidMount', function componentDidMount() {
+		this.getBlogList();
+		window.onhashchange = this.handleHashChange;
+		$(window).scroll(function () {
+			if ($(window).scrollTop() > 100) {
+				$('#aBlog-goTop').fadeIn(1000);
+			} else {
+				$('#aBlog-goTop').fadeOut(1000);
+			}
+		});
+		$('#aBlog-goTop').click(function () {
+			$('body, html').animate({ scrollTop: 0 }, 300);
+			return false;
+		});
+	}), _defineProperty(_React$createClass, 'directToHash', function directToHash() {
+		if (window.location.hash) {
+			this.handleHashChange();
+		} else {
+			changeHash('#!/list/Blog');
+		}
+	}), _defineProperty(_React$createClass, 'getBlogList', function getBlogList() {
+		var _this2 = this;
+
+		if (this.state.showData.length == 0) {
+			(function () {
+				var _this = _this2;
+				var xhr = new XMLHttpRequest();
+				var onePageNum = _this2.state.onePageNum;
+				xhr.open('GET', '/getMethod/blogList', true);
+				xhr.responseType = 'json';
+				xhr.onload = function (e) {
+					if (this.response.ok == 1) {
+						simulateData = this.response.data;
+						// _this.setState({
+						// 	data: simulateData,
+						// 	showData: simulateData,
+						// 	totalNum: Math.ceil(simulateData.length / onePageNum)
+						// })
+						ContentActions.getBlogList(simulateData, simulateData, Math.ceil(simulateData.length / onePageNum));
+						_this.directToHash();
+					}
+				};
+				xhr.send();
+			})();
+		}
+	}), _defineProperty(_React$createClass, 'componentWillReceiveProps', function componentWillReceiveProps(nextProps) {
+		var _this3 = this;
+
+		var SelectTag = TotalStore.getSelectTag();
+		if (this.props.select !== nextProps.select) {
+			(function () {
+				var simuData = [];
+				_this3.state.data.forEach(function (value) {
+					if (nextProps.select === 'Blog') {
+						simuData.push(value);
+					} else if (SelectTag[nextProps.select]) {
+						for (var _i = 0; _i < value.tags.length; _i++) {
+							if (SelectTag[nextProps.select].indexOf(value.tags[_i]) !== -1) {
+								simuData.push(value);
+								break;
+							}
+						}
+					} else {
+						if (value.tags.indexOf(nextProps.select) !== -1) {
+							simuData.push(value);
+						}
+					}
+				});
+				var onePageNum = _this3.state.onePageNum;
+				// this.setState({
+				// 	showData: simuData,
+				// 	currentNum: Math.ceil(simuData.length / onePageNum) ? 1 : 0,
+				// 	totalNum: Math.ceil(simuData.length / onePageNum)
+				// })
+				ContentActions.changeSelect(simuData, Math.ceil(simuData.length / onePageNum) ? 1 : 0, Math.ceil(simuData.length / onePageNum));
+			})();
+		}
+		if (nextProps.shouldRefreshBlogList) {
+			this.getBlogList();
+			this.props.blogListDidRefreshed();
+		}
+	}), _defineProperty(_React$createClass, 'shouldComponentUpdate', function shouldComponentUpdate(nextProps, nextState) {
+		if (this.state.blog !== nextState.blog) {
+			this.showBlogArticle(nextState);
+		}
+		return true;
+	}), _defineProperty(_React$createClass, 'componentDidUpdate', function componentDidUpdate(prevProps, prevState) {
+		var _this4 = this;
+
+		if (this.state.comments.length !== prevState.comments.length) {
+			(function () {
+				var divs = document.getElementsByClassName('aBlog-footer-comment-content');
+				var comments = Object.assign([], _this4.state.comments);
+				comments.forEach(function (value, index) {
+					divs[index].innerHTML = value.content;
+				});
+			})();
+		}
+	}), _defineProperty(_React$createClass, 'showBlogArticle', function showBlogArticle(nextState) {
+		ContentActions.changeZanState(false);
+		// this.setState({hasZaned: false})
+		document.getElementById('blog-article').innerHTML = nextState.blog.article;
+	}), _defineProperty(_React$createClass, 'handlePrev', function handlePrev() {
+		if (this.state.currentNum > 1) {
+			ContentActions.changeCurrentNum(this.state.currentNum - 1);
+			// this.setState({
+			// 	currentNum: this.state.currentNum - 1
+			// })
+			$('html, body').animate({ scrollTop: '0px' }, 500);
+		}
+	}), _defineProperty(_React$createClass, 'handleNext', function handleNext() {
+		if (this.state.currentNum < this.state.totalNum) {
+			ContentActions.changeCurrentNum(this.state.currentNum + 1);
+			// this.setState({
+			// 	currentNum: this.state.currentNum + 1
+			// })
+			$('html, body').animate({ scrollTop: '0px' }, 500);
+		}
+	}), _defineProperty(_React$createClass, 'handleShowBlog', function handleShowBlog(e) {
+		var id = arguments.length <= 1 || arguments[1] === undefined ? '' : arguments[1];
+
+		var _this = this;
+		if (!!e) {
+			id = e.target.getAttribute('data-myid');
+		}
+		id = JSON.stringify({ _id: id });
+		this.props.handleChangeDisplay.call(null, 'showBlog');
+		var xhr = new XMLHttpRequest();
+		xhr.open('POST', '/postMethod/blog', true);
+		xhr.setRequestHeader('Content-Type', 'application/x-javascript; charset=UTF-8');
+		xhr.responseType = 'json';
+		xhr.onload = function (e) {
+			if (this.response.ok == 1) {
+				var blog = this.response.data;
+				blog.date = blog.date.substring(0, 10);
+				ContentActions.showBlog(blog, blog.comments);
+				// _this.setState({
+				// 	blog: blog,
+				// 	comments: blog.comments
+				// })
+			}
+		};
+		xhr.send(id);
+	}), _defineProperty(_React$createClass, 'zan', function zan() {
+		var _this5 = this;
+
+		if (!this.state.hasZaned) {
+			(function () {
+				var _this = _this5;
+				var id = JSON.stringify({ _id: _this5.state.blog._id });
+				var xhr = new XMLHttpRequest();
+				xhr.open('POST', 'postMethod/zan', true);
+				xhr.setRequestHeader('Content-Type', 'application/x-javascript; charset=UTF-8');
+				xhr.responseType = 'json';
+				xhr.onload = function (e) {
+					if (this.response.ok == 1) {
+						var blog = _this.state.blog;
+						blog.zan += 1;
+						ContentActions.changeZanState(true, blog);
+						// _this.setState({blog: blog, hasZaned: true})
+					}
+				};
+				xhr.send(id);
+			})();
+		}
+	}), _defineProperty(_React$createClass, 'onNicknameChange', function onNicknameChange(e) {
+		ContentActions.changeNickname(e.target.value);
+		// this.setState({nickname: e.target.value})
+	}), _defineProperty(_React$createClass, 'onEmailChange', function onEmailChange(e) {
+		ContentActions.changeEmail(e.target.value);
+		// this.setState({email: e.target.value})
+	}), _defineProperty(_React$createClass, 'handlePostComment', function handlePostComment() {
+		var _this6 = this;
+
+		if (this.state.nickname == '' || this.state.nickname == '昵称不能为空*') {
+			ContentActions.changeNickname('昵称不能为空*');
+			// this.setState({nickname: '昵称不能为空*'})
+		} else {
+				(function () {
+					var _this = _this6;
+					var content = document.getElementById('aBlog-footer-edit-p').innerHTML;
+					var index = content.indexOf('<div>');
+					if (index > 0) {
+						var contentArray = [].concat(_toConsumableArray(content));
+						contentArray.splice(index, 0, '</div>');
+						content = contentArray.join('');
+						content = '<div>' + content;
+					} else if (index == -1) {
+						content = '<div>' + content + '</div>';
+					}
+					var name = _this6.state.nickname;
+					var email = _this6.state.email;
+					var _date = getDate();
+					var predata = {
+						_id: _this6.state.blog._id,
+						author: _this6.state.blog.author,
+						content: content,
+						name: name,
+						email: email,
+						date: _date
+					};
+					var data = JSON.stringify(predata);
+					var xhr = new XMLHttpRequest();
+					xhr.open('POST', '/postMethod/comment', true);
+					xhr.setRequestHeader('Content-Type', 'application/x-javascript; charset=UTF-8');
+					xhr.responseType = 'json';
+					xhr.onload = function (e) {
+						if (this.response.ok == 1) {
+							var comments = Object.assign([], _this.state.comments);
+							predata.floor = comments.length + 1;
+							comments.push(predata);
+							ContentActions.showBlog(null, comments);
+							// _this.setState({
+							// 	comments: comments
+							// })
+							document.getElementById('aBlog-footer-edit-p').innerHTML = '';
+						} else if (this.response.ok == 2) {
+							var blog = Object.assign({}, _this.state.blog);
+							predata.content = '</br><div>--------' + predata.author + ' 修改于 ' + predata.date + '--------</div></br>' + predata.content;
+							blog.article += predata.content;
+							ContentActions.showBlog(blog, null);
+							// _this.setState({
+							// 	blog: blog
+							// })
+						} else if (this.response.ok == 3) {
+								window.location = 'blog.html';
+							} else {
+								alert('sorrty~');
+							}
+					};
+					xhr.send(data);
+				})();
+			}
+	}), _defineProperty(_React$createClass, 'toAbout', function toAbout() {
+		window.location = 'about.html';
+	}), _defineProperty(_React$createClass, 'render', function render() {
+		return Content({
+			showData: this.state.showData,
+			currentNum: this.state.currentNum,
+			comments: this.state.comments,
+			display: this.props.display,
+			handlePrev: this.handlePrev,
+			totalNum: this.state.totalNum,
+			handleNext: this.handleNext,
+			toAbout: this.toAbout,
+			blog: this.state.blog,
+			nickname: this.state.nickname,
+			onNicknameChange: this.onNicknameChange,
+			email: this.state.email,
+			onEmailChange: this.onEmailChange,
+			handlePostComment: this.handlePostComment,
+			_this: this,
+			zan: this.zan
+		});
+	}), _React$createClass));
+
+	module.exports = ContentController;
+
+/***/ },
+/* 185 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var React = __webpack_require__(1);
+	var rce = React.createElement.bind();
+
+	var Content = function Content(props) {
+		var showData = props.showData;
+		var currentNum = props.currentNum;
+		var comments = props.comments;
+		var display = props.display;
+		var handlePrev = props.handlePrev;
+		var totalNum = props.totalNum;
+		var handleNext = props.handleNext;
+		var toAbout = props.toAbout;
+		var blog = props.blog;
+		var nickname = props.nickname;
+		var onNicknameChange = props.onNicknameChange;
+		var email = props.email;
+		var onEmailChange = props.onEmailChange;
+		var handlePostComment = props.handlePostComment;
+		var _this = props._this;
+		var zan = props.zan;
+
+		var data = showData;
+		var wraps = data.map(function (value, index) {
+			if (value) {
+				var author = value.author;
+				if (author.indexOf(':') != -1) {
+					author = author.substring(0, author.indexOf(':'));
+				}
+				value.date = value.date.substring(0, 10);
+				return rce('div', { 'key': 'wraps' + index, 'className': 'post-wrap', 'style': { 'display': index < 5 * currentNum && index >= 5 * (currentNum - 1) ? 'block' : 'none' } }, rce('h1', { 'className': 'post-name' }, rce('a', { 'href': '#!/article/' + value._id, /*'onClick': handleShowBlog,*/'data-myid': value._id }, value.title)), rce('div', { 'className': 'post-date' }, '#' + value.date + ' By: ' + author), rce('div', { 'className': 'post-excerpt' }, value.excerpt), rce('div', { 'className': 'post-tags' }, rce('span', { 'className': 'post-tag' }, 'tags:'), value.tags.map(function (value1, index1) {
+					return rce('span', { 'key': 'tags' + Date() + index1, 'className': 'post-tag' },
+					// rce('a', {'href': '#'}, value1)
+					value1);
+				})));
+			}
+		});
+		// }.bind(_this))
+		var style1 = { 'color': 'white', 'border': '1px solid white' };
+		var style2 = {};
+		var styleHasComment = { 'display': 'none' };
+		var styleNoComment = {};
+		// let comments = comments
+		var aBlogFooterComment = comments.map(function (value, index) {
+			var date = value.date.substring(2, 10);
+
+			return rce('div', { 'key': 'comment' + index, 'className': 'aBlog-footer' }, rce('div', { 'className': 'aBlog-footer-comment' }, rce('div', { 'className': 'aBlog-footer-comment-info' }, rce('div', { 'className': 'aBlog-footer-comment-info-floor' }, rce('div', null, value.floor)), rce('div', { 'className': 'aBlog-footer-comment-info-name' }, rce('div', null, value.name)), rce('div', { 'className': 'aBlog-footer-comment-info-name' }, rce('div', null, date))), rce('div', { 'className': 'aBlog-footer-comment-content' }, 'content')));
+		});
+
+		return rce('div', { 'style': { 'display': display === 0 || display === 2 ? 'block' : 'none' } }, rce('div', { 'className': 'mainContainer-content', 'style': { 'display': display === 0 ? 'block' : 'none' } }, wraps, rce('div', { 'className': 'pagination' }, rce('div', { 'className': 'previous', 'style': currentNum <= 1 ? style1 : style2, 'onClick': handlePrev }, '← Newer Posts'), rce('span', { 'className': 'page_number' }, 'Page: ' + currentNum + ' of ' + totalNum), rce('div', { 'className': 'next', 'style': currentNum >= totalNum ? style1 : style2, 'onClick': handleNext }, 'Older Posts →')), rce('div', { 'className': 'pagination about-me' }, rce('div', { 'onClick': toAbout }, 'About Me'))), rce('div', { 'className': 'mainContenter-content', 'style': { 'display': display === 2 ? 'block' : 'none' } }, rce('div', { 'className': 'aBlog', 'id': 'blog' }, rce('h2', null, blog.title), rce('br', null), rce('div', { 'className': 'blog-article', 'id': 'blog-article' }), rce('br', null), rce('div', { 'className': 'blog-info' }, rce('div', { 'className': 'blog-info-zan', 'onClick': zan, 'onTouchStart': zan }, '有用: ' + blog.zan), rce('div', { 'className': 'blog-info-tags' }, '标签: ' + blog.tags), rce('div', { 'className': 'blog-info-date' }, blog.date))), rce('div', { 'className': 'aBlog-footer' },
+		// rce('div', null, 'footer')
+		rce('div', { 'className': 'aBlog-footer-label' }, 'Comment : '), rce('div', { 'className': 'aBlog-footer-edit' }, rce('p', { 'contentEditable': 'true', 'id': 'aBlog-footer-edit-p' })), rce('div', { 'className': 'aBlog-footer-info-post-wraper' }, rce('div', { 'className': 'aBlog-footer-info' }, rce('input', { 'type': 'text', 'placeholder': '  nickname *', 'value': nickname, 'onChange': onNicknameChange }), rce('input', { 'type': 'email', 'placeholder': '  Email ', 'value': email, 'onChange': onEmailChange })), rce('div', { 'className': 'aBlog-footer-post', 'onClick': handlePostComment }, rce('div', null, 'post')))), rce('div', { 'className': 'aBlog-footer', 'style': comments.length == 0 ? styleNoComment : styleHasComment }, rce('div', { 'className': 'no-comment' }, 'no comment~')), aBlogFooterComment, rce('div', { 'className': 'aBlog-goTop', 'id': 'aBlog-goTop' }, rce('a', { 'href': 'javascript: ;' }))));
+	};
+
+	module.exports = Content;
+
+/***/ },
+/* 186 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var AppDispatcher = __webpack_require__(173);
+
+	var ContentActions = {
+		getBlogList: function getBlogList(data, showData, totalNum) {
+			AppDispatcher.dispatch({
+				actionType: 'GET_BLOG_LIST',
+				data: data,
+				showData: showData,
+				totalNum: totalNum
+			});
+		},
+
+		changeSelect: function changeSelect(showData, currentNum, totalNum) {
+			new Promise(function (res, rej) {
+				// while(AppDispatcher.isDispatching()){}
+				res();
+			}).then(function () {
+				AppDispatcher.dispatch({
+					actionType: 'CHANGE_SELECT',
+					showData: showData,
+					currentNum: currentNum,
+					totalNum: totalNum
+				});
+			});
+		},
+
+		changeZanState: function changeZanState(hasZaned) {
+			var blog = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+
+			new Promise(function (res, rej) {
+				// while(AppDispatcher.isDispatching()){}
+				res();
+			}).then(function () {
+				AppDispatcher.dispatch({
+					actionType: 'CHANGE_ZAN_STATE',
+					hasZaned: hasZaned,
+					blog: blog
+				});
+			});
+		},
+
+		changeCurrentNum: function changeCurrentNum(currentNum) {
+			AppDispatcher.dispatch({
+				actionType: 'CHANGE_CURRENT_NUM',
+				currentNum: currentNum
+			});
+		},
+
+		showBlog: function showBlog(blog, comments) {
+			AppDispatcher.dispatch({
+				actionType: 'SHOW_BLOG',
+				blog: blog,
+				comments: comments
+			});
+		},
+
+		changeNickname: function changeNickname(nickname) {
+			AppDispatcher.dispatch({
+				actionType: 'CHANGE_NICKNAME',
+				nickname: nickname
+			});
+		},
+
+		changeEmail: function changeEmail(email) {
+			AppDispatcher.dispatch({
+				actionType: 'CHANGE_EMAIL',
+				email: email
+			});
+		}
+	};
+
+	module.exports = ContentActions;
+
+/***/ },
+/* 187 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var EventEmitter = __webpack_require__(178).EventEmitter;
+	var assign = __webpack_require__(4);
+
+	var ContentStore = assign({}, EventEmitter.prototype, {
+		data: [],
+		showData: [],
+		currentNum: 1,
+		totalNum: 1,
+		blog: '',
+		hasZaned: false,
+		onePageNum: 5,
+		nickname: '',
+		email: '',
+		comments: [],
+
+		getData: function getData() {
+			return this.data;
+		},
+		getShowData: function getShowData() {
+			return this.showData;
+		},
+		getCurrentNum: function getCurrentNum() {
+			return this.currentNum;
+		},
+		getTotalNum: function getTotalNum() {
+			return this.totalNum;
+		},
+		getBlog: function getBlog() {
+			return this.blog;
+		},
+		getHasZaned: function getHasZaned() {
+			return this.hasZaned;
+		},
+		getOnePageNum: function getOnePageNum() {
+			return this.onePageNum;
+		},
+		getNickname: function getNickname() {
+			return this.nickname;
+		},
+		getEmail: function getEmail() {
+			return this.email;
+		},
+		getComments: function getComments() {
+			return this.comments;
+		},
+
+		emitChange: function emitChange() {
+			this.emit('change');
+		},
+		addChangeListener: function addChangeListener(callback) {
+			this.on('change', callback);
+		},
+
+		removeChangeListener: function removeChangeListener(callback) {
+			this.removeListener('change', callback);
+		},
+
+		getBlogList: function getBlogList(data, showData, totalNum) {
+			this.data = data;
+			this.showData = showData;
+			this.totalNum = totalNum;
+		},
+
+		changeSelect: function changeSelect(showData, currentNum, totalNum) {
+			this.showData = showData;
+			this.currentNum = currentNum;
+			this.totalNum = totalNum;
+		},
+
+		changeZanState: function changeZanState(hasZaned, blog) {
+			this.hasZaned = hasZaned;
+			if (!!blog) {
+				this.blog = blog;
+			}
+		},
+
+		changeCurrentNum: function changeCurrentNum(currentNum) {
+			this.currentNum = currentNum;
+		},
+
+		showBlog: function showBlog(blog, comments) {
+			if (!!blog) {
+				this.blog = blog;
+			}
+			if (!!comments) {
+				this.comments = comments;
+			}
+		},
+
+		changeNickname: function changeNickname(nickname) {
+			this.nickname = nickname;
+		},
+
+		changeEmail: function changeEmail(email) {
+			this.email = email;
+		}
+	});
+
+	module.exports = ContentStore;
+
+/***/ },
+/* 188 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var AppDispatcher = __webpack_require__(173);
+
+	var TotalActions = {
+		addNum: function addNum() {
+			AppDispatcher.dispatch({
+				actionType: 'ADD_NUM'
+			});
+		},
+
+		handleSelect: function handleSelect(e, select) {
+			AppDispatcher.dispatch({
+				actionType: 'SELECT',
+				e: e,
+				select: select
+			});
+		},
+
+		handleChangeDisplay: function handleChangeDisplay(e) {
+			var nextDisplay = arguments.length <= 1 || arguments[1] === undefined ? null : arguments[1];
+
+			AppDispatcher.dispatch({
+				actionType: 'CHANGE_DISPLAY',
+				e: e,
+				nextDisplay: nextDisplay
+			});
+		},
+
+		blogListDidRefreshed: function blogListDidRefreshed() {
+			new Promise(function (res, rej) {
+				// while(AppDispatcher.isDispatching()){}
+				res();
+			}).then(function () {
+				AppDispatcher.dispatch({
+					actionType: 'BLOGLIST_DID_REFRESHED'
+				});
+			});
+		},
+
+		handleMouseOver: function handleMouseOver(e) {
+			AppDispatcher.dispatch({
+				actionType: 'MOUSE_OVER',
+				e: e
+			});
+		},
+
+		handleMouseLeave: function handleMouseLeave(e) {
+			AppDispatcher.dispatch({
+				actionType: 'MOUSE_LEAVE',
+				e: e
+			});
+		},
+
+		showSide: function showSide() {
+			AppDispatcher.dispatch({
+				actionType: 'SHOW_SIDE'
+			});
+		}
+	};
+
+	module.exports = TotalActions;
 
 /***/ }
 /******/ ]);

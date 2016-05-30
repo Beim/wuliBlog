@@ -1,7 +1,7 @@
 const path = require('path')
 module.exports = {
 	entry: {
-		index: './public/js/entries/index.js'
+		blog: './public/js/entries/blog.js'
 	},
 	output: {
 		path: path.join(__dirname, '/public/js'),

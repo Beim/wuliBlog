@@ -1,6 +1,8 @@
 const path = require('path')
 module.exports = {
 	entry: {
+		index: './public/js/entries/index.js',
+		about: './public/js/entries/about.js',
 		blog: './public/js/entries/blog.js'
 	},
 	output: {

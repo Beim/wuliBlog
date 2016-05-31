@@ -49,8 +49,8 @@
 	var React = __webpack_require__(1);
 	var ReactDOM = __webpack_require__(38);
 	var rce = React.createElement.bind();
-	var SiteHeader = __webpack_require__(189);
-	var Fullstrip = __webpack_require__(190);
+	var SiteHeader = __webpack_require__(168);
+	var Fullstrip = __webpack_require__(169);
 	var UrlShorterController = __webpack_require__(191);
 	var total = React.createClass({
 		displayName: 'total',
@@ -20331,8 +20331,39 @@
 	module.exports = ReactMount.renderSubtreeIntoContainer;
 
 /***/ },
-/* 168 */,
-/* 169 */,
+/* 168 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var React = __webpack_require__(1);
+	var rce = React.createElement.bind();
+	var myName = '北冥有鱼吃';
+	var SiteHeader = function SiteHeader(props) {
+		return rce('header', { 'className': 'site-header' }, rce('div', { 'className': 'header-content' }, rce('a', { 'className': 'site-title', 'href': 'https://github.com/Beim' }, myName), rce('nav', { 'className': 'site-nav' }, rce('a', { 'className': 'site-link', 'href': '../index.html' }, 'HOME'), rce('a', { 'className': 'site-link', 'href': '../about.html' }, 'ABOUT'), rce('a', { 'className': 'site-link', 'href': '../blog.html' }, 'BLOG'),
+		// rce('a',{'className': 'site-link', 'href': '#'}, 'TieBa'),
+		rce('a', { 'className': 'site-link', 'href': '../url.html' }, 'ShortURL'), rce('a', { 'className': 'site-link', 'href': '#' }, 'MORE'))));
+	};
+
+	module.exports = SiteHeader;
+
+/***/ },
+/* 169 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var React = __webpack_require__(1);
+	var rce = React.createElement.bind();
+
+	var Fullstrip = function Fullstrip(props) {
+		var title = props.title;
+		return rce('div', { 'className': 'fullstrip' }, rce('div', { 'className': 'fullstrip-container' }, rce('div', { 'className': 'fullstrip-title' }, title)));
+	};
+
+	module.exports = Fullstrip;
+
+/***/ },
 /* 170 */,
 /* 171 */,
 /* 172 */,
@@ -20341,7 +20372,9 @@
 /* 175 */,
 /* 176 */,
 /* 177 */,
-/* 178 */
+/* 178 */,
+/* 179 */,
+/* 180 */
 /***/ function(module, exports) {
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -20645,8 +20678,6 @@
 
 
 /***/ },
-/* 179 */,
-/* 180 */,
 /* 181 */,
 /* 182 */,
 /* 183 */,
@@ -20655,39 +20686,8 @@
 /* 186 */,
 /* 187 */,
 /* 188 */,
-/* 189 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var React = __webpack_require__(1);
-	var rce = React.createElement.bind();
-	var myName = '北冥有鱼吃';
-	var SiteHeader = function SiteHeader(props) {
-		return rce('header', { 'className': 'site-header' }, rce('div', { 'className': 'header-content' }, rce('a', { 'className': 'site-title', 'href': 'https://github.com/Beim' }, myName), rce('nav', { 'className': 'site-nav' }, rce('a', { 'className': 'site-link', 'href': '../index.html' }, 'HOME'), rce('a', { 'className': 'site-link', 'href': '../about.html' }, 'ABOUT'), rce('a', { 'className': 'site-link', 'href': '../blog.html' }, 'BLOG'),
-		// rce('a',{'className': 'site-link', 'href': '#'}, 'TieBa'),
-		rce('a', { 'className': 'site-link', 'href': '../url.html' }, 'ShortURL'), rce('a', { 'className': 'site-link', 'href': '#' }, 'MORE'))));
-	};
-
-	module.exports = SiteHeader;
-
-/***/ },
-/* 190 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var React = __webpack_require__(1);
-	var rce = React.createElement.bind();
-
-	var Fullstrip = function Fullstrip(props) {
-		var title = props.title;
-		return rce('div', { 'className': 'fullstrip' }, rce('div', { 'className': 'fullstrip-container' }, rce('div', { 'className': 'fullstrip-title' }, title)));
-	};
-
-	module.exports = Fullstrip;
-
-/***/ },
+/* 189 */,
+/* 190 */,
 /* 191 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -20843,7 +20843,7 @@
 		var hostUrl = props.hostUrl;
 		var urls = props.urls;
 		var urlList = urls.map(function (value, index) {
-			return rce('div', { 'key': 'url' + index, 'className': 'results-body' }, rce('div', { 'className': 'longUrl' }, rce('a', { 'href': value.longUrl }, cutStr(value.longUrl, 20))), rce('div', { 'className': 'shortUrl' }, rce('a', { 'href': value.shortUrl }, cutStr(value.shortUrl, 20))), rce('div', { 'className': 'clicks' }, value.clicks));
+			return rce('div', { 'key': 'url' + index, 'className': 'results-body' }, rce('div', { 'className': 'longUrl' }, rce('a', { 'href': value.longUrl, 'target': '_Blank' }, cutStr(value.longUrl, 20))), rce('div', { 'className': 'shortUrl' }, rce('a', { 'href': value.shortUrl, 'target': '_Blank' }, cutStr(value.shortUrl, 20))), rce('div', { 'className': 'clicks' }, value.clicks));
 		});
 
 		return rce('div', { 'className': 'UrlShorterContent' }, rce('div', { 'className': 'conditions' }, rce('div', { 'className': 'type' }, rce('div', { 'className': 'type-create', 'onClick': chooseStateHandler, 'style': chooseState === 'create' ? styleChoose : styleUnChoose }, 'create'), rce('div', { 'className': 'type-search', 'onClick': chooseStateHandler, 'style': chooseState === 'search' ? styleChoose : styleUnChoose }, 'search')), rce('div', { 'className': 'urls' }, rce('div', { 'style': chooseState === 'create' ? { 'display': 'block' } : { 'display': 'none' } }, rce('b', null, 'Paste your long URL here:')), rce('div', { 'className': 'inputLongURL', 'style': chooseState === 'create' ? { 'display': 'block' } : { 'display': 'none' } }, rce('input', { 'value': longValue, 'onChange': longValueChangeHandler })), rce('div', null, rce('b', null, 'short URL:')), rce('div', { 'className': 'inputShortURL' }, rce('span', null, hostUrl), rce('input', { 'value': shortValue, 'onChange': shortValueChangeHandler })), rce('div', { 'className': 'urlPost', 'onClick': postHandler }, 'post'))), rce('div', { 'className': 'results' }, rce('div', { 'className': 'results-head' }, rce('div', { 'className': 'longUrl' }, 'LONG URL'), rce('div', { 'className': 'shortUrl' }, 'SHORT URL'), rce('div', { 'className': 'clicks' }, 'CLICKS')), urlList));
@@ -20857,7 +20857,7 @@
 
 	'use strict';
 
-	var EventEmitter = __webpack_require__(178).EventEmitter;
+	var EventEmitter = __webpack_require__(180).EventEmitter;
 	var assign = __webpack_require__(4);
 
 	var UrlShorterStore = assign({}, EventEmitter.prototype, {

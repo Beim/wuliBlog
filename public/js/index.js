@@ -51,8 +51,8 @@
 	var rce = React.createElement.bind();
 	var myName = '北冥有鱼吃';
 	// ReactDOM.initializeTouchEvents(true)
-	var SiteHeader = __webpack_require__(189);
-	var Fullstrip = __webpack_require__(190);
+	var SiteHeader = __webpack_require__(168);
+	var Fullstrip = __webpack_require__(169);
 
 	var total = React.createClass({
 		displayName: 'total',
@@ -20334,28 +20334,7 @@
 	module.exports = ReactMount.renderSubtreeIntoContainer;
 
 /***/ },
-/* 168 */,
-/* 169 */,
-/* 170 */,
-/* 171 */,
-/* 172 */,
-/* 173 */,
-/* 174 */,
-/* 175 */,
-/* 176 */,
-/* 177 */,
-/* 178 */,
-/* 179 */,
-/* 180 */,
-/* 181 */,
-/* 182 */,
-/* 183 */,
-/* 184 */,
-/* 185 */,
-/* 186 */,
-/* 187 */,
-/* 188 */,
-/* 189 */
+/* 168 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -20372,7 +20351,7 @@
 	module.exports = SiteHeader;
 
 /***/ },
-/* 190 */
+/* 169 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';

@@ -25,10 +25,10 @@ let UrlShorter = (props) => {
 		return(
 			rce('div', {'key': 'url' + index, 'className': 'results-body'},
 				rce('div', {'className': 'longUrl'}, 
-					rce('a', {'href': value.longUrl}, cutStr(value.longUrl, 20))
+					rce('a', {'href': value.longUrl, 'target': '_Blank'}, cutStr(value.longUrl, 20))
 				),
 				rce('div', {'className': 'shortUrl'},
-					rce('a', {'href': value.shortUrl}, cutStr(value.shortUrl, 20))
+					rce('a', {'href': value.shortUrl, 'target': '_Blank'}, cutStr(value.shortUrl, 20))
 				),
 				rce('div', {'className': 'clicks'}, value.clicks)
 			)

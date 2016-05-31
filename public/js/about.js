@@ -49,8 +49,8 @@
 	var React = __webpack_require__(1);
 	var ReactDOM = __webpack_require__(38);
 	var rce = React.createElement.bind();
-	var SiteHeader = __webpack_require__(189);
-	var Fullstrip = __webpack_require__(190);
+	var SiteHeader = __webpack_require__(168);
+	var Fullstrip = __webpack_require__(169);
 	// ReactDOM.initializeTouchEvents(true)
 
 	var total = React.createClass({
@@ -20340,28 +20340,7 @@
 	module.exports = ReactMount.renderSubtreeIntoContainer;
 
 /***/ },
-/* 168 */,
-/* 169 */,
-/* 170 */,
-/* 171 */,
-/* 172 */,
-/* 173 */,
-/* 174 */,
-/* 175 */,
-/* 176 */,
-/* 177 */,
-/* 178 */,
-/* 179 */,
-/* 180 */,
-/* 181 */,
-/* 182 */,
-/* 183 */,
-/* 184 */,
-/* 185 */,
-/* 186 */,
-/* 187 */,
-/* 188 */,
-/* 189 */
+/* 168 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -20378,7 +20357,7 @@
 	module.exports = SiteHeader;
 
 /***/ },
-/* 190 */
+/* 169 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';

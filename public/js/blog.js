@@ -50,7 +50,7 @@
 	var ReactDOM = __webpack_require__(38);
 	var rce = React.createElement.bind();
 	// let MyButtonController = require('../components/MyButtonController.js')
-	var TotalController = __webpack_require__(168);
+	var TotalController = __webpack_require__(170);
 	var total = React.createClass({
 		displayName: 'total',
 		display: 'total',
@@ -20337,9 +20337,27 @@
 
 	var React = __webpack_require__(1);
 	var rce = React.createElement.bind();
-	var Total = __webpack_require__(169);
-	var TotalActions = __webpack_require__(188);
-	var TotalStore = __webpack_require__(177);
+	var myName = '北冥有鱼吃';
+	var SiteHeader = function SiteHeader(props) {
+		return rce('header', { 'className': 'site-header' }, rce('div', { 'className': 'header-content' }, rce('a', { 'className': 'site-title', 'href': 'https://github.com/Beim' }, myName), rce('nav', { 'className': 'site-nav' }, rce('a', { 'className': 'site-link', 'href': '../index.html' }, 'HOME'), rce('a', { 'className': 'site-link', 'href': '../about.html' }, 'ABOUT'), rce('a', { 'className': 'site-link', 'href': '../blog.html' }, 'BLOG'),
+		// rce('a',{'className': 'site-link', 'href': '#'}, 'TieBa'),
+		rce('a', { 'className': 'site-link', 'href': '../url.html' }, 'ShortURL'), rce('a', { 'className': 'site-link', 'href': '#' }, 'MORE'))));
+	};
+
+	module.exports = SiteHeader;
+
+/***/ },
+/* 169 */,
+/* 170 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var React = __webpack_require__(1);
+	var rce = React.createElement.bind();
+	var Total = __webpack_require__(171);
+	var TotalActions = __webpack_require__(190);
+	var TotalStore = __webpack_require__(179);
 
 	var TotalController = React.createClass({ displayName: 'TotalController',
 		getInitialState: function getInitialState() {
@@ -20468,17 +20486,17 @@
 	module.exports = TotalController;
 
 /***/ },
-/* 169 */
+/* 171 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var React = __webpack_require__(1);
 	var rce = React.createElement.bind();
-	var SideController = __webpack_require__(170);
-	var WestEggController = __webpack_require__(182);
-	var ContentController = __webpack_require__(185);
-	var SiteHeader = __webpack_require__(189);
+	var SideController = __webpack_require__(172);
+	var WestEggController = __webpack_require__(184);
+	var ContentController = __webpack_require__(187);
+	var SiteHeader = __webpack_require__(168);
 
 	var Total = function Total(props) {
 		var SelectTag = props.SelectTag;
@@ -20531,7 +20549,7 @@
 	module.exports = Total;
 
 /***/ },
-/* 170 */
+/* 172 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -20539,9 +20557,9 @@
 	var React = __webpack_require__(1);
 	var rce = React.createElement.bind();
 
-	var Side = __webpack_require__(171);
-	var SideActions = __webpack_require__(172);
-	var SideStore = __webpack_require__(179);
+	var Side = __webpack_require__(173);
+	var SideActions = __webpack_require__(174);
+	var SideStore = __webpack_require__(181);
 
 	var SideController = React.createClass({
 		displayName: 'SideController',
@@ -20590,7 +20608,7 @@
 	module.exports = SideController;
 
 /***/ },
-/* 171 */
+/* 173 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -20624,12 +20642,12 @@
 	module.exports = Side;
 
 /***/ },
-/* 172 */
+/* 174 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var AppDispatcher = __webpack_require__(173);
+	var AppDispatcher = __webpack_require__(175);
 
 	var SideActions = {
 		handleHeaderClick: function handleHeaderClick() {
@@ -20653,17 +20671,17 @@
 	module.exports = SideActions;
 
 /***/ },
-/* 173 */
+/* 175 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var Dispatcher = __webpack_require__(174).Dispatcher;
+	var Dispatcher = __webpack_require__(176).Dispatcher;
 	var AppDispatcher = new Dispatcher();
-	var TotalStore = __webpack_require__(177);
-	var SideStore = __webpack_require__(179);
-	var WestEggStore = __webpack_require__(180);
-	var ContentStore = __webpack_require__(181);
+	var TotalStore = __webpack_require__(179);
+	var SideStore = __webpack_require__(181);
+	var WestEggStore = __webpack_require__(182);
+	var ContentStore = __webpack_require__(183);
 
 	AppDispatcher.register(function (action) {
 		switch (action.actionType) {
@@ -20757,7 +20775,7 @@
 	module.exports = AppDispatcher;
 
 /***/ },
-/* 174 */
+/* 176 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -20769,11 +20787,11 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 */
 
-	module.exports.Dispatcher = __webpack_require__(175);
+	module.exports.Dispatcher = __webpack_require__(177);
 
 
 /***/ },
-/* 175 */
+/* 177 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -20795,7 +20813,7 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
-	var invariant = __webpack_require__(176);
+	var invariant = __webpack_require__(178);
 
 	var _prefix = 'ID_';
 
@@ -21010,7 +21028,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 176 */
+/* 178 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -21065,12 +21083,12 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 177 */
+/* 179 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var EventEmitter = __webpack_require__(178).EventEmitter;
+	var EventEmitter = __webpack_require__(180).EventEmitter;
 	var assign = __webpack_require__(4);
 
 	var TotalStore = assign({}, EventEmitter.prototype, {
@@ -21194,7 +21212,7 @@
 	module.exports = TotalStore;
 
 /***/ },
-/* 178 */
+/* 180 */
 /***/ function(module, exports) {
 
 	// Copyright Joyent, Inc. and other Node contributors.
@@ -21498,12 +21516,12 @@
 
 
 /***/ },
-/* 179 */
+/* 181 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var EventEmitter = __webpack_require__(178).EventEmitter;
+	var EventEmitter = __webpack_require__(180).EventEmitter;
 	var assign = __webpack_require__(4);
 
 	var SideStore = assign({}, EventEmitter.prototype, {
@@ -21543,14 +21561,14 @@
 	module.exports = SideStore;
 
 /***/ },
-/* 180 */
+/* 182 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var EventEmitter = __webpack_require__(178).EventEmitter;
+	var EventEmitter = __webpack_require__(180).EventEmitter;
 	var assign = __webpack_require__(4);
-	var TotalStore = __webpack_require__(177);
+	var TotalStore = __webpack_require__(179);
 
 	var WestEggStore = assign({}, EventEmitter.prototype, {
 		// SelectTag: TotalStore.getSelectTag(),
@@ -21630,12 +21648,12 @@
 	module.exports = WestEggStore;
 
 /***/ },
-/* 181 */
+/* 183 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var EventEmitter = __webpack_require__(178).EventEmitter;
+	var EventEmitter = __webpack_require__(180).EventEmitter;
 	var assign = __webpack_require__(4);
 
 	var ContentStore = assign({}, EventEmitter.prototype, {
@@ -21736,7 +21754,7 @@
 	module.exports = ContentStore;
 
 /***/ },
-/* 182 */
+/* 184 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -21746,9 +21764,9 @@
 	var React = __webpack_require__(1);
 	var rce = React.createElement.bind();
 
-	var WestEgg = __webpack_require__(183);
-	var WestEggActions = __webpack_require__(184);
-	var WestEggStore = __webpack_require__(180);
+	var WestEgg = __webpack_require__(185);
+	var WestEggActions = __webpack_require__(186);
+	var WestEggStore = __webpack_require__(182);
 
 	var WestEggController = React.createClass({
 		displayName: 'WestEggController',
@@ -21880,7 +21898,7 @@
 	module.exports = WestEggController;
 
 /***/ },
-/* 183 */
+/* 185 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -21927,12 +21945,12 @@
 	module.exports = WestEgg;
 
 /***/ },
-/* 184 */
+/* 186 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var AppDispatcher = __webpack_require__(173);
+	var AppDispatcher = __webpack_require__(175);
 
 	var WestEggActions = {
 		addNum: function addNum() {
@@ -21968,7 +21986,7 @@
 	module.exports = WestEggActions;
 
 /***/ },
-/* 185 */
+/* 187 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -21981,10 +21999,10 @@
 
 	var React = __webpack_require__(1);
 	var rce = React.createElement.bind();
-	var Content = __webpack_require__(186);
-	var ContentActions = __webpack_require__(187);
-	var ContentStore = __webpack_require__(181);
-	var TotalStore = __webpack_require__(177);
+	var Content = __webpack_require__(188);
+	var ContentActions = __webpack_require__(189);
+	var ContentStore = __webpack_require__(183);
+	var TotalStore = __webpack_require__(179);
 
 	var changeHash = function changeHash(e) {
 		window.location.hash = e;
@@ -22323,7 +22341,7 @@
 	module.exports = ContentController;
 
 /***/ },
-/* 186 */
+/* 188 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -22384,12 +22402,12 @@
 	module.exports = Content;
 
 /***/ },
-/* 187 */
+/* 189 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var AppDispatcher = __webpack_require__(173);
+	var AppDispatcher = __webpack_require__(175);
 
 	var ContentActions = {
 		getBlogList: function getBlogList(data, showData, totalNum) {
@@ -22463,12 +22481,12 @@
 	module.exports = ContentActions;
 
 /***/ },
-/* 188 */
+/* 190 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	var AppDispatcher = __webpack_require__(173);
+	var AppDispatcher = __webpack_require__(175);
 
 	var TotalActions = {
 		addNum: function addNum() {
@@ -22528,23 +22546,6 @@
 	};
 
 	module.exports = TotalActions;
-
-/***/ },
-/* 189 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var React = __webpack_require__(1);
-	var rce = React.createElement.bind();
-	var myName = '北冥有鱼吃';
-	var SiteHeader = function SiteHeader(props) {
-		return rce('header', { 'className': 'site-header' }, rce('div', { 'className': 'header-content' }, rce('a', { 'className': 'site-title', 'href': 'https://github.com/Beim' }, myName), rce('nav', { 'className': 'site-nav' }, rce('a', { 'className': 'site-link', 'href': '../index.html' }, 'HOME'), rce('a', { 'className': 'site-link', 'href': '../about.html' }, 'ABOUT'), rce('a', { 'className': 'site-link', 'href': '../blog.html' }, 'BLOG'),
-		// rce('a',{'className': 'site-link', 'href': '#'}, 'TieBa'),
-		rce('a', { 'className': 'site-link', 'href': '../url.html' }, 'ShortURL'), rce('a', { 'className': 'site-link', 'href': '#' }, 'MORE'))));
-	};
-
-	module.exports = SiteHeader;
 
 /***/ }
 /******/ ]);

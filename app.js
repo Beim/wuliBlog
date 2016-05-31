@@ -38,14 +38,15 @@ app.use(json())
 
 app.use(function * (next) {
   var start = new Date()
-  // var deviceAgent = req.headers['user-agent'].toLowerCase();
-  let deviceAgent = this.header['user-agent'].toLowerCase();
-  let agentID = deviceAgent.match(/(iphone|ipod|ipad|android)/);
-  if(agentID && (this.url == '/' || this.url == '/index.html') ){
-  	//指到手机、pad的网页
-  	this.redirect('blog.html')
-  }else{
-  	//指到pc网页
+  if(this.url == '/' || this.url == '/index.html'){
+      let deviceAgent = this.header['user-agent'].toLowerCase();
+      let agentID = deviceAgent.match(/(iphone|ipod|ipad|android)/);
+      if(agentID){
+      	//指到手机、pad的网页
+      	this.redirect('blog.html')
+      }else{
+      	//指到pc网页
+      }
   }
   yield next
   var ms = new Date() - start

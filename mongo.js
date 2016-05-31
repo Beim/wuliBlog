@@ -26,6 +26,13 @@ let blogSchema = new mongoose.Schema({
 	}]
 })
 let blogModel = mongoose.model('blogs', blogSchema)
+
+let urlSchema = new mongoose.Schema({
+	longUrl: String,
+	shortUrl: String,
+	clicks: {type: Number, default: 0}
+})
+let urlModel = mongoose.model('urls', urlSchema)
  
 
 exports.insert = {
@@ -73,6 +80,43 @@ exports.insert = {
 				}
 			})
 		})
+	},
+
+	url: (data) => {
+		return new Promise((res, rej) => {
+			urlModel.findOne({'shortUrl': data.shortUrl}, (err, doc) => {
+				if(err){
+					console.log('findOne err : ' + err)
+					res(0)
+				}
+				else{
+					if(doc){
+						doc.longUrl = data.longUrl
+						doc.clicks = 0
+						doc.save((err2) => {
+							if(err2){
+								console.info('save err : ' + err2)
+								res(0)
+							}
+							else{
+								res(1)
+							}
+						})
+					}
+					else{
+						urlModel.create(data, (err1, doc1) => {
+							if(err1){
+								console.info('create err : ' + err1)
+								res(0)
+							}
+							else{
+								res(1)
+							}
+						})
+					}
+				}
+			})
+		})
 	}
 }
 
@@ -100,6 +144,43 @@ exports.search = {
 				}
 				else{
 					res(doc)
+				}
+			})
+		})
+	},
+	urls: (limit, skip = null) => {
+		return new Promise((res, rej) => {
+			urlModel.find(limit, skip, (err, doc) => {
+				if(err){
+					console.log('find err : ' + err)
+					res(0)
+				}
+				else{
+					res(doc)
+				}
+			})
+		})
+	},
+	longUrl: (limit, skip = null) => {
+		return new Promise((res, rej) => {
+			urlModel.findOne(limit, skip, (err, doc) => {
+				if(err){
+					console.log('findOne err : ' + err)
+					res(0)
+				}
+				else{
+					if(doc){
+						doc.clicks += 1
+						doc.save((err1) => {
+							if(err1){
+								console.log('save err : ' + err1)
+							}
+						})
+						res(doc.longUrl)
+					}
+					else{
+						res(0)
+					}
 				}
 			})
 		})

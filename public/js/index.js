@@ -51,17 +51,15 @@
 	var rce = React.createElement.bind();
 	var myName = '北冥有鱼吃';
 	// ReactDOM.initializeTouchEvents(true)
+	var SiteHeader = __webpack_require__(189);
+	var Fullstrip = __webpack_require__(190);
 
 	var total = React.createClass({
 		displayName: 'total',
 		display: 'total',
 
 		render: function render() {
-			return rce('div', { 'className': 'home' },
-			// rce('img', {src: '../img/background.jpg'})
-			rce('header', { 'className': 'site-header' },
-			// rce('p', null, 'hello')
-			rce('div', { 'className': 'header-content' }, rce('nav', { 'className': 'site-nav' }, rce('a', { 'className': 'site-link', 'href': '../index.html' }, 'HOME'), rce('a', { 'className': 'site-link', 'href': '../about.html' }, 'ABOUT'), rce('a', { 'className': 'site-link', 'href': '../blog.html' }, 'BLOG'), rce('a', { 'className': 'site-link', 'href': '#' }, 'TieBa'), rce('a', { 'className': 'site-link', 'href': '#' }, 'CharRoom'), rce('a', { 'className': 'site-link', 'href': '#' }, 'MORE')))), rce('div', { 'className': 'homepage' }, rce('div', { 'className': 'homepage-null' }), rce('div', { 'className': 'homepage-content' }, rce('div', { 'className': 'homepage-main' }, myName), rce('div', { 'className': 'homepage-sub' }, 'powered by beim'))));
+			return rce('div', { 'className': 'home' }, SiteHeader(), rce('div', { 'className': 'homepage' }, rce('div', { 'className': 'homepage-null' }), rce('div', { 'className': 'homepage-content' }, rce('div', { 'className': 'homepage-main' }, myName), rce('div', { 'className': 'homepage-sub' }, 'powered by beim'))));
 		}
 	});
 
@@ -20334,6 +20332,60 @@
 	var ReactMount = __webpack_require__(160);
 
 	module.exports = ReactMount.renderSubtreeIntoContainer;
+
+/***/ },
+/* 168 */,
+/* 169 */,
+/* 170 */,
+/* 171 */,
+/* 172 */,
+/* 173 */,
+/* 174 */,
+/* 175 */,
+/* 176 */,
+/* 177 */,
+/* 178 */,
+/* 179 */,
+/* 180 */,
+/* 181 */,
+/* 182 */,
+/* 183 */,
+/* 184 */,
+/* 185 */,
+/* 186 */,
+/* 187 */,
+/* 188 */,
+/* 189 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var React = __webpack_require__(1);
+	var rce = React.createElement.bind();
+	var myName = '北冥有鱼吃';
+	var SiteHeader = function SiteHeader(props) {
+		return rce('header', { 'className': 'site-header' }, rce('div', { 'className': 'header-content' }, rce('a', { 'className': 'site-title', 'href': 'https://github.com/Beim' }, myName), rce('nav', { 'className': 'site-nav' }, rce('a', { 'className': 'site-link', 'href': '../index.html' }, 'HOME'), rce('a', { 'className': 'site-link', 'href': '../about.html' }, 'ABOUT'), rce('a', { 'className': 'site-link', 'href': '../blog.html' }, 'BLOG'),
+		// rce('a',{'className': 'site-link', 'href': '#'}, 'TieBa'),
+		rce('a', { 'className': 'site-link', 'href': '../url.html' }, 'ShortURL'), rce('a', { 'className': 'site-link', 'href': '#' }, 'MORE'))));
+	};
+
+	module.exports = SiteHeader;
+
+/***/ },
+/* 190 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var React = __webpack_require__(1);
+	var rce = React.createElement.bind();
+
+	var Fullstrip = function Fullstrip(props) {
+		var title = props.title;
+		return rce('div', { 'className': 'fullstrip' }, rce('div', { 'className': 'fullstrip-container' }, rce('div', { 'className': 'fullstrip-title' }, title)));
+	};
+
+	module.exports = Fullstrip;
 
 /***/ }
 /******/ ]);

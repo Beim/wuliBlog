@@ -3,6 +3,7 @@ const rce = React.createElement.bind()
 let SideController = require('./SideController.js')
 let WestEggController = require('./WestEggController.js')
 let ContentController = require('./ContentController.js')
+let SiteHeader = require('../components/SiteHeader.js')
 
 let Total = (props) => {
 	let SelectTag = props.SelectTag
@@ -39,18 +40,19 @@ let Total = (props) => {
 			),
 			rce('div', {'className': 'site-hide', 'id': 'site-hide', 'onClick': showSide}),
 			rce('div', {'className': 'blogContent', 'id': 'blogContent'},
-				rce('div', {'className': 'site-header'},
-					rce('a', {'className': 'site-title','id': 'site-title', 'href': 'https://github.com/Beim'}, myName),
-					rce('nav', {'className': 'site-nav'}, 
-						rce('a', {'className': 'site-link', 'href': '#', 'style': {'color': 'white'}, 'onClick': handleChangeDisplay.bind(null, 'secret')}, 'secret'),
-						rce('a',{'className': 'site-link', 'href': '../index.html'}, 'HOME'),
-						rce('a',{'className': 'site-link', 'href': '../about.html'}, 'ABOUT'),
-						rce('a',{'className': 'site-link', 'href': '../blog.html'}, 'BLOG'),
-						rce('a',{'className': 'site-link', 'href': '#'}, 'TieBa'),
-						rce('a',{'className': 'site-link', 'href': '#'}, 'CharRoom'),
-						rce('a',{'className': 'site-link', 'href': '#'}, 'MORE')
-					)
-				),
+				// rce('div', {'className': 'site-header'},
+				// 	rce('a', {'className': 'site-title','id': 'site-title', 'href': 'https://github.com/Beim'}, myName),
+				// 	rce('nav', {'className': 'site-nav'}, 
+				// 		rce('a', {'className': 'site-link', 'href': '#', 'style': {'color': 'white'}, 'onClick': handleChangeDisplay.bind(null, 'secret')}, 'secret'),
+				// 		rce('a',{'className': 'site-link', 'href': '../index.html'}, 'HOME'),
+				// 		rce('a',{'className': 'site-link', 'href': '../about.html'}, 'ABOUT'),
+				// 		rce('a',{'className': 'site-link', 'href': '../blog.html'}, 'BLOG'),
+				// 		rce('a',{'className': 'site-link', 'href': '#'}, 'TieBa'),
+				// 		rce('a',{'className': 'site-link', 'href': '../url.html'}, 'ShortURL'),
+				// 		rce('a',{'className': 'site-link', 'href': '#'}, 'MORE')
+				// 	)
+				// ),
+				SiteHeader(),
 				rce('div', {'className': 'fullstrip'},
 					rce('div', {'className': 'fullstrip-container'},
 						rce('div', {'className': 'fullstrip-title-mob'}, 

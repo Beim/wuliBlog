@@ -3,7 +3,8 @@ module.exports = {
 	entry: {
 		index: './public/js/entries/index.js',
 		about: './public/js/entries/about.js',
-		blog: './public/js/entries/blog.js'
+		blog: './public/js/entries/blog.js',
+		url: './public/js/entries/url.js'
 	},
 	output: {
 		path: path.join(__dirname, '/public/js'),

@@ -12,7 +12,9 @@ html, body, .home, .main{
 	width: 100%;
 	/*display: block;*/
 }
-
+.site-title{
+	display: none;
+}
 
 
 .site-header{

@@ -49,7 +49,8 @@
 	var React = __webpack_require__(1);
 	var ReactDOM = __webpack_require__(38);
 	var rce = React.createElement.bind();
-	var myName = '北冥有鱼吃';
+	var SiteHeader = __webpack_require__(189);
+	var Fullstrip = __webpack_require__(190);
 	// ReactDOM.initializeTouchEvents(true)
 
 	var total = React.createClass({
@@ -62,7 +63,7 @@
 			window.location = 'blog.html';
 		},
 		render: function render() {
-			return rce('div', { 'className': 'about' }, rce('header', { 'className': 'site-header' }, rce('a', { 'className': 'site-title', 'href': 'https://github.com/Beim' }, myName), rce('nav', { 'className': 'site-nav' }, rce('a', { 'className': 'site-link', 'href': '../index.html' }, 'HOME'), rce('a', { 'className': 'site-link', 'href': '../about.html' }, 'ABOUT'), rce('a', { 'className': 'site-link', 'href': '../blog.html' }, 'BLOG'), rce('a', { 'className': 'site-link', 'href': '#' }, 'TieBa'), rce('a', { 'className': 'site-link', 'href': '#' }, 'CharRoom'), rce('a', { 'className': 'site-link', 'href': '#' }, 'MORE'))), rce('div', { 'className': 'fullstrip' }, rce('div', { 'className': 'fullstrip-container' }, rce('div', { 'className': 'fullstrip-title' }, 'About'))), rce('div', { 'className': 'mainContainer' }, rce('div', { 'className': 'mainContainer-content' }, rce('div', { 'className': 'mainContainer-left' },
+			return rce('div', { 'className': 'about' }, SiteHeader(), Fullstrip({ title: 'About' }), rce('div', { 'className': 'mainContainer' }, rce('div', { 'className': 'mainContainer-content' }, rce('div', { 'className': 'mainContainer-left' },
 			// rce('div', {}, 'left')
 			rce('div', { 'className': 'bio-image' }, rce('img', { 'className': 'myImage', 'src': '../img/myImg.png', 'onClick': this.handleClickMyImg })), rce('div', { 'className': 'title' }, 'Things I\'m good at'), rce('div', { 'className': 'content-area' }, rce('div', { 'className': 'skill html' }, 'zero'), rce('div', { 'className': 'skill css' }, 'zero'), rce('div', { 'className': 'skill javascript' }, 'zero'), rce('div', { 'className': 'skill koa' }, 'zero'), rce('div', { 'className': 'skill nodejs' }, 'zero')), rce('div', { 'className': 'title' }, 'Things I love'), rce('div', { 'className': 'content-area' }, rce('div', { 'className': 'skill html' }, 'zero'), rce('div', { 'className': 'skill css' }, 'zero'), rce('div', { 'className': 'skill javascript' }, 'zero'), rce('div', { 'className': 'skill koa' }, 'zero'), rce('div', { 'className': 'skill nodejs' }, 'zero'))), rce('div', { 'className': 'mainContainer-right' }, rce('h2', { 'className': 'to-blog', 'onClick': this.toBlog, 'onTouchStart': this.toBlog }, 'To my Blog'), rce('br', null), rce('h2', null, 'Who are you?'), rce('p', null, 'who are you'), rce('h2', null, 'Where are you ?'), rce('p', null, 'where are you'), rce('h2', null, 'What are you up to at the moment?'), rce('p', null, 'what are you up to at the moment?')))));
 		}
@@ -20337,6 +20338,60 @@
 	var ReactMount = __webpack_require__(160);
 
 	module.exports = ReactMount.renderSubtreeIntoContainer;
+
+/***/ },
+/* 168 */,
+/* 169 */,
+/* 170 */,
+/* 171 */,
+/* 172 */,
+/* 173 */,
+/* 174 */,
+/* 175 */,
+/* 176 */,
+/* 177 */,
+/* 178 */,
+/* 179 */,
+/* 180 */,
+/* 181 */,
+/* 182 */,
+/* 183 */,
+/* 184 */,
+/* 185 */,
+/* 186 */,
+/* 187 */,
+/* 188 */,
+/* 189 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var React = __webpack_require__(1);
+	var rce = React.createElement.bind();
+	var myName = '北冥有鱼吃';
+	var SiteHeader = function SiteHeader(props) {
+		return rce('header', { 'className': 'site-header' }, rce('div', { 'className': 'header-content' }, rce('a', { 'className': 'site-title', 'href': 'https://github.com/Beim' }, myName), rce('nav', { 'className': 'site-nav' }, rce('a', { 'className': 'site-link', 'href': '../index.html' }, 'HOME'), rce('a', { 'className': 'site-link', 'href': '../about.html' }, 'ABOUT'), rce('a', { 'className': 'site-link', 'href': '../blog.html' }, 'BLOG'),
+		// rce('a',{'className': 'site-link', 'href': '#'}, 'TieBa'),
+		rce('a', { 'className': 'site-link', 'href': '../url.html' }, 'ShortURL'), rce('a', { 'className': 'site-link', 'href': '#' }, 'MORE'))));
+	};
+
+	module.exports = SiteHeader;
+
+/***/ },
+/* 190 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var React = __webpack_require__(1);
+	var rce = React.createElement.bind();
+
+	var Fullstrip = function Fullstrip(props) {
+		var title = props.title;
+		return rce('div', { 'className': 'fullstrip' }, rce('div', { 'className': 'fullstrip-container' }, rce('div', { 'className': 'fullstrip-title' }, title)));
+	};
+
+	module.exports = Fullstrip;
 
 /***/ }
 /******/ ]);

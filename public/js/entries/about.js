@@ -2,7 +2,8 @@
 const React = require('react')
 const ReactDOM = require('react-dom')
 var rce = React.createElement.bind()
-const myName = '北冥有鱼吃'
+let SiteHeader = require('../components/SiteHeader.js')
+let Fullstrip = require('../components/Fullstrip.js')
 // ReactDOM.initializeTouchEvents(true)
 
 var total = React.createClass({display: 'total',
@@ -15,22 +16,8 @@ var total = React.createClass({display: 'total',
 	render : function(){
 		return(
 			rce('div',{'className': 'about'},
-				rce('header', {'className': 'site-header'},
-					rce('a', {'className': 'site-title', 'href': 'https://github.com/Beim'}, myName),
-					rce('nav', {'className': 'site-nav'}, 
-						rce('a',{'className': 'site-link', 'href': '../index.html'}, 'HOME'),
-						rce('a',{'className': 'site-link', 'href': '../about.html'}, 'ABOUT'),
-						rce('a',{'className': 'site-link', 'href': '../blog.html'}, 'BLOG'),
-						rce('a',{'className': 'site-link', 'href': '#'}, 'TieBa'),
-						rce('a',{'className': 'site-link', 'href': '#'}, 'CharRoom'),
-						rce('a',{'className': 'site-link', 'href': '#'}, 'MORE')
-					)
-				),
-				rce('div', {'className': 'fullstrip'},
-					rce('div', {'className': 'fullstrip-container'},
-						rce('div', {'className': 'fullstrip-title'}, 'About')
-					)
-				),
+				SiteHeader(),
+				Fullstrip({title: 'About'}),
 				rce('div', {'className': 'mainContainer'},
 					rce('div', {'className': 'mainContainer-content'},
 						rce('div', {'className': 'mainContainer-left'},

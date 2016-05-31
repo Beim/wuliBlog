@@ -94,6 +94,22 @@ router.post('/:name', function *(next) {
 			}
 		}
 	}
+
+	//url
+	else if(this.params.name == 'url'){
+		let body = this.request.body
+		let response = yield db.insert['url'](body)
+		this.body = {
+			ok: response
+		}
+	}
+	else if(this.params.name == 'urls'){
+		let body = this.request.body
+		let response = yield db.search['urls'](body)
+		this.body = {
+			urls: response
+		}
+	}
 	return yield next
 })
 

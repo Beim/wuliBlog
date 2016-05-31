@@ -17,6 +17,7 @@ var index = require('./routes/index')
 var users = require('./routes/users')
 var getMethod = require('./routes/getMethod')
 var postMethod = require('./routes/postMethod')
+var myUrl = require('./routes/url')
 
 /*
 	middleware
@@ -57,6 +58,7 @@ koaRouter.use('/', index.routes(), index.allowedMethods())
 koaRouter.use('/users', users.routes(), users.allowedMethods())
 koaRouter.use('/getMethod', getMethod.routes(), getMethod.allowedMethods())
 koaRouter.use('/postMethod', postMethod.routes(), postMethod.allowedMethods())
+koaRouter.use('/url', myUrl.routes(), myUrl.allowedMethods())
 
 app.use(koaRouter.routes())
 

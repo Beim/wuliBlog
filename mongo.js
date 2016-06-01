@@ -149,6 +149,7 @@ exports.search = {
 		})
 	},
 	urls: (limit, skip = null) => {
+		limit.shortUrl = new RegExp(limit.shortUrl , 'i')
 		return new Promise((res, rej) => {
 			urlModel.find(limit, skip, (err, doc) => {
 				if(err){

@@ -45,9 +45,10 @@ let UrlShorterController = React.createClass({display: 'UrlShorterController',
 	},
 	postHandler: function(){
 		if(this.state.chooseState == 'create'){
+			// console.info(this.state.shortValue)
 			let predata = {
 				longUrl: this.state.longValue,
-				shortUrl: this.state.hostUrl + this.state.shortValue
+				shortUrl: this.state.shortValue
 			}
 			let data = JSON.stringify(predata)
 			let xhr = new XMLHttpRequest()
@@ -70,7 +71,7 @@ let UrlShorterController = React.createClass({display: 'UrlShorterController',
 		}
 		else if(this.state.chooseState == 'search'){
 			let predata = {
-				shortUrl: this.state.hostUrl + this.state.shortValue
+				shortUrl: this.state.shortValue
 			}
 			let data = JSON.stringify(predata)
 			let xhr = new XMLHttpRequest()

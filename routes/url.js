@@ -8,7 +8,7 @@ router.get('/', function *(next){
 
 router.get('/:name', function *(next){
 	let limit = {
-		shortUrl: 'http://'+ this.host + this.url
+		shortUrl: this.url.slice('/url/'.length)
 	}
 	let response = yield db.search['longUrl'](limit)
 	if(response !== 0){

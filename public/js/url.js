@@ -20745,9 +20745,10 @@
 
 			if (this.state.chooseState == 'create') {
 				(function () {
+					// console.info(this.state.shortValue)
 					var predata = {
 						longUrl: _this.state.longValue,
-						shortUrl: _this.state.hostUrl + _this.state.shortValue
+						shortUrl: _this.state.shortValue
 					};
 					var data = JSON.stringify(predata);
 					var xhr = new XMLHttpRequest();
@@ -20770,7 +20771,7 @@
 				})();
 			} else if (this.state.chooseState == 'search') {
 				var _predata = {
-					shortUrl: this.state.hostUrl + this.state.shortValue
+					shortUrl: this.state.shortValue
 				};
 				var _data = JSON.stringify(_predata);
 				var _xhr = new XMLHttpRequest();
@@ -20843,7 +20844,7 @@
 		var hostUrl = props.hostUrl;
 		var urls = props.urls;
 		var urlList = urls.map(function (value, index) {
-			return rce('div', { 'key': 'url' + index, 'className': 'results-body' }, rce('div', { 'className': 'longUrl' }, rce('a', { 'href': value.longUrl, 'target': '_Blank' }, cutStr(value.longUrl, 20))), rce('div', { 'className': 'shortUrl' }, rce('a', { 'href': value.shortUrl, 'target': '_Blank' }, cutStr(value.shortUrl, 20))), rce('div', { 'className': 'clicks' }, value.clicks));
+			return rce('div', { 'key': 'url' + index, 'className': 'results-body' }, rce('div', { 'className': 'longUrl' }, rce('a', { 'href': value.longUrl, 'target': '_Blank' }, cutStr(value.longUrl, 20))), rce('div', { 'className': 'shortUrl' }, rce('a', { 'href': hostUrl + value.shortUrl, 'target': '_Blank' }, cutStr(value.shortUrl, 20))), rce('div', { 'className': 'clicks' }, value.clicks));
 		});
 
 		return rce('div', { 'className': 'UrlShorterContent' }, rce('div', { 'className': 'conditions' }, rce('div', { 'className': 'type' }, rce('div', { 'className': 'type-create', 'onClick': chooseStateHandler, 'style': chooseState === 'create' ? styleChoose : styleUnChoose }, 'create'), rce('div', { 'className': 'type-search', 'onClick': chooseStateHandler, 'style': chooseState === 'search' ? styleChoose : styleUnChoose }, 'search')), rce('div', { 'className': 'urls' }, rce('div', { 'style': chooseState === 'create' ? { 'display': 'block' } : { 'display': 'none' } }, rce('b', null, 'Paste your long URL here:')), rce('div', { 'className': 'inputLongURL', 'style': chooseState === 'create' ? { 'display': 'block' } : { 'display': 'none' } }, rce('input', { 'value': longValue, 'onChange': longValueChangeHandler })), rce('div', null, rce('b', null, 'short URL:')), rce('div', { 'className': 'inputShortURL' }, rce('span', null, hostUrl), rce('input', { 'value': shortValue, 'onChange': shortValueChangeHandler })), rce('div', { 'className': 'urlPost', 'onClick': postHandler }, 'post'))), rce('div', { 'className': 'results' }, rce('div', { 'className': 'results-head' }, rce('div', { 'className': 'longUrl' }, 'LONG URL'), rce('div', { 'className': 'shortUrl' }, 'SHORT URL'), rce('div', { 'className': 'clicks' }, 'CLICKS')), urlList));

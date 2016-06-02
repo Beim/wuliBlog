@@ -47,7 +47,7 @@ let Total = (props) => {
 						rce('a',{'className': 'site-link', 'href': '../index.html'}, 'HOME'),
 						rce('a',{'className': 'site-link', 'href': '../about.html'}, 'ABOUT'),
 						rce('a',{'className': 'site-link', 'href': '../blog.html'}, 'BLOG'),
-						rce('a',{'className': 'site-link', 'href': '#'}, 'TieBa'),
+						// rce('a',{'className': 'site-link', 'href': '#'}, 'TieBa'),
 						rce('a',{'className': 'site-link', 'href': '../url.html'}, 'ShortURL'),
 						rce('a',{'className': 'site-link', 'href': '#'}, 'MORE')
 					)

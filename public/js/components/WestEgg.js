@@ -15,6 +15,8 @@ let WestEgg = (props) => {
 	let onPost = props.onPost
 	let onAddImg = props.onAddImg
 	let handleAuthorChange = props.handleAuthorChange
+	let handleAddHTML = props.handleAddHTML
+	let onAddHTML = props.onAddHTML
 
 	let style1 = {'color': '#444', 'border': '1px solid #444'}
 	let style2 = {}
@@ -50,7 +52,9 @@ let WestEgg = (props) => {
 					rce('div', {'onClick': handleAddImg, 'type': 'file'}, 'Image'),
 					rce('input', {'type': 'file', 'id': 'fileInput', 'accept': 'image/gif, image/jpeg, image/x-png', 'style': {'display': 'none'}, 'onChange': onAddImg}),
 					rce('div', {'onClick': handleAddPre }, 'AddPre'),
-					rce('div', {'onClick': handleAddH2 }, 'AddH2')
+					rce('div', {'onClick': handleAddH2 }, 'AddH2'),
+					rce('div', {'onClick': handleAddHTML}, 'AddHtml'),
+					rce('input', {'type': 'file', 'id': 'fileInputHTML', 'accept': 'text/html', 'style': {'display': 'none'}, 'onChange': onAddHTML}),
 				),
 				rce('div', {'className': 'westEgg-body-edit'},
 					rce('p' ,{'contentEditable': 'true', 'id': 'westEgg-body-edit-p'})

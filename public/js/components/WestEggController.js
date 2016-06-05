@@ -54,6 +54,39 @@ let WestEggController = React.createClass({display: 'WestEggController',
 		}
 		xhr.send(form)
 	},
+	handleAddHTML: function(){
+		$('#fileInputHTML').click()	
+	},
+	onAddHTML: function(e){
+		// console.log('onAddHTML')
+		let fileObj = document.getElementById('fileInputHTML').files[0]
+		let form = new FormData()
+		form.append('file', fileObj)
+		let xhr = new XMLHttpRequest()
+		xhr.open('post', 'postMethod/htmls', true)
+		xhr.responstType = 'text'
+		xhr.onload = function (e) {
+			
+			// let url = this.response
+			// let p = document.getElementById('westEgg-body-edit-p')
+			// let div = document.createElement('div')
+			// let img = document.createElement('img')
+			// img.src = url
+			// div.appendChild(img)
+			// p.appendChild(div)
+			// p.lastChild.focus()
+			let url = this.response
+			// let preHTML = `<div><pre class=" language-javascript" style="padding: 0em 0em 0.5em; word-spacing: normal; list-style-type: none; border: none; text-shadow: white 0px 1px; font-family: Consolas, Monaco, 'Andale Mono', monospace; direction: ltr; tab-size: 4; overflow: auto; letter-spacing: -0.12px; line-height: 21.6px; background: rgb(245, 242, 240);"><font color="#708090"><span style="font-size: 14.4px;">#</span></font></pre></div>`
+			let preHTML = `<div class="iframeDiv">
+				<a href=${url} >${url}</a>
+			</div>`
+			let p = document.getElementById('westEgg-body-edit-p')
+			p.innerHTML += '<div>&nbsp;&nbsp;</div>'	 + preHTML + '<div>&nbsp;&nbsp;</div>'		
+
+		}
+		xhr.send(form)
+		
+	},
 	handleSelectTag: function (e) {
 		WestEggActions.handleSelectTag(e)
 	},
@@ -127,7 +160,9 @@ let WestEggController = React.createClass({display: 'WestEggController',
 			authorValue: this.state.authorValue,
 			onPost: this.onPost,
 			onAddImg: this.onAddImg,
-			handleAuthorChange: this.handleAuthorChange
+			handleAuthorChange: this.handleAuthorChange,
+			handleAddHTML: this.handleAddHTML,
+			onAddHTML: this.onAddHTML
 		})
 	}
 })

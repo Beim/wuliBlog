@@ -20356,7 +20356,7 @@
 	var React = __webpack_require__(1);
 	var rce = React.createElement.bind();
 	var Total = __webpack_require__(171);
-	var TotalActions = __webpack_require__(190);
+	var TotalActions = __webpack_require__(188);
 	var TotalStore = __webpack_require__(179);
 
 	var TotalController = React.createClass({ displayName: 'TotalController',
@@ -20495,7 +20495,7 @@
 	var rce = React.createElement.bind();
 	var SideController = __webpack_require__(172);
 	var WestEggController = __webpack_require__(184);
-	var ContentController = __webpack_require__(187);
+	var ContentController = __webpack_require__(185);
 	var SiteHeader = __webpack_require__(168);
 
 	var Total = function Total(props) {
@@ -21755,8 +21755,8 @@
 	var React = __webpack_require__(1);
 	var rce = React.createElement.bind();
 
-	var WestEgg = __webpack_require__(185);
-	var WestEggActions = __webpack_require__(186);
+	var WestEgg = __webpack_require__(192);
+	var WestEggActions = __webpack_require__(193);
 	var WestEggStore = __webpack_require__(182);
 
 	var WestEggController = React.createClass({
@@ -21807,6 +21807,35 @@
 				div.appendChild(img);
 				p.appendChild(div);
 				p.lastChild.focus();
+			};
+			xhr.send(form);
+		},
+		handleAddHTML: function handleAddHTML() {
+			$('#fileInputHTML').click();
+		},
+		onAddHTML: function onAddHTML(e) {
+			// console.log('onAddHTML')
+			var fileObj = document.getElementById('fileInputHTML').files[0];
+			var form = new FormData();
+			form.append('file', fileObj);
+			var xhr = new XMLHttpRequest();
+			xhr.open('post', 'postMethod/htmls', true);
+			xhr.responstType = 'text';
+			xhr.onload = function (e) {
+
+				// let url = this.response
+				// let p = document.getElementById('westEgg-body-edit-p')
+				// let div = document.createElement('div')
+				// let img = document.createElement('img')
+				// img.src = url
+				// div.appendChild(img)
+				// p.appendChild(div)
+				// p.lastChild.focus()
+				var url = this.response;
+				// let preHTML = `<div><pre class=" language-javascript" style="padding: 0em 0em 0.5em; word-spacing: normal; list-style-type: none; border: none; text-shadow: white 0px 1px; font-family: Consolas, Monaco, 'Andale Mono', monospace; direction: ltr; tab-size: 4; overflow: auto; letter-spacing: -0.12px; line-height: 21.6px; background: rgb(245, 242, 240);"><font color="#708090"><span style="font-size: 14.4px;">#</span></font></pre></div>`
+				var preHTML = '<div class="iframeDiv">\n\t\t\t\t<a href=' + url + ' >' + url + '</a>\n\t\t\t</div>';
+				var p = document.getElementById('westEgg-body-edit-p');
+				p.innerHTML += '<div>&nbsp;&nbsp;</div>' + preHTML + '<div>&nbsp;&nbsp;</div>';
 			};
 			xhr.send(form);
 		},
@@ -21881,7 +21910,9 @@
 				authorValue: this.state.authorValue,
 				onPost: this.onPost,
 				onAddImg: this.onAddImg,
-				handleAuthorChange: this.handleAuthorChange
+				handleAuthorChange: this.handleAuthorChange,
+				handleAddHTML: this.handleAddHTML,
+				onAddHTML: this.onAddHTML
 			});
 		}
 	});
@@ -21894,94 +21925,6 @@
 
 	'use strict';
 
-	var React = __webpack_require__(1);
-	var rce = React.createElement.bind();
-
-	var WestEgg = function WestEgg(props) {
-		var stateTags = props.stateTags;
-		var handleSelectTag = props.handleSelectTag;
-		var chooseTag = props.chooseTag;
-		var display = props.display;
-		var titleValue = props.titleValue;
-		var handleTitleChange = props.handleTitleChange;
-		var handleAddImg = props.handleAddImg;
-		var handleAddPre = props.handleAddPre;
-		var handleAddH2 = props.handleAddH2;
-		var authorValue = props.authorValue;
-		var onPost = props.onPost;
-		var onAddImg = props.onAddImg;
-		var handleAuthorChange = props.handleAuthorChange;
-
-		var style1 = { 'color': '#444', 'border': '1px solid #444' };
-		var style2 = {};
-		var tagWrap = [];
-
-		var _loop = function _loop(i) {
-			var tagName = i;
-			var tagDetail = stateTags[i];
-			var _tags = [];
-			tagDetail.forEach(function (elem) {
-				_tags.push(rce('div', { 'key': '_tagspush' + elem + i, 'onClick': handleSelectTag, 'style': chooseTag[elem] === 0 ? style2 : style1 }, elem));
-			});
-			tagWrap.push(rce('div', { 'key': 'tagWrap-div' + i, 'className': 'westEgg-sort-tag-div' }, rce('div', { 'key': 'tagWrap-div1' + i, 'className': 'westEgg-sort-tag-div1' }, rce('b', null, i)), rce('div', { 'key': 'tagWrap-div2' + i, 'className': 'westEgg-sort-tag-div2' }, _tags)));
-		};
-
-		for (var i in stateTags) {
-			_loop(i);
-		}
-
-		return rce('div', { 'className': 'mainContainer-content', 'style': { 'display': display === 1 ? 'block' : 'none' } }, rce('div', { 'className': 'westEgg-title' }, rce('input', { 'placeholder': 'Please fill the title', 'value': titleValue, 'onChange': handleTitleChange })), rce('div', { 'className': 'westEgg-body' }, rce('div', { 'className': 'westEgg-body-img' }, rce('div', { 'onClick': handleAddImg, 'type': 'file' }, 'Image'), rce('input', { 'type': 'file', 'id': 'fileInput', 'accept': 'image/gif, image/jpeg, image/x-png', 'style': { 'display': 'none' }, 'onChange': onAddImg }), rce('div', { 'onClick': handleAddPre }, 'AddPre'), rce('div', { 'onClick': handleAddH2 }, 'AddH2')), rce('div', { 'className': 'westEgg-body-edit' }, rce('p', { 'contentEditable': 'true', 'id': 'westEgg-body-edit-p' }))), rce('div', { 'className': 'westEgg-sort' }, rce('div', { 'className': 'westEgg-sort-tag' }, tagWrap)), rce('div', { 'className': 'westEgg-post' }, rce('div', { 'className': 'westEgg-post-author' }, rce('input', { 'placeholder': 'author', 'value': authorValue, 'onChange': handleAuthorChange })), rce('div', { 'className': 'westEgg-post-btn', 'onClick': onPost }, 'button')));
-	};
-
-	module.exports = WestEgg;
-
-/***/ },
-/* 186 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var AppDispatcher = __webpack_require__(175);
-
-	var WestEggActions = {
-		addNum: function addNum() {
-			AppDispatcher.dispatch({
-				actionType: 'ADD_NUM'
-			});
-		},
-		handleTitleChange: function handleTitleChange(e) {
-			AppDispatcher.dispatch({
-				actionType: 'CHANGE_TITLE',
-				e: e
-			});
-		},
-		handleAuthorChange: function handleAuthorChange(e) {
-			AppDispatcher.dispatch({
-				actionType: 'CHANGE_AUTHOR',
-				e: e
-			});
-		},
-		handleSelectTag: function handleSelectTag(e) {
-			AppDispatcher.dispatch({
-				actionType: 'SELECT_TAG',
-				e: e
-			});
-		},
-		init: function init() {
-			AppDispatcher.dispatch({
-				actionType: 'INIT_WESTEGG'
-			});
-		}
-	};
-
-	module.exports = WestEggActions;
-
-/***/ },
-/* 187 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
 	var _React$createClass;
 
 	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
@@ -21990,8 +21933,8 @@
 
 	var React = __webpack_require__(1);
 	var rce = React.createElement.bind();
-	var Content = __webpack_require__(188);
-	var ContentActions = __webpack_require__(189);
+	var Content = __webpack_require__(186);
+	var ContentActions = __webpack_require__(187);
 	var ContentStore = __webpack_require__(183);
 	var TotalStore = __webpack_require__(179);
 
@@ -22332,7 +22275,7 @@
 	module.exports = ContentController;
 
 /***/ },
-/* 188 */
+/* 186 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -22393,7 +22336,7 @@
 	module.exports = Content;
 
 /***/ },
-/* 189 */
+/* 187 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -22472,7 +22415,7 @@
 	module.exports = ContentActions;
 
 /***/ },
-/* 190 */
+/* 188 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -22537,6 +22480,99 @@
 	};
 
 	module.exports = TotalActions;
+
+/***/ },
+/* 189 */,
+/* 190 */,
+/* 191 */,
+/* 192 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var React = __webpack_require__(1);
+	var rce = React.createElement.bind();
+
+	var WestEgg = function WestEgg(props) {
+		var stateTags = props.stateTags;
+		var handleSelectTag = props.handleSelectTag;
+		var chooseTag = props.chooseTag;
+		var display = props.display;
+		var titleValue = props.titleValue;
+		var handleTitleChange = props.handleTitleChange;
+		var handleAddImg = props.handleAddImg;
+		var handleAddPre = props.handleAddPre;
+		var handleAddH2 = props.handleAddH2;
+		var authorValue = props.authorValue;
+		var onPost = props.onPost;
+		var onAddImg = props.onAddImg;
+		var handleAuthorChange = props.handleAuthorChange;
+		var handleAddHTML = props.handleAddHTML;
+		var onAddHTML = props.onAddHTML;
+
+		var style1 = { 'color': '#444', 'border': '1px solid #444' };
+		var style2 = {};
+		var tagWrap = [];
+
+		var _loop = function _loop(i) {
+			var tagName = i;
+			var tagDetail = stateTags[i];
+			var _tags = [];
+			tagDetail.forEach(function (elem) {
+				_tags.push(rce('div', { 'key': '_tagspush' + elem + i, 'onClick': handleSelectTag, 'style': chooseTag[elem] === 0 ? style2 : style1 }, elem));
+			});
+			tagWrap.push(rce('div', { 'key': 'tagWrap-div' + i, 'className': 'westEgg-sort-tag-div' }, rce('div', { 'key': 'tagWrap-div1' + i, 'className': 'westEgg-sort-tag-div1' }, rce('b', null, i)), rce('div', { 'key': 'tagWrap-div2' + i, 'className': 'westEgg-sort-tag-div2' }, _tags)));
+		};
+
+		for (var i in stateTags) {
+			_loop(i);
+		}
+
+		return rce('div', { 'className': 'mainContainer-content', 'style': { 'display': display === 1 ? 'block' : 'none' } }, rce('div', { 'className': 'westEgg-title' }, rce('input', { 'placeholder': 'Please fill the title', 'value': titleValue, 'onChange': handleTitleChange })), rce('div', { 'className': 'westEgg-body' }, rce('div', { 'className': 'westEgg-body-img' }, rce('div', { 'onClick': handleAddImg, 'type': 'file' }, 'Image'), rce('input', { 'type': 'file', 'id': 'fileInput', 'accept': 'image/gif, image/jpeg, image/x-png', 'style': { 'display': 'none' }, 'onChange': onAddImg }), rce('div', { 'onClick': handleAddPre }, 'AddPre'), rce('div', { 'onClick': handleAddH2 }, 'AddH2'), rce('div', { 'onClick': handleAddHTML }, 'AddHtml'), rce('input', { 'type': 'file', 'id': 'fileInputHTML', 'accept': 'text/html', 'style': { 'display': 'none' }, 'onChange': onAddHTML })), rce('div', { 'className': 'westEgg-body-edit' }, rce('p', { 'contentEditable': 'true', 'id': 'westEgg-body-edit-p' }))), rce('div', { 'className': 'westEgg-sort' }, rce('div', { 'className': 'westEgg-sort-tag' }, tagWrap)), rce('div', { 'className': 'westEgg-post' }, rce('div', { 'className': 'westEgg-post-author' }, rce('input', { 'placeholder': 'author', 'value': authorValue, 'onChange': handleAuthorChange })), rce('div', { 'className': 'westEgg-post-btn', 'onClick': onPost }, 'button')));
+	};
+
+	module.exports = WestEgg;
+
+/***/ },
+/* 193 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var AppDispatcher = __webpack_require__(175);
+
+	var WestEggActions = {
+		addNum: function addNum() {
+			AppDispatcher.dispatch({
+				actionType: 'ADD_NUM'
+			});
+		},
+		handleTitleChange: function handleTitleChange(e) {
+			AppDispatcher.dispatch({
+				actionType: 'CHANGE_TITLE',
+				e: e
+			});
+		},
+		handleAuthorChange: function handleAuthorChange(e) {
+			AppDispatcher.dispatch({
+				actionType: 'CHANGE_AUTHOR',
+				e: e
+			});
+		},
+		handleSelectTag: function handleSelectTag(e) {
+			AppDispatcher.dispatch({
+				actionType: 'SELECT_TAG',
+				e: e
+			});
+		},
+		init: function init() {
+			AppDispatcher.dispatch({
+				actionType: 'INIT_WESTEGG'
+			});
+		}
+	};
+
+	module.exports = WestEggActions;
 
 /***/ }
 /******/ ]);

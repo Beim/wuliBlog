@@ -28,6 +28,22 @@ router.post('/:name', function *(next) {
 		// }
 		this.body = 'img/save/' + name
 	}
+	
+	else if (this.params.name === 'htmls'){
+		let parts = fparse(this)
+		let part = yield parts
+		let _path = path.join(__dirname, '/../public/html/save')
+		let str = '.hello world.png.jpg'
+		let ext = part.filename
+		let i = ext.indexOf('.')
+		if(i){
+			ext = ext.slice(i)
+		}
+		let name = Math.random().toString() + ext
+		let stream = fs.createWriteStream(path.join(_path, name))
+		part.pipe(stream)
+		this.body = 'html/save/' + name
+	}
 
 	else if (this.params.name === 'newBlog'){
 		let body = this.request.body

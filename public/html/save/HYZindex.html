@@ -1,0 +1,97 @@
+<!DOCTYPE html>  
+<html>  
+<head>  
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />  
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />  
+<title>Hello, World</title>  
+<style type="text/css">  
+html{height:100%}  
+body{height:100%;margin:0px;padding:0px}  
+#container{height:100%}  
+</style>  
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=mApcAtRu5KGswrDUxniCSQEMD4tUoasX">
+//v2.0版本的引用方式：src="http://api.map.baidu.com/api?v=2.0&ak=您的密钥"
+//v1.4版本及以前版本的引用方式：src="http://api.map.baidu.com/api?v=1.4&key=您的密钥&callback=initialize"
+</script>
+<script type="text/javascript">
+	var showError = function (error)
+	  {
+	  switch(error.code) 
+	    {
+	    case error.PERMISSION_DENIED:
+	      console.log("User denied the request for Geolocation. : " + error.PERMISSION_DENIED)
+	      break;
+	    case error.POSITION_UNAVAILABLE:
+	      console.log("Location information is unavailable.")
+	      break;
+	    case error.TIMEOUT:
+	      console.log("The request to get user location timed out.")
+	      break;
+	    case error.UNKNOWN_ERROR:
+	      console.log("An unknown error occurred.")
+	      break;
+	    }
+	  }
+</script>
+</head>  
+ 
+<body>  
+<div id="container"></div> 
+<script type="text/javascript"> 
+	window.onload = function () {
+		//H5的获取地理位置API
+		if ("geolocation" in navigator) {
+			console.log(navigator.geolocation)
+		  	navigator.geolocation.getCurrentPosition(function(position) {
+		  		console.log('222')
+		  		//获取当前的经度和纬度
+		  		var lat = position.coords.latitude;
+		  		var lon = position.coords.longitude;
+			  	// alert(lat+"    "+lon);
+			  	//创建地图实例
+			  	var map = new BMap.Map("container");
+			  	//获取地图的中心
+			  	var point = new BMap.Point(lon,lat);
+			  	//初始化地图中心和地图级别
+			  	map.centerAndZoom(point,15);
+			  	//标出当前位置
+			  	var marker = new BMap.Marker(point);
+			  	map.addOverlay(marker);
+				var infoWindow = new BMap.InfoWindow("您的位置在这里");
+				marker.openInfoWindow(infoWindow,map.getCenter());
+				marker.addEventListener("click", function () {
+					this.openInfoWindow(infoWindow);
+				})
+			  	//设置地图能够通过滚轮修改比例
+			  	map.enableScrollWheelZoom();
+			  	//添加左上角地图平移的控件
+			  	map.addControl(new BMap.NavigationControl());    
+			  	//添加地图左上角比例尺控件
+				map.addControl(new BMap.ScaleControl());    
+				//添加地图右下角缩略地图控件
+				map.addControl(new BMap.OverviewMapControl());    
+				//添加地图右上角地图类型
+				map.addControl(new BMap.MapTypeControl());   
+				// 获取地图的地理编码
+			  	var gc = new BMap.Geocoder();
+			  	//获取当前位置具体省市街道
+			  	gc.getLocation(point,function (rs) {
+			  		var addComp = rs.addressComponents;
+			  		// alert(addComp.province + ", " + addComp.city + ", " + addComp.district + ", " + addComp.street);
+			  		// 仅当设置城市信息时，MapTypeControl的切换功能才能可用
+			  		map.setCurrentCity(addComp.city); 
+			  	});
+			  	//添加关键字检索显示
+				var local = new BMap.LocalSearch(map, {
+					renderOptions:{map: map}
+				});
+				local.search("快递");
+
+			},showError);/* 地理位置服务可用 */
+		} else {
+		  	alert('您的浏览器不支持地理定位！');/* 地理位置服务不可用 */
+		}
+	}
+</script>  
+</body>  
+</html>

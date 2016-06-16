@@ -1,0 +1,1627 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hello!</title>
+<link rel="stylesheet" href="https://stackedit.io/res-min/themes/base.css" />
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body><div class="container"><p>FIle I/O 给POSIX标准函数做一个简单的包装.要使用这个模块需要require(‘fs’).其中所有的方法都有同步和异步的形式.</p>
+
+<p>异步方法的最后一个参数是方法执行完之后的回调函数. 传给这个回调函数的参数是由不同的方法决定的,但是它的第一个参数总是作为意外错误的标志. 如果整个操作成功完成, 则回调函数的第一个参数会是null或者undefined</p>
+
+<p>如果用同步方法,出现意外错误会立即抛出.你可以用try/catch来处理错误或者让错误向上冒泡</p>
+
+<p>异步方式的栗子:</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs coffeescript"><span class="hljs-reserved">const</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>);
+
+fs.unlink<span class="hljs-function"><span class="hljs-params">(<span class="hljs-string">'/tmp/hello'</span>, (err) =&gt; {
+  <span class="hljs-keyword">if</span> (err) <span class="hljs-keyword">throw</span> err;
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'successfully deleted /tmp/hello'</span>);
+})</span>;</span></code></pre>
+
+<p>同步方式的栗子:</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs coffeescript"><span class="hljs-reserved">const</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>);
+
+fs.unlinkSync(<span class="hljs-string">'/tmp/hello'</span>);
+<span class="hljs-built_in">console</span>.log(<span class="hljs-string">'successfully deleted /tmp/hello'</span>);</code></pre>
+
+<p>用异步方式不会保证执行顺序,因此下面这种写法很容易出错</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs coffeescript">fs.rename<span class="hljs-function"><span class="hljs-params">(<span class="hljs-string">'/tmp/hello'</span>, <span class="hljs-string">'/tmp/world'</span>, (err) =&gt; {
+  <span class="hljs-keyword">if</span> (err) <span class="hljs-keyword">throw</span> err;
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'renamed complete'</span>);
+})</span>;
+<span class="hljs-title">fs</span>.<span class="hljs-title">stat</span><span class="hljs-params">(<span class="hljs-string">'/tmp/world'</span>, (err, stats) =&gt; {
+  <span class="hljs-keyword">if</span> (err) <span class="hljs-keyword">throw</span> err;
+  <span class="hljs-built_in">console</span>.log(`<span class="javascript">stats: ${<span class="hljs-built_in">JSON</span>.stringify(stats)}</span>`);
+})</span>;</span></code></pre>
+
+<p>上面这样写可能fs.stat在fs.rename之前执行. 正确的方法是让回调链式调用:</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs coffeescript">fs.rename<span class="hljs-function"><span class="hljs-params">(<span class="hljs-string">'/tmp/hello'</span>, <span class="hljs-string">'/tmp/world'</span>, (err) =&gt; {
+  <span class="hljs-keyword">if</span> (err) <span class="hljs-keyword">throw</span> err;
+  fs.stat(<span class="hljs-string">'/tmp/world'</span>, (err, stats) =&gt; {
+    <span class="hljs-keyword">if</span> (err) <span class="hljs-keyword">throw</span> err;
+    <span class="hljs-built_in">console</span>.log(`<span class="javascript">stats: ${<span class="hljs-built_in">JSON</span>.stringify(stats)}</span>`);
+  });
+})</span>;</span></code></pre>
+
+<p>在事务繁忙的程序里,强烈推荐使用这些方法的异步形式.同步形式将会阻碍整个进程的运行,直到它完全执行完成.</p>
+
+<p>文件名的路径可以是相对路径,不过记住,这个路径是相对于process.cwd()的</p>
+
+<p>大多数fs方法允许你忽略回调函数这个参数.如果忽略的话,会有默认的回调函数用来抛出错误. 你可以设置 NODE_DEBUG 环境变量来跟踪错误的原始位置:</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs javascript">$ cat script.js
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">bad</span><span class="hljs-params">()</span> {</span>
+  <span class="hljs-built_in">require</span>(<span class="hljs-string">'fs'</span>).readFile(<span class="hljs-string">'/'</span>);
+}
+bad();
+
+$ env NODE_DEBUG=fs node script.js
+fs.js:<span class="hljs-number">88</span>
+        <span class="hljs-keyword">throw</span> backtrace;
+        ^
+<span class="hljs-built_in">Error</span>: EISDIR: illegal operation on a directory, read
+    &lt;stack trace.&gt; </code></pre>
+
+
+
+<h2 id="buffer-api">Buffer API</h2>
+
+<p>fs的方法支持传递和接受string和Buffer类型的路径. 后者是为了支持非UTF8文件名的文件系统. 在大多数时候使用Buffer作路径是不必要的,因为string API会自动以UTF-8格式转换.</p>
+
+<p>注意:在特定的文件系统(如 NTFS和HFS+)里文件名总是使用UTF-8编码. 在这种文件系统里,传入不是UTF8编码的Buffer给fs的方法是无效的.</p>
+
+
+
+<h2 id="class-fsfswatcher">Class: fs.FSWatcher</h2>
+
+<p>fs.watch()返回的对象的类型</p>
+
+
+
+<h3 id="1event-change">1~Event: ‘change’</h3>
+
+<blockquote>
+  <ul>
+  <li>event &lt; String&gt; The type of fs change</li>
+  <li>filename &lt; String&gt; | &lt; Buffer&gt; The filename that changed (if relevant/available)</li>
+  </ul>
+</blockquote>
+
+<p>当被监听的目录或者文件发生改变时提交该事件,详细见 fs.watch()</p>
+
+<p>filename参数是否提供要看操作系统是否支持. 如果filename被提供, 且fs.watch()中设置encoding参数为’buffer’,则filename会以Buffer形式提供, 若未设置encoding,则filename是string</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs r">fs.watch(<span class="hljs-string">'./tmp'</span>, {encoding: <span class="hljs-string">'buffer'</span>}, (event, filename) =&gt; {
+  <span class="hljs-keyword">if</span> (filename)
+    console.log(filename);
+    // Prints: &lt;Buffer <span class="hljs-keyword">...</span>&gt;
+});</code></pre>
+
+
+
+<h3 id="2event-error">2~Event: ‘error’</h3>
+
+<blockquote>
+  <p>error &lt; Error&gt;</p>
+</blockquote>
+
+<p>错误出现时提交该事件</p>
+
+
+
+<h3 id="3watcherclose">3~watcher.close()</h3>
+
+<p>停止对fs.FSWatcher的改变的监听</p>
+
+
+
+<h2 id="class-fsreadstream">Class: fs.ReadStream</h2>
+
+<p>ReadStream是一个Readable Stream</p>
+
+
+
+<h3 id="1event-open">1~Event: ‘open’</h3>
+
+<p>fd &lt; Integer&gt; Integer file descriptor used by the ReadStream.</p>
+
+<p>当ReadStream的文件打开的时候提交该事件</p>
+
+
+
+<h3 id="2event-close">2~Event: ‘close’</h3>
+
+<p>当ReadStream下的文件标识被fs.close()方法关闭之后提交该事件 <br>
+Emitted when the ReadStream’s underlying file descriptor has been closed using the fs.close() method.</p>
+
+
+
+<h3 id="3readstreampath">3~readStream.path</h3>
+
+<p>path是从fs.createReadStream()的第一个参数读来的.如果传入的path参数是string,则readStream.path也会是string,如果传入的path参数是Buffer,则readSream.path也会是Buffer</p>
+
+
+
+<h2 id="class-fsstats">Class: fs.Stats</h2>
+
+<p>fs.stat(), fs.lstat() and fs.fstat() 和他们的同步版本返回的对象的类型</p>
+
+<blockquote>
+  <p>stats.isFile() <br>
+  stats.isDirectory() <br>
+  stats.isBlockDevice() <br>
+  stats.isCharacterDevice() <br>
+  stats.isSymbolicLink() (only valid with fs.lstat()) <br>
+  stats.isFIFO() <br>
+  stats.isSocket()</p>
+</blockquote>
+
+<p>以一个常规的文件为例,util.inspect(stats)会返回类似下面的字符串</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs vbscript">{
+  dev: <span class="hljs-number">2114</span>,
+  ino: <span class="hljs-number">48064969</span>,
+  mode: <span class="hljs-number">33188</span>,
+  nlink: <span class="hljs-number">1</span>,
+  uid: <span class="hljs-number">85</span>,
+  gid: <span class="hljs-number">100</span>,
+  rdev: <span class="hljs-number">0</span>,
+  size: <span class="hljs-number">527</span>,
+  blksize: <span class="hljs-number">4096</span>,
+  blocks: <span class="hljs-number">8</span>,
+  atime: Mon, <span class="hljs-number">10</span> <span class="hljs-built_in">Oct</span> <span class="hljs-number">2011</span> <span class="hljs-number">23</span>:<span class="hljs-number">24</span>:<span class="hljs-number">11</span> GMT,
+  mtime: Mon, <span class="hljs-number">10</span> <span class="hljs-built_in">Oct</span> <span class="hljs-number">2011</span> <span class="hljs-number">23</span>:<span class="hljs-number">24</span>:<span class="hljs-number">11</span> GMT,
+  ctime: Mon, <span class="hljs-number">10</span> <span class="hljs-built_in">Oct</span> <span class="hljs-number">2011</span> <span class="hljs-number">23</span>:<span class="hljs-number">24</span>:<span class="hljs-number">11</span> GMT,
+  birthtime: Mon, <span class="hljs-number">10</span> <span class="hljs-built_in">Oct</span> <span class="hljs-number">2011</span> <span class="hljs-number">23</span>:<span class="hljs-number">24</span>:<span class="hljs-number">11</span> GMT
+}</code></pre>
+
+<blockquote>
+  <p><strong>注意</strong>: atime, mtime, birthtime, and ctime 是Date对象的实例,你需要使用合适的方法来比较这些对象的值. 像最普遍的方法getTime()会返回一个从 1 January 1970 00:00:00 UTC起过去的毫秒数,而且这个整数应该满足任何比较, 然而还有显示更多信息的方法,详情见<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date">MDN</a></p>
+</blockquote>
+
+
+
+<h3 id="1stat-time-values">1~Stat Time Values</h3>
+
+<p>stat对象的时间相关属性如下:</p>
+
+<blockquote>
+  <ul>
+  <li><p>atime “Access Time” - Time when file data last accessed. Changed by the mknod(2), utimes(2), and read(2) system calls.</p></li>
+  <li><p>mtime “Modified Time” - Time when file data last modified. Changed by the mknod(2), utimes(2), and write(2) system calls.</p></li>
+  <li><p>ctime “Change Time” - Time when file status was last changed (inode data modification). Changed by the chmod(2), chown(2), link(2), mknod(2), rename(2), unlink(2), utimes(2), read(2), and write(2) system calls.</p></li>
+  <li><p>birthtime “Birth Time” - Time of file creation. Set once when the file is created. On filesystems where birthtime is not available, this field may instead hold either the ctime or 1970-01-01T00:00Z (ie, unix epoch timestamp 0). Note that this value may be greater than atime or mtime in this case. On Darwin and other FreeBSD variants, also set if the atime is explicitly set to an earlier value than the current birthtime using the utimes(2) system call.</p></li>
+  </ul>
+  
+  <p><strong>注意</strong>:在Node v0.12之前,Windows系统上ctime和birthtime是一样的,在v0.12之后ctime不再是’creation time’, 而在Unix系统上从来不是.</p>
+</blockquote>
+
+
+
+<h2 id="class-fswritestream">Class: fs.WriteStream</h2>
+
+<p>WriteStream是一个Writable Stream</p>
+
+
+
+<h3 id="1event-open-1">1~Event: ‘open’</h3>
+
+<blockquote>
+  <p>fd &lt; Integer&gt; Integer file descriptor used by the WriteStream.</p>
+</blockquote>
+
+<p>当WriteStream的文件打开的时候提交这个事件</p>
+
+
+
+<h3 id="2event-close-1">2~Event: ‘close’</h3>
+
+<p>当WriteStream下的文件标识被fs.close()关闭之后提交这个事件</p>
+
+
+
+<h3 id="3writestreambyteswritten">3~writeStream.bytesWritten</h3>
+
+<p>已经写入的bytes数量,不包括正在写入队列中的数据</p>
+
+
+
+<h3 id="4writestreampath">4~writeStream.path</h3>
+
+<p>通过fs.createWriteSream()传入的第一个参数的得到的path.如果传入的path参数是string,则writeStream.path也是string,如果传入的path是Buffer,则writeStream.path也是Buffer</p>
+
+
+
+<h2 id="fsaccesspath-mode-callback">fs.access(path[, mode], callback)</h2>
+
+<blockquote>
+  <p>path &lt; String&gt; | &lt; Buffer&gt; <br>
+  mode &lt; Integer&gt; <br>
+  callback &lt; Function&gt;</p>
+</blockquote>
+
+<p>测试用户对path指定的文件的权限. 可选参数mode指定权限测试的方法,以下常量定义了mode可能的值. 可以用 | 指定或者按位指定两个或更多值.</p>
+
+<blockquote>
+  <ul>
+  <li><p>fs.F_OK - File is visible to the calling process. This is useful for determining if a file exists, but says nothing about rwx permissions. Default if no mode is specified.</p></li>
+  <li><p>fs.R_OK - File can be read by the calling process.</p></li>
+  <li><p>fs.W_OK - File can be written by the calling process.</p></li>
+  <li><p>fs.X_OK - File can be executed by the calling process. This has no effect on Windows (will behave like fs.F_OK).</p></li>
+  </ul>
+</blockquote>
+
+<p>最后一个参数callback,是包含了可能的error参数的回调函数. 如果任何权限检查失败,则error参数会被填充, 下面这个栗子检查文件/etc/passwd是否能被当前进程读写:</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs coffeescript">fs.access<span class="hljs-function"><span class="hljs-params">(<span class="hljs-string">'/etc/passwd'</span>, fs.R_OK | fs.W_OK, (err) =&gt; {
+  <span class="hljs-built_in">console</span>.log(err ? <span class="hljs-string">'no access!'</span> : <span class="hljs-string">'can read/write'</span>);
+})</span>;</span></code></pre>
+
+
+
+<h2 id="fsaccesssyncpath-mode">fs.accessSync(path[, mode])</h2>
+
+<blockquote>
+  <p>path &lt; String&gt; | &lt; Buffer&gt; <br>
+  mode &lt; Integer&gt;</p>
+</blockquote>
+
+<p>fs.access()的同步版本,如果权限检查失败会抛出错误,并且不会做其他事情.</p>
+
+
+
+<h2 id="fsappendfilefile-data-options-callback">fs.appendFile(file, data[, options], callback)</h2>
+
+<blockquote>
+  <ul>
+  <li>file &lt; String&gt; | &lt; Buffer&gt; | &lt; Number&gt; filename or file descriptor</li>
+  <li>data &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>options &lt; Object&gt; | &lt; String&gt; <br>
+  encoding &lt; String&gt; | &lt; Null&gt; default = ‘utf8’ <br>
+  mode &lt; Integer&gt; default = 0o666 <br>
+  flag &lt; String&gt; default = ‘a’</li>
+  <li>callback &lt; Function&gt;</li>
+  </ul>
+</blockquote>
+
+<p>异步地给把data添加到文件中, 如果文件不存在则创建, data可能是string或者buffer</p>
+
+<p>举个栗子:</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs coffeescript">fs.appendFile<span class="hljs-function"><span class="hljs-params">(<span class="hljs-string">'message.txt'</span>, <span class="hljs-string">'data to append'</span>, (err) =&gt; {
+  <span class="hljs-keyword">if</span> (err) <span class="hljs-keyword">throw</span> err;
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'The "data to append" was appended to file!'</span>);
+})</span>;</span></code></pre>
+
+<p>如果options是一个string,那它用来指定encoding <br>
+栗子:</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs vhdl">fs.appendFile(<span class="hljs-attribute">'message</span>.txt', <span class="hljs-attribute">'data</span> <span class="hljs-keyword">to</span> append', <span class="hljs-attribute">'utf8</span>', callback);
+
+Any specified <span class="hljs-keyword">file</span> descriptor has <span class="hljs-keyword">to</span> have been opened <span class="hljs-keyword">for</span> appending.
+
+Note: Specified <span class="hljs-keyword">file</span> descriptors will <span class="hljs-keyword">not</span> be closed automatically.
+</code></pre>
+
+
+
+<h2 id="fsappendfilesyncfile-data-options">fs.appendFileSync(file, data[, options])</h2>
+
+<blockquote>
+  <ul>
+  <li><p>file &lt; String&gt; | &lt; Buffer&gt; | &lt; Number&gt; filename or file descriptor</p></li>
+  <li><p>data &lt; String&gt; | &lt; Buffer&gt;</p></li>
+  <li><p>options &lt; Object&gt; | &lt; String&gt; <br>
+  encoding &lt; String&gt; | &lt; Null&gt; default = ‘utf8’ <br>
+  mode &lt; Integer&gt; default = 0o666 <br>
+  flag &lt; String&gt; default = ‘a’</p></li>
+  </ul>
+</blockquote>
+
+<p>fs.appendFile()的同步版本. 返回undefined</p>
+
+
+
+<h2 id="fschmodpath-mode-callback">fs.chmod(path, mode, callback)</h2>
+
+<blockquote>
+  <ul>
+  <li>path &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>mode &lt; Integer&gt;</li>
+  <li>callback &lt; Function&gt;</li>
+  </ul>
+</blockquote>
+
+<p>异步的chmod, 回调函数除了可能出现的错误没有其他参数</p>
+
+
+
+<h2 id="fschmodsyncpath-mode">fs.chmodSync(path, mode)</h2>
+
+<blockquote>
+  <ul>
+  <li>path &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>mode &lt; Integer&gt;</li>
+  </ul>
+</blockquote>
+
+<p>同步的chmod, 返回undefined</p>
+
+
+
+<h2 id="fschownpath-uid-gid-callback">fs.chown(path, uid, gid, callback)</h2>
+
+<blockquote>
+  <ul>
+  <li>path &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>uid &lt; Integer&gt;</li>
+  <li>gid &lt; Integer&gt;</li>
+  <li>callback &lt; Function&gt;</li>
+  </ul>
+</blockquote>
+
+<p>异步的chown, 回调函数除了可能出现的错误没有其他参数 <br>
+(chown将指定文件的拥有者改为指定的用户或组,用户可以是用户名或者用户ID；组可以是组名或者组ID)</p>
+
+
+
+<h2 id="fschownsyncpath-uid-gid">fs.chownSync(path, uid, gid)</h2>
+
+<blockquote>
+  <ul>
+  <li>path &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>uid &lt; Integer&gt;</li>
+  <li>gid &lt; Integer&gt;</li>
+  </ul>
+</blockquote>
+
+<p>同步的chown, 返回undefined</p>
+
+
+
+<h2 id="fsclosefd-callback">fs.close(fd, callback)</h2>
+
+<p>fd  <br>
+callback </p>
+
+<p>异步的close, 回调函数除了可能出现的错误没有其他参数</p>
+
+
+
+<h1 id="fsclosesyncfd">fs.closeSync(fd)</h1>
+
+<blockquote>
+  <ul>
+  <li>fd &lt; Integer&gt;</li>
+  </ul>
+</blockquote>
+
+<p>同步的close, 返回undefined</p>
+
+
+
+<h2 id="fscreatereadstreampath-options">fs.createReadStream(path[, options])</h2>
+
+<blockquote>
+  <ul>
+  <li>path &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>options &lt; String&gt; | &lt; Object&gt; <br>
+  flags &lt; String&gt; <br>
+  encoding &lt; String&gt; <br>
+  fd &lt; Integer&gt; <br>
+  mode &lt; Integer&gt; <br>
+  autoClose &lt; Boolean&gt; <br>
+  start &lt; Integer&gt; <br>
+  end &lt; Integer&gt;</li>
+  </ul>
+</blockquote>
+
+<p>返回一个新的ReadStream对象(详见Readable Stream)</p>
+
+<p>注意:与readable stream上为highWaterMark设置的默认值16kb不同,用这个方法返回的stream在相同参数的默认值是64kb</p>
+
+<p>options参数是一个对象或者字符串,它有以下默认值:</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs cs">{
+  flags: <span class="hljs-string">'r'</span>,
+  encoding: <span class="hljs-keyword">null</span>,
+  fd: <span class="hljs-keyword">null</span>,
+  mode: <span class="hljs-number">0</span>o666,
+  autoClose: <span class="hljs-keyword">true</span>
+}</code></pre>
+
+<p>options参数有start和end值用来读文件的一个部分. start和end参数大于等于0. encoding参数可以是Buffer接受的任何一个编码方式</p>
+
+<p>如果fd参数被设置,ReadStream将会忽略path参数的值而使用指定的文件描述符(file descriptor). 这意味着’open’事件不会被触发. 注意:fd参数应该被禁用,没有禁用的fd参数应该传给<a href="https://nodejs.org/api/net.html#net_class_net_socket">new.Socket</a></p>
+
+<p>如果autoClose设置为false, 那么文件描述符(file descriptor)不会被关闭,出现错误也不会. 你需要手动来关闭它并且确认没有文件描述符泄露(file descriptor leak).如果autoClose被设置成true(默认), 在error或者end事件触发的时候文件描述符(file descriptor)就会被自动关闭</p>
+
+<p>举个栗子,读一个长度为100bytes的文件的最后10个bytes:</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs livecodeserver">fs.createReadStream(<span class="hljs-string">'sample.txt'</span>, {start: <span class="hljs-number">90</span>, <span class="hljs-function"><span class="hljs-keyword">end</span>: <span class="hljs-title">99</span>});</span></code></pre>
+
+<p>如果options是字符串,那它用来指定encoding</p>
+
+
+
+<h2 id="fscreatewritestreampath-options">fs.createWriteStream(path[, options])</h2>
+
+<blockquote>
+  <ul>
+  <li>path &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>options &lt; String&gt; | &lt; Object&gt; <br>
+  flags &lt; String&gt; <br>
+  defaultEncoding &lt; String&gt; <br>
+  fd &lt; Integer&gt; <br>
+  mode &lt; Integer&gt; <br>
+  autoClose &lt; Boolean&gt; <br>
+  start &lt; Integer&gt;</li>
+  </ul>
+</blockquote>
+
+<p>返回一个新的WriteStream对象(详见<a href="https://nodejs.org/api/stream.html#stream_class_stream_writable">Wirtable Stream</a>)</p>
+
+<p>options是一个对象或者字符串, 它有以下默认值</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs css"><span class="hljs-rules">{
+  <span class="hljs-rule"><span class="hljs-attribute">flags</span>:<span class="hljs-value"> <span class="hljs-string">'w'</span>,
+  defaultEncoding: <span class="hljs-string">'utf8'</span>,
+  fd: null,
+  mode: <span class="hljs-number">0</span>o666,
+  autoClose: true
+</span></span></span>}</code></pre>
+
+<p>options可能包含start参数,用来指定写入数据的开始位置. 修改而不是替代文件需要修改flags的模式为r+而不是默认的模式w. defaultEncoding参数可以是Buffer能接受的参数之一</p>
+
+<p>如果autoClose参数设定为true(默认值),在error或者end事件触发时文件描述符(file descriptor)会被自动关闭. 如果autoClose参数设定为false, 那么文件描述符(file descriptor)不会被关闭, 就算error事件触发也不会. 你需要手动来关闭它,并且要确认没有文件描述符泄露(file descriptor leak)</p>
+
+<p>类似于ReadStream, 如果fd被指定, WriteStream将会忽略path参数并且使用指定的文件描述符(file descriptor). 这意味着’open’事件不会被触发. 注意fd应该被禁用,没有禁用的fd应该传给<a href="https://nodejs.org/api/net.html#net_class_net_socket">new.Socket</a></p>
+
+<p>如果options参数是字符串,那它被用来指定encoding</p>
+
+
+
+<h2 id="fsfchmodfd-mode-callback">fs.fchmod(fd, mode, callback)</h2>
+
+<blockquote>
+  <ul>
+  <li>fd &lt; Integer&gt;</li>
+  <li>mode &lt; Integer&gt;</li>
+  <li>callback &lt; Function&gt;</li>
+  </ul>
+</blockquote>
+
+<p>异步的fchmod, 回调函数除了可能出现的错误没有其他参数 <br>
+(chmod函数在指定的文件上进行操作, 而fchomod则对已经打开的文件操作) <br>
+(为了改变一个文件的权限位，进程的有效用户ID必须等于文件的所有者ID，或者该进程必须具有超级用户权限。)</p>
+
+
+
+<h2 id="fsfchmodsyncfd-mode">fs.fchmodSync(fd, mode)</h2>
+
+<blockquote>
+  <ul>
+  <li>fd &lt; Integer&gt;</li>
+  <li>mode &lt; Integer&gt;</li>
+  </ul>
+</blockquote>
+
+<p>同步的fchmod. 返回undefined</p>
+
+
+
+<h2 id="fsfchownfd-uid-gid-callback">fs.fchown(fd, uid, gid, callback)</h2>
+
+<blockquote>
+  <ul>
+  <li>fd &lt; Integer&gt;</li>
+  <li>uid &lt; Integer&gt;</li>
+  <li>gid &lt; Integer&gt;</li>
+  <li>callback &lt; Function&gt;</li>
+  </ul>
+</blockquote>
+
+<p>异步的fchown, 回调函数除了可能出现的错误没有其他参数</p>
+
+
+
+<h2 id="fsfchownsyncfd-uid-gid">fs.fchownSync(fd, uid, gid)</h2>
+
+<blockquote>
+  <ul>
+  <li>fd &lt; Integer&gt;</li>
+  <li>uid &lt; Integer&gt;</li>
+  <li>gid &lt; Integer&gt;</li>
+  </ul>
+</blockquote>
+
+<p>同步的fchown, 返回undefined</p>
+
+
+
+<h2 id="fsfdatasyncfd-callback">fs.fdatasync(fd, callback)</h2>
+
+<blockquote>
+  <ul>
+  <li>fd &lt; Integer&gt;</li>
+  <li>callback &lt; Function&gt;</li>
+  </ul>
+</blockquote>
+
+<p>异步的fdatasync(没错就算它带着sync也是异步的…) ,回调函数中除了可能出现的错误没有其他参数.</p>
+
+
+
+<h2 id="fsfdatasyncsyncfd">fs.fdatasyncSync(fd)</h2>
+
+<blockquote>
+  <ul>
+  <li>fd &lt; Integer&gt;</li>
+  </ul>
+</blockquote>
+
+<p>同步的fdatasync, 返回undefined</p>
+
+
+
+<h2 id="fsfstatfd-callback">fs.fstat(fd, callback)</h2>
+
+<blockquote>
+  <ul>
+  <li>fd &lt; Integer&gt;</li>
+  <li>callback &lt; Function&gt;</li>
+  </ul>
+</blockquote>
+
+<p>异步的fstat. 回调函数有两个参数(err, stats), 其中stats是fs.Stats对象. fstat()和stat()除了fstat()中文件是被文件描述符(file descriptor)标记是否被stat-ed以外完全相同.</p>
+
+
+
+<h2 id="fsfstatsyncfd">fs.fstatSync(fd)</h2>
+
+<blockquote>
+  <ul>
+  <li>fd &lt; Integer&gt;</li>
+  </ul>
+</blockquote>
+
+<p>同步的fstat, 返回一个fs.Stats的实例</p>
+
+
+
+<h2 id="fsfsyncfd-callback">fs.fsync(fd, callback)</h2>
+
+<blockquote>
+  <ul>
+  <li>fd &lt; Integer&gt;</li>
+  <li>callback &lt; Function&gt;</li>
+  </ul>
+</blockquote>
+
+<p>异步的fsync, 回调函数中除了可能出现的错误以外没有其他参数</p>
+
+
+
+<h2 id="fsfsyncsyncfd">fs.fsyncSync(fd)</h2>
+
+<blockquote>
+  <ul>
+  <li>fd &lt; Integer&gt;</li>
+  </ul>
+</blockquote>
+
+<p>同步的fsync, 返回undefined</p>
+
+
+
+<h2 id="fsftruncatefd-len-callback">fs.ftruncate(fd, len, callback)</h2>
+
+<blockquote>
+  <ul>
+  <li>fd &lt; Integer&gt;</li>
+  <li>len &lt; Integer&gt;</li>
+  <li>callback &lt; Function&gt;</li>
+  </ul>
+</blockquote>
+
+<p>异步的ftruncate, 回调函数的参数只有error</p>
+
+
+
+<h2 id="fsftruncatesyncfd-len">fs.ftruncateSync(fd, len)</h2>
+
+<blockquote>
+  <ul>
+  <li>fd &lt; Integer&gt;</li>
+  <li>len &lt; Integer&gt;</li>
+  </ul>
+</blockquote>
+
+<p>同步的ftruncate, 返回undefined</p>
+
+
+
+<h2 id="fsfutimesfd-atime-mtime-callback">fs.futimes(fd, atime, mtime, callback)</h2>
+
+<blockquote>
+  <ul>
+  <li>fd &lt; Integer&gt;</li>
+  <li>atime &lt; Integer&gt;</li>
+  <li>mtime &lt; Integer&gt;</li>
+  <li>callback &lt; Function&gt;</li>
+  </ul>
+</blockquote>
+
+<p>根据提供的文件描述符(file descriptor)改变文件的时间戳(timestamps)</p>
+
+
+
+<h2 id="fsfutimessyncfd-atime-mtime">fs.futimesSync(fd, atime, mtime)</h2>
+
+<blockquote>
+  <ul>
+  <li>fd &lt; Integer&gt;</li>
+  <li>atime &lt; Integer&gt;</li>
+  <li>mtime &lt; Integer&gt;</li>
+  </ul>
+</blockquote>
+
+<p>同步的fs.futimes(). 返回undefined</p>
+
+
+
+<h2 id="fslchmodpath-mode-callback">fs.lchmod(path, mode, callback)</h2>
+
+<blockquote>
+  <ul>
+  <li>path &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>mode &lt; Integer&gt;</li>
+  <li>callback &lt; Function&gt;</li>
+  </ul>
+</blockquote>
+
+<p>异步的lchmod, 回调函数中只有error参数</p>
+
+<p>只在Mac OS X上可用</p>
+
+
+
+<h2 id="fslchmodsyncpath-mode">fs.lchmodSync(path, mode)</h2>
+
+<blockquote>
+  <ul>
+  <li>path &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>mode &lt; Integer&gt;</li>
+  </ul>
+</blockquote>
+
+<p>同步的lchmod, 返回undefined</p>
+
+
+
+<h2 id="fslchownpath-uid-gid-callback">fs.lchown(path, uid, gid, callback)</h2>
+
+<blockquote>
+  <ul>
+  <li>path &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>uid &lt; Integer&gt;</li>
+  <li>gid &lt; Integer&gt;</li>
+  <li>callback &lt; Function&gt;</li>
+  </ul>
+</blockquote>
+
+<p>异步的lchown, 回调函数中只有error参数</p>
+
+
+
+<h2 id="fslchownsyncpath-uid-gid">fs.lchownSync(path, uid, gid)</h2>
+
+<blockquote>
+  <ul>
+  <li>path &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>uid &lt; Integer&gt;</li>
+  <li>gid &lt; Integer&gt;</li>
+  </ul>
+</blockquote>
+
+<p>同步的lchown, 返回undefined</p>
+
+
+
+<h2 id="fslinksrcpath-dstpath-callback">fs.link(srcpath, dstpath, callback)</h2>
+
+<blockquote>
+  <ul>
+  <li>srcpath &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>dstpath &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>callback &lt; Function&gt;</li>
+  </ul>
+</blockquote>
+
+<p>异步的link, 回调函数只有error参数</p>
+
+
+
+<h2 id="fslinksyncsrcpath-dstpath">fs.linkSync(srcpath, dstpath)</h2>
+
+<blockquote>
+  <ul>
+  <li>srcpath &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>dstpath &lt; String&gt; | &lt; Buffer&gt;</li>
+  </ul>
+</blockquote>
+
+<p>同步的link, 返回undefined</p>
+
+
+
+<h2 id="fslstatpath-callback">fs.lstat(path, callback)</h2>
+
+<blockquote>
+  <ul>
+  <li>path &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>callback &lt; Function&gt;</li>
+  </ul>
+</blockquote>
+
+<p>异步的lstat,回调函数右两个参数(err, stats),其中stats是fs.Stats对象. lstat和stat()比较,除了在lstat()之path是link标志(symbolic)情况下,被stat的是link自身,而不是它指向的文件这个区别,其他的完全相同. <br>
+(lstat() is identical to stat(), except that if path is a symbolic link, then the link itself is stat-ed, not the file that it refers to.)</p>
+
+
+
+<h2 id="fslstatsyncpath">fs.lstatSync(path)</h2>
+
+<blockquote>
+  <ul>
+  <li>path &lt; String&gt; | &lt; Buffer&gt;</li>
+  </ul>
+</blockquote>
+
+<p>同步的lstat, 返回fs.Stats的实例</p>
+
+
+
+<h2 id="fsmkdirpath-mode-callback">fs.mkdir(path[, mode], callback)</h2>
+
+<blockquote>
+  <ul>
+  <li>path &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>mode &lt; Integer&gt;</li>
+  <li>callback &lt; Function&gt;</li>
+  </ul>
+</blockquote>
+
+<p>异步的mkdir, 回调函数只有error, mode参数默认值是0o777</p>
+
+
+
+<h2 id="fsmkdirsyncpath-mode">fs.mkdirSync(path[, mode])</h2>
+
+<blockquote>
+  <ul>
+  <li>path &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>mode &lt; Integer&gt;</li>
+  </ul>
+</blockquote>
+
+<p>同步的mkdir, 返回undefined</p>
+
+
+
+<h2 id="fsmkdtempprefix-callback">fs.mkdtemp(prefix, callback)</h2>
+
+<p>新建一个唯一的暂时目录</p>
+
+<p>在必须的prefix参数后增加6个随机生成的字符来生成一个唯一的暂时目录</p>
+
+<p>生成的文件路径传给回调函数的第二个参数</p>
+
+<p>举个栗子:</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs coffeescript">fs.mkdtemp<span class="hljs-function"><span class="hljs-params">(<span class="hljs-string">'/tmp/foo-'</span>, (err, folder) =&gt; {
+  <span class="hljs-built_in">console</span>.log(folder);
+    <span class="hljs-regexp">//</span> Prints: /tmp/foo-itXde2
+})</span>;</span></code></pre>
+
+<blockquote>
+  <p><strong>注意</strong>: fs.mkdtemp()方法会直接在prefix参数字符串后增加6个随机生成的字符.例如,给定一个目录’/tmp’,如果你想要在这个目录下生成暂时mulu,prefix参数必须以一个符合当前平台的路径分隔符作为结尾(require(‘path’).sep).</p>
+</blockquote>
+
+<p>举个栗子:</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs coffeescript"><span class="hljs-regexp">//</span> The parent directory <span class="hljs-keyword">for</span> the <span class="hljs-keyword">new</span> temporary directory
+<span class="hljs-reserved">const</span> tmpDir = <span class="hljs-string">'/tmp'</span>;
+
+<span class="hljs-regexp">//</span> This method <span class="hljs-keyword">is</span> *INCORRECT*:
+fs.mkdtemp<span class="hljs-function"><span class="hljs-params">(tmpDir, (err, folder) =&gt; {
+  <span class="hljs-keyword">if</span> (err) <span class="hljs-keyword">throw</span> err;
+  <span class="hljs-built_in">console</span>.log(folder);
+    <span class="hljs-regexp">//</span> Will <span class="hljs-built_in">print</span> something similar to `<span class="javascript">/tmpabc123</span>`.
+    <span class="hljs-regexp">//</span> Note that a <span class="hljs-keyword">new</span> temporary directory <span class="hljs-keyword">is</span> created
+    <span class="hljs-regexp">//</span> at the file system root rather than *within*
+    <span class="hljs-regexp">//</span> the /tmp directory.
+})</span>;
+
+// <span class="hljs-title">This</span> <span class="hljs-title">method</span> <span class="hljs-title">is</span> *<span class="hljs-title">CORRECT</span>*:
+<span class="hljs-title">const</span> <span class="hljs-title">path</span> = <span class="hljs-title">require</span><span class="hljs-params">(<span class="hljs-string">'path'</span>)</span>;
+<span class="hljs-title">fs</span>.<span class="hljs-title">mkdtemp</span><span class="hljs-params">(tmpDir + path.sep, (err, folder) =&gt; {
+  <span class="hljs-keyword">if</span> (err) <span class="hljs-keyword">throw</span> err;
+  <span class="hljs-built_in">console</span>.log(folder);
+    <span class="hljs-regexp">//</span> Will <span class="hljs-built_in">print</span> something similar to `<span class="javascript">/tmp/abc123</span>`.
+    <span class="hljs-regexp">//</span> A <span class="hljs-keyword">new</span> temporary directory <span class="hljs-keyword">is</span> created within
+    <span class="hljs-regexp">//</span> the /tmp directory.
+})</span>;</span></code></pre>
+
+
+
+<h2 id="fsmkdtempsyncprefix">fs.mkdtempSync(prefix)</h2>
+
+<p>fs.mkdirtemp()的同步版本, 返回创建的文件夹的路径</p>
+
+
+
+<h2 id="fsopenpath-flags-mode-callback">fs.open(path, flags[, mode], callback)</h2>
+
+<blockquote>
+  <ul>
+  <li>path &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>flags &lt; String&gt; | &lt; Number&gt;</li>
+  <li>mode &lt; Integer&gt;</li>
+  <li>callback &lt; Function&gt;</li>
+  </ul>
+</blockquote>
+
+<p>异步的打开文件, 详见open(2) (<a href="http://man7.org/linux/man-pages/man2/open.2.html">http://man7.org/linux/man-pages/man2/open.2.html</a>)</p>
+
+<p>flags可以是以下:</p>
+
+<blockquote>
+  <ul>
+  <li>‘r’ - Open file for reading. An exception occurs if the file does not exist.</li>
+  <li>‘r+’ - Open file for reading and writing. An exception occurs if the file does not exist.</li>
+  <li>‘rs+’ - Open file for reading and writing in synchronous mode. Instructs the operating system to bypass the local file system cache. <br>
+  This is primarily useful for opening files on NFS mounts as it allows you to skip the potentially stale local cache. It has a very real impact on I/O performance so don’t use this flag unless you need it. <br>
+  <strong>Note</strong> that this doesn’t turn fs.open() into a synchronous blocking call. If that’s what you want then you should be using fs.openSync()</li>
+  <li>‘w’ - Open file for writing. The file is created (if it does not exist) or truncated (if it exists).</li>
+  <li>‘wx’ - Like ‘w’ but fails if path exists.</li>
+  <li>‘w+’ - Open file for reading and writing. The file is created (if it does not exist) or truncated (if it exists).</li>
+  <li>‘wx+’ - Like ‘w+’ but fails if path exists.</li>
+  <li>‘a’ - Open file for appending. The file is created if it does not exist.</li>
+  <li>‘ax’ - Like ‘a’ but fails if path exists.</li>
+  <li>‘a+’ - Open file for reading and appending. The file is created if it does not exist.</li>
+  <li>‘ax+’ - Like ‘a+’ but fails if path exists.</li>
+  </ul>
+</blockquote>
+
+<p>mode参数设置文件模式(权限和粘滞位(sticky bits)), 但只有在文件已经被创建的情况下有效. 它的默认值为0666, 可读可写.</p>
+
+<p>回调函数右两个参数(err, fd)</p>
+
+<p>独有的flag ‘x’(O_EXCL flag in open(2)) 确保path是新建的.在POSIX系统里,如果path是对不存在的文件的符号链接(symlink),也会被认为是存在的. </p>
+
+<p>flags参数也可以像open(2)的文档里给出的一样用数值表示; 但是require(‘constants’)提供的常量更常用. 在Windows下flags参数会被解释为与其等价的常量,如O_WRONLY 变成 FILE_GENERIC_WRITE,或者 O_EXCL|O_CREATE 变成 CREATE_NEW,即可以被CreateFIleW接受的参数.</p>
+
+<p>在Linux下,当文件在append mode(附加模式)下打开的时候指定了position(位置)的写入不会生效. 内核会忽略position参数,直接在文件的末尾添加数据.</p>
+
+<p>注意:fs.open()在一些flags下的表现在不同平台下会不一样. 例如, 在OS X和Linux下用’a+’ flag打开一个目录-见下例-会返回一个错误, 相反的, 在Windows和FreeBSD下, 会返回一个文件描述符(file descriptor)</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs coffeescript"><span class="hljs-regexp">//</span> OS X <span class="hljs-keyword">and</span> Linux
+fs.open<span class="hljs-function"><span class="hljs-params">(<span class="hljs-string">'&lt;directory&gt;'</span>, <span class="hljs-string">'a+'</span>, (err, fd) =&gt; {
+  <span class="hljs-regexp">//</span> =&gt; [Error: EISDIR: illegal operation <span class="hljs-literal">on</span> a directory, open &lt;directory&gt;]
+})</span>
+
+// <span class="hljs-title">Windows</span> <span class="hljs-title">and</span> <span class="hljs-title">FreeBSD</span>
+<span class="hljs-title">fs</span>.<span class="hljs-title">open</span><span class="hljs-params">(<span class="hljs-string">'&lt;directory&gt;'</span>, <span class="hljs-string">'a+'</span>, (err, fd) =&gt; {
+  <span class="hljs-regexp">//</span> =&gt; <span class="hljs-literal">null</span>, &lt;fd&gt;
+})</span></span></code></pre>
+
+
+
+<h2 id="fsopensyncpath-flags-mode">fs.openSync(path, flags[, mode])</h2>
+
+<blockquote>
+  <ul>
+  <li>path &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>flags &lt; String&gt; | &lt; Number&gt;</li>
+  <li>mode &lt; Integer&gt;</li>
+  </ul>
+</blockquote>
+
+<p>同步的fs.open(), 返回一个代表文件描述符(file descriptor)的整数</p>
+
+
+
+<h2 id="fsreadfd-buffer-offset-length-position-callback">fs.read(fd, buffer, offset, length, position, callback)</h2>
+
+<blockquote>
+  <ul>
+  <li>fd &lt; Integer&gt;</li>
+  <li>buffer &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>offset &lt; Integer&gt;</li>
+  <li>length &lt; Integer&gt;</li>
+  <li>position &lt; Integer&gt;</li>
+  <li>callback &lt; Function&gt;</li>
+  </ul>
+</blockquote>
+
+<p>由fd指定从文件中读取数据</p>
+
+<p>buffer参数是数据将会写入的buffer</p>
+
+<p>offset参数是buffer开始被写入的位置</p>
+
+<p>length参数是指定写入byte数量的整数</p>
+
+<p>position参数是指定从文件中读数据的位置,如果position参数是null, 数据将会从文件当前位置开始</p>
+
+<p>回调函数有3个参数(err, bytesRead, buffer)</p>
+
+
+
+<h2 id="fsreadsyncfd-buffer-offset-length-position">fs.readSync(fd, buffer, offset, length, position)</h2>
+
+<blockquote>
+  <ul>
+  <li>fd &lt; Integer&gt;</li>
+  <li>buffer &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>offset &lt; Integer&gt;</li>
+  <li>length &lt; Integer&gt;</li>
+  <li>position &lt; Integer&gt;</li>
+  </ul>
+</blockquote>
+
+<p>同步的fs.read(), 返回 bytesRead 的数量</p>
+
+
+
+<h2 id="fsreaddirpath-options-callback">fs.readdir(path[, options], callback)</h2>
+
+<blockquote>
+  <ul>
+  <li>path &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>options &lt; String&gt; | &lt; Object&gt; <br>
+  encoding &lt; String&gt; default = ‘utf8’</li>
+  <li>callback &lt; Function&gt;</li>
+  </ul>
+</blockquote>
+
+<p>异步的<a href="http://man7.org/linux/man-pages/man3/readdir.3.html">readdir(3)</a> <br>
+读取目录的内容,回调函数传入两个参数(err, files),其中files参数是目录下的文件名称(不包括’.’he’..’)</p>
+
+<p>可选的options参数可以是用来指定编码的string, 或者是一个包含encoding属性的对象,文件名会根据被指定的字符编码来决定传给回调函数的内容. 如果encoding设置为’buffer’, 这些文件名将会以Buffer对象的形式传给回调函数.</p>
+
+
+
+<h2 id="fsreaddirsyncpath-options">fs.readdirSync(path[, options])</h2>
+
+<blockquote>
+  <ul>
+  <li>path &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>options &lt; String&gt; | &lt; Object&gt; <br>
+  encoding &lt; String&gt; default = ‘utf8’</li>
+  </ul>
+</blockquote>
+
+<p>同步的readdir(3), 返回一个不包含’.’和’..’的文件名的数组</p>
+
+<p>可选的options参数可以是用来指定编码的string, 或者是一个包含encoding属性的对象,文件名会根据被指定的字符编码来决定传给回调函数的内容. 如果encoding设置为’buffer’, 这些文件名将会以Buffer对象的形式传给回调函数.</p>
+
+
+
+<h2 id="fsreadfilefile-options-callback">fs.readFile(file[, options], callback)</h2>
+
+<blockquote>
+  <ul>
+  <li>file &lt; String&gt; | &lt; Buffer&gt; | &lt; Integer&gt; filename or file descriptor</li>
+  <li>options &lt; Object&gt; | &lt; String&gt; <br>
+  encoding &lt; String&gt; | &lt; Null&gt; default = null <br>
+  flag &lt; String&gt; default = ‘r’</li>
+  <li>callback &lt; Function&gt;</li>
+  </ul>
+</blockquote>
+
+<p>异步地读取整个文件, 举个栗子:</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs coffeescript">fs.readFile<span class="hljs-function"><span class="hljs-params">(<span class="hljs-string">'/etc/passwd'</span>, (err, data) =&gt; {
+  <span class="hljs-keyword">if</span> (err) <span class="hljs-keyword">throw</span> err;
+  <span class="hljs-built_in">console</span>.log(data);
+})</span>;</span></code></pre>
+
+<p>回调函数有两个参数(err, data), data参数是文件的内容</p>
+
+<p>如果没有指定encoding, 则会返回未被处理的buffer (raw buffer)</p>
+
+<p>如果options参数是字符串,则它用来指定encoding. 举个栗子:</p>
+
+<p>fs.readFile(‘/etc/passwd’, ‘utf8’, callback);</p>
+
+<p>任何指定的文件描述符(file descriptor)必须支持读取</p>
+
+<p>注意:指定的文件描述符不会自动的关闭</p>
+
+
+
+<h2 id="fsreadfilesyncfile-options">fs.readFileSync(file[, options])</h2>
+
+<blockquote>
+  <ul>
+  <li>file  |  |  filename or file descriptor</li>
+  <li>options &lt; Object&gt; | &lt; String&gt; <br>
+  encoding &lt; String&gt; | &lt; Null&gt; default = null <br>
+  flag &lt; String&gt; default = ‘r’</li>
+  </ul>
+</blockquote>
+
+<p>fs.readFile的同步版本, 返回文件的内容</p>
+
+<p>如果encoding参数被指定则返回一个字符串, 否则将返回一个buffer</p>
+
+
+
+<h2 id="fsreadlinkpath-options-callback">fs.readlink(path[, options], callback)</h2>
+
+<blockquote>
+  <ul>
+  <li>path &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>options &lt; String&gt; | &lt; Object&gt; <br>
+  encoding &lt; String&gt; default = ‘utf8’</li>
+  <li>callback &lt; Function&gt;</li>
+  </ul>
+</blockquote>
+
+<p>异步的<a href="http://man7.org/linux/man-pages/man2/readlink.2.html">readlink(2)</a></p>
+
+<p>回调函数接受两个参数(err, linkString)</p>
+
+<p>可选的options参数可以是用来指定编码的string, 或者是一个包含encoding属性的对象,文件名会根据被指定的字符编码来决定传给回调函数的内容. 如果encoding设置为’buffer’, 这些文件名将会以Buffer对象的形式传给回调函数.</p>
+
+
+
+<h2 id="fsreadlinksyncpath-options">fs.readlinkSync(path[, options])</h2>
+
+<blockquote>
+  <ul>
+  <li>path &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>options &lt; String&gt; | &lt; Object&gt; <br>
+  encoding &lt; String&gt; default = ‘utf8’</li>
+  </ul>
+</blockquote>
+
+<p>同步的reaklink(2), 返回一个标识链接的字符串 (symbolic link’s string value)</p>
+
+<p>可选的options参数可以是用来指定编码的string, 或者是一个包含encoding属性的对象,文件名会根据被指定的字符编码来决定传给回调函数的内容. 如果encoding设置为’buffer’, 这些文件名将会以Buffer对象的形式传给回调函数.</p>
+
+
+
+<h2 id="fsrealpathpath-options-callback">fs.realpath(path[, options], callback)</h2>
+
+<blockquote>
+  <ul>
+  <li>path &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>options &lt; String&gt; | &lt; Object&gt; <br>
+  encoding &lt; String&gt; default = ‘utf8’</li>
+  <li>callback &lt; Function&gt;</li>
+  </ul>
+</blockquote>
+
+<p>同步的<a href="http://man7.org/linux/man-pages/man3/realpath.3.html">realpath(3)</a></p>
+
+<p>回调函数接受两个参数(err, resolvedPath), 可能使用process.cwd来解释相对路径</p>
+
+<p>可选的options参数可以是用来指定编码的string, 或者是一个包含encoding属性的对象,文件名会根据被指定的字符编码来决定传给回调函数的内容. 如果encoding设置为’buffer’, 这些文件名将会以Buffer对象的形式传给回调函数.</p>
+
+
+
+<h2 id="fsrealpathsyncpath-options">fs.realpathSync(path[, options])</h2>
+
+<blockquote>
+  <ul>
+  <li>path &lt; String&gt; | &lt; Buffer&gt;;</li>
+  <li>options &lt; String&gt; | &lt; Object&gt; <br>
+  encoding &lt; String&gt; default = ‘utf8’</li>
+  </ul>
+</blockquote>
+
+<p>同步的realpath(3), 返回被解释的路径(resolved path)</p>
+
+<p>可选的options参数可以是用来指定编码的string, 或者是一个包含encoding属性的对象,文件名会根据被指定的字符编码来决定传给回调函数的内容. 如果encoding设置为’buffer’, 这些文件名将会以Buffer对象的形式传给回调函数.</p>
+
+
+
+<h2 id="fsrenameoldpath-newpath-callback">fs.rename(oldPath, newPath, callback)</h2>
+
+<blockquote>
+  <ul>
+  <li>oldPath &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>newPath &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>callback &lt; Function&gt;</li>
+  </ul>
+</blockquote>
+
+<p>异步的rename. 回调函数只有error参数</p>
+
+
+
+<h2 id="fsrenamesyncoldpath-newpath">fs.renameSync(oldPath, newPath)</h2>
+
+<blockquote>
+  <ul>
+  <li>oldPath &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>newPath &lt; String&gt; | &lt; Buffer&gt;</li>
+  </ul>
+</blockquote>
+
+<p>同步的rename, 返回undefined</p>
+
+
+
+<h2 id="fsrmdirpath-callback">fs.rmdir(path, callback)</h2>
+
+<blockquote>
+  <ul>
+  <li>path &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>callback &lt; Function&gt;</li>
+  </ul>
+</blockquote>
+
+<p>异步的mkdir, 回调函数只有error参数</p>
+
+
+
+<h2 id="fsrmdirsyncpath">fs.rmdirSync(path)</h2>
+
+<blockquote>
+  <ul>
+  <li>path &lt; String&gt; | &lt; Buffer&gt;</li>
+  </ul>
+</blockquote>
+
+<p>同步的mkdir, 返回undefined</p>
+
+
+
+<h2 id="fsstatpath-callback">fs.stat(path, callback)</h2>
+
+<blockquote>
+  <ul>
+  <li>path &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>callback &lt; Function&gt;</li>
+  </ul>
+</blockquote>
+
+<p>异步的<a href="http://man7.org/linux/man-pages/man2/stat.2.html">stat(2)</a></p>
+
+<p>回调函数接受两个参数(err, stats), 其中stats是fs.Stats对象</p>
+
+
+
+<h2 id="fsstatsyncpath">fs.statSync(path)</h2>
+
+<blockquote>
+  <ul>
+  <li>path &lt; String&gt; | &lt; Buffer&gt;</li>
+  </ul>
+</blockquote>
+
+<p>同步的stat, 返回fs.Stats的实例</p>
+
+
+
+<h2 id="fssymlinktarget-path-type-callback">fs.symlink(target, path[, type], callback)</h2>
+
+<blockquote>
+  <ul>
+  <li>target &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>path &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>type &lt; String&gt;</li>
+  <li>callback &lt; Function&gt;</li>
+  </ul>
+</blockquote>
+
+<p>异步的symlink, 回调函数只有error参数.</p>
+
+<p>type参数可以被设置成’dir’, ‘file’ 或者 ‘junction’ (默认值是’file’),并且只在Windows有效(在其他平台会被忽略).注意:WIndows的junction points(连接点)要求重点是绝对路径,因此当使用’junction’时,target参数会被自动标准化成绝对路径</p>
+
+<p>举个栗子:</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs perl">fs.<span class="hljs-keyword">symlink</span>(<span class="hljs-string">'./foo'</span>, <span class="hljs-string">'./new-port'</span>);</code></pre>
+
+<p>这会新建一个名为’new-port’的符号链接(symbolic link)指向’foo’</p>
+
+
+
+<h2 id="fssymlinksynctarget-path-type">fs.symlinkSync(target, path[, type])</h2>
+
+<blockquote>
+  <ul>
+  <li>target &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>path &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>type &lt; String&gt;</li>
+  </ul>
+</blockquote>
+
+<p>同步的symlink(2), 返回undefined</p>
+
+
+
+<h2 id="fstruncatepath-len-callback">fs.truncate(path, len, callback)</h2>
+
+<blockquote>
+  <ul>
+  <li>path &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>len &lt; Integer&gt;</li>
+  <li>callback &lt; Function&gt;</li>
+  </ul>
+</blockquote>
+
+<p>异步的<a href="http://man7.org/linux/man-pages/man2/truncate.2.html">truncate(2)</a></p>
+
+<p>回调函数只有error参数, 也可以传入一个文件描述符(file descriptor)作为第一个参数. 在这种情况下, fs.ftruncate()会被调用</p>
+
+
+
+<h2 id="fstruncatesyncpath-len">fs.truncateSync(path, len)</h2>
+
+<blockquote>
+  <ul>
+  <li>path &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>len &lt; Integer&gt;</li>
+  </ul>
+</blockquote>
+
+<p>同步的truncate(2) 返回undefined</p>
+
+
+
+<h2 id="fsunlinkpath-callback">fs.unlink(path, callback)</h2>
+
+<blockquote>
+  <ul>
+  <li>path &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>callback &lt; Function&gt;</li>
+  </ul>
+</blockquote>
+
+<p>异步的<a href="http://man7.org/linux/man-pages/man2/unlink.2.html">unlink(2)</a></p>
+
+<p>回调函数只有error参数</p>
+
+
+
+<h2 id="fsunlinksyncpath">fs.unlinkSync(path)</h2>
+
+<blockquote>
+  <ul>
+  <li>path &lt; String&gt; | &lt; Buffer&gt;</li>
+  </ul>
+</blockquote>
+
+<p>同步的unlink(2) , 返回undefined</p>
+
+
+
+<h2 id="fsunwatchfilefilename-listener">fs.unwatchFile(filename[, listener])</h2>
+
+<blockquote>
+  <ul>
+  <li>filename &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>listener &lt; Function&gt;</li>
+  </ul>
+</blockquote>
+
+<p>停止对filename参数的改变的监听. 如果listener参数被指定,只有特定的listener会被移除, 否则,所有的listerner都会被移除,这样你就有效的停止了对filename参数的监听.</p>
+
+<p>对没有监听的filename调用fs.unwatchFile()不会有操作(no-op),且不会报错</p>
+
+<p>注意: fs.watch()比fs.watchFile()和fs.unwatchFile()效能更好. 在能用fs.watch()的时候精良不要用fs.watchFile()和fs.unwatchFile()</p>
+
+
+
+<h2 id="fsutimespath-atime-mtime-callback">fs.utimes(path, atime, mtime, callback)</h2>
+
+<blockquote>
+  <ul>
+  <li>path &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>atime &lt; Integer&gt;</li>
+  <li>mtime &lt; Integer&gt;</li>
+  <li>callback &lt; Function&gt;</li>
+  </ul>
+</blockquote>
+
+<p>改变path参数指定的文件的时间戳(file timestamps)</p>
+
+<p><strong>注意</strong>: 参数atime和mtime 在下列相关方法中都遵从以下规则</p>
+
+<p>~如果值是像数值的字符串(‘123456789’),该值会被转换成相应的数字 <br>
+~如果值是NaN或者Infinity, 该值会被转换为Date.now()</p>
+
+
+
+<h2 id="fsutimessyncpath-atime-mtime">fs.utimesSync(path, atime, mtime)</h2>
+
+<blockquote>
+  <ul>
+  <li>path &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>atime &lt; Integer&gt;</li>
+  <li>mtime &lt; Integer&gt;</li>
+  </ul>
+</blockquote>
+
+<p>同步的fs.utimes(), 返回undefined</p>
+
+
+
+<h2 id="fswatchfilename-options-listener">fs.watch(filename[, options][, listener])</h2>
+
+<blockquote>
+  <ul>
+  <li>filename &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>options &lt; String&gt; | &lt; Object&gt; <br>
+  persistent &lt; Boolean&gt; Indicates whether the process should continue to run as long as files are being watched. default = true <br>
+   recursive &lt; Boolean&gt; Indicates whether all subdirectories should be watched, or only the current directory. The applies when a directory is specified, and only on supported platforms (See Caveats). default = false <br>
+  encoding &lt; String&gt; Specifies the character encoding to be used for the filename passed to the listener. default = ‘utf8’</li>
+  <li>listener &lt; Function&gt;</li>
+  </ul>
+</blockquote>
+
+<p>监听filename的改变, filename是文件或者目录.返回的值是fs.FSWatcher对象</p>
+
+<p>第二个参数是可选的,如果options参数是字符串,它用来指定encoding, 否则options应该以对象形式传入.</p>
+
+<p>监听器回调函数(listener callback)接受两个参数(event, filename), event参数是’rename’或者’change’, filename参数是触发该事件的文件名</p>
+
+<p><strong>警告!</strong> <br>
+    fs.watch API 在各平台不是完全一致的,而且有些情况不可用 <br>
+    递归选项只在OS X和Windows被支持(The recursive option is only supported on OS X and Windows.)</p>
+
+<p><strong>可用性</strong>: <br>
+This feature depends on the underlying operating system providing a way to be notified of filesystem changes. <br>
+On Linux systems, this uses inotify. <br>
+On BSD systems, this uses kqueue. <br>
+On OS X, this uses kqueue for files and ‘FSEvents’ for directories. <br>
+On SunOS systems (including Solaris and SmartOS), this uses event ports. <br>
+On Windows systems, this feature depends on ReadDirectoryChangesW. <br>
+On Aix systems, this feature depends on AHAFS, which must be enabled. <br>
+If the underlying functionality is not available for some reason, then fs.watch will not be able to function. For example, watching files or directories can be unreliable, and in some cases impossible, on network file systems (NFS, SMB, etc), or host file systems when using virtualization software such as Vagrant, Docker, etc.</p>
+
+<p>就算fs.watch()不可用,你还是可以用fs.watchFile,它使用stat polling(轮询), 但是它更慢且不那么可靠.</p>
+
+<p><strong>Inodes</strong></p>
+
+<p>在Linux和OS X系统下, fs.watch()会把path解释为inode(<a href="http://www.linux.org/threads/intro-to-inodes.4130/">http://www.linux.org/threads/intro-to-inodes.4130/</a>),并监视inode. 如果被监视的path被删除并重新创建, 它会被指定为一个新的inode. [监听]会为删除操作提交一个事件,但是会继续监听原来的inode(original inode). 新的inode不会触发事件. 这是意料之中的行为.</p>
+
+<p><strong>Filename Argument</strong></p>
+
+<p>需要指出的是回调函数的filename参数只被Linux 和 Windows支持. 就算平台支持,也不能保证一定会提供filename参数. 因此,不要认定回调函数中的filename参数一定会被提供,并且作其为null时的准备</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs coffeescript">fs.watch<span class="hljs-function"><span class="hljs-params">(<span class="hljs-string">'somedir'</span>, (event, filename) =&gt; {
+  <span class="hljs-built_in">console</span>.log(`<span class="javascript">event is: ${event}</span>`);
+  <span class="hljs-keyword">if</span> (filename) {
+    <span class="hljs-built_in">console</span>.log(`<span class="javascript">filename provided: ${filename}</span>`);
+  } <span class="hljs-keyword">else</span> {
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'filename not provided'</span>);
+  }
+})</span>;</span></code></pre>
+
+
+
+<h2 id="fswatchfilefilename-options-listener">fs.watchFile(filename[, options], listener)</h2>
+
+<blockquote>
+  <ul>
+  <li>filename &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>options &lt; Object&gt; <br>
+  persistent &lt; Boolean&gt; <br>
+  interval &lt; Integer&gt;</li>
+  <li>listener &lt; Function&gt;</li>
+  </ul>
+</blockquote>
+
+<p>监听filename的改变, 每次文件被访问的时候都会调用回调函数listener</p>
+
+<p>options参数是可选的. 如果提供的话,它应该是一个对象. options参数对象可能包含boolean类型名为persistent的参数,它用来标识在文件被改变的时候进程是否应该继续执行. options参数对象可能指定一个interval属性来标识目标文件多少毫秒被轮询一次.默认值是{ persistent: true, interval: 5007 }.</p>
+
+<p>listener参数接受两个参数,分别是当前的stat对象和之前的stat对象</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs coffeescript">fs.watchFile<span class="hljs-function"><span class="hljs-params">(<span class="hljs-string">'message.text'</span>, (curr, prev) =&gt; {
+  <span class="hljs-built_in">console</span>.log(`<span class="javascript">the current mtime is: ${curr.mtime}</span>`);
+  <span class="hljs-built_in">console</span>.log(`<span class="javascript">the previous mtime was: ${prev.mtime}</span>`);
+})</span>;</span></code></pre>
+
+<p>这些stat对象都是fs.Stat的实例</p>
+
+<p>如果你想要在文件被修改而不是只被访问的时候获得提示,你需要比较curr.mtime和prev.mtime</p>
+
+<p><strong>注意</strong>: 当一个fs.watchFile操作返回ENOENT错误, 它会以所有域都归零调用一次listener(或者,以dates为例,会变成Unix Epoch), 在Windows中, blksize和blocks域会变成undefined而不是0. 如果文件在之后被创建了,listener会以最近的stat对象为参数再次调用.这是从v0.10以后的一个改变.</p>
+
+<p>注意: fs.watch()比fs.watchFile和fs.unwatchFile更高效, 在能用fs.watch()的时候尽量使用它.</p>
+
+
+
+<h2 id="fswritefd-buffer-offset-length-position-callback">fs.write(fd, buffer, offset, length[, position], callback)</h2>
+
+<blockquote>
+  <ul>
+  <li>fd &lt; Integer&gt;</li>
+  <li>buffer &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>offset &lt; Integer&gt;</li>
+  <li>length &lt; Integer&gt;</li>
+  <li>position &lt; Integer&gt;</li>
+  <li>callback &lt; Function&gt;</li>
+  </ul>
+</blockquote>
+
+<p>写入数据到fd指定的文件</p>
+
+<p>offset和length参数指定buffer中用来写入的部分</p>
+
+<p>position参数标识从文件开始位置的偏移量,数据将从这个位置开始写入.如果typeof position !== ‘number’, 数据将会从当前位置开始写入 (详见 <a href="http://man7.org/linux/man-pages/man2/pwrite.2.html">pwrite(2)</a>)</p>
+
+<p>回调函数接受三个参数(err, written, buffer), 其中written参数标识buffer中有多少bytes已经被写入</p>
+
+<p>值得一提的是在同一个文件中不等待回调函数而重复调用fs.write是不安全的.基于这种情况,强烈推荐使用fs.createWriteStream</p>
+
+<p>在Linux上, 以附加模式(append mode)打开的文件中指定位置的写入是无效的. 内盒会忽略position参数,并始终从文件的最后附加数据.</p>
+
+
+
+<h2 id="fswritefd-data-position-encoding-callback">fs.write(fd, data[, position[, encoding]], callback)</h2>
+
+<blockquote>
+  <ul>
+  <li>fd &lt; Integer&gt;</li>
+  <li>data &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>position &lt; Integer&gt;</li>
+  <li>encoding &lt; String&gt;</li>
+  <li>callback &lt; Function&gt;</li>
+  </ul>
+</blockquote>
+
+<p>写入数据到fd指定的文件. 如果data参数不是Buffer实例,那么它的值将被强制为string</p>
+
+<p>position参数标识从文件开始位置的偏移量,数据将从这个位置开始写入.如果typeof position !== ‘number’, 数据将会从当前位置开始写入 (详见 <a href="http://man7.org/linux/man-pages/man2/pwrite.2.html">pwrite(2)</a>)</p>
+
+<p>encoding参数应该指定字符串编码</p>
+
+<p>回调函数接受三个参数(err, written, buffer), 其中written参数标识buffer中有多少bytes已经被写入.注意写入的bytes数量和字符数量不同. 详见 <a href="https://nodejs.org/api/buffer.html#buffer_class_method_buffer_bytelength_string_encoding">Buffer.byteLength</a></p>
+
+<p>和写入buffer的时候不同,整个string都要被写入. 不能指定切割字符串. 这是因为返回数据的 byte offset(偏移量)可能和 string offset不同.</p>
+
+<p>值得一提的是在同一个文件中不等待回调函数而重复调用fs.write是不安全的.基于这种情况,强烈推荐使用fs.createWriteStream</p>
+
+<p>在Linux上, 以附加模式(append mode)打开的文件中指定位置的写入是无效的. 内盒会忽略position参数,并始终从文件的最后附加数据.</p>
+
+
+
+<h2 id="fswritefilefile-data-options-callback">fs.writeFile(file, data[, options], callback)</h2>
+
+<blockquote>
+  <ul>
+  <li>file &lt; String&gt; | &lt; Buffer&gt; | &lt; Integer&gt; filename or file descriptor</li>
+  <li>data &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>options &lt; Object&gt; | &lt; String&gt; <br>
+  encoding &lt; String&gt; | &lt; Null&gt; default = ‘utf8’ <br>
+  mode &lt; Integer&gt; default = 0o666 <br>
+  flag &lt; String&gt; default = ‘w’</li>
+  <li>callback &lt; Function&gt;</li>
+  </ul>
+</blockquote>
+
+<p>异步地写入数据到文件, 如果文件已经存在的话将被取代. data参数可以是string或者buffer</p>
+
+<p>如果data参数是buffer的话encoding参数会被忽略, 它的默认值是’utf8’</p>
+
+<p>举个栗子:</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs coffeescript">fs.writeFile<span class="hljs-function"><span class="hljs-params">(<span class="hljs-string">'message.txt'</span>, <span class="hljs-string">'Hello Node.js'</span>, (err) =&gt; {
+  <span class="hljs-keyword">if</span> (err) <span class="hljs-keyword">throw</span> err;
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'It\'s saved!'</span>);
+})</span>;</span></code></pre>
+
+<p>如果options是string, 那么它会指定编码,栗子:</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs bash">fs.writeFile(<span class="hljs-string">'message.txt'</span>, <span class="hljs-string">'Hello Node.js'</span>, <span class="hljs-string">'utf8'</span>, callback);</code></pre>
+
+<p>所有指定的文件描述符(file descriptor)都必须支持写入</p>
+
+<p>值得一提的是在同一个文件中不等待回调函数而重复调用fs.write是不安全的.基于这种情况,强烈推荐使用fs.createWriteStream</p>
+
+<p><strong>注意</strong>: 指定的文件描述符(file descriptor)将不会被自动关闭</p>
+
+
+
+<h2 id="fswritefilesyncfile-data-options">fs.writeFileSync(file, data[, options])</h2>
+
+<blockquote>
+  <ul>
+  <li>file &lt; String&gt; | &lt; Buffer&gt; | &lt; Integer&gt; filename or file descriptor</li>
+  <li>data &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>options &lt; Object&gt; | &lt; String&gt; <br>
+  encoding &lt; String&gt; | &lt; Null&gt; default = ‘utf8’ <br>
+  mode &lt; Integer&gt; default = 0o666 <br>
+  flag &lt; String&gt; default = ‘w’</li>
+  </ul>
+</blockquote>
+
+<p>fs.writeFile()的同步版本, 返回undefined</p>
+
+
+
+<h2 id="fswritesyncfd-buffer-offset-length-position">fs.writeSync(fd, buffer, offset, length[, position])</h2>
+
+<blockquote>
+  <ul>
+  <li>fd &lt; Integer&gt;</li>
+  <li>buffer &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>offset &lt; Integer&gt;</li>
+  <li>length &lt; Integer&gt;</li>
+  <li>position &lt; Integer&gt;</li>
+  </ul>
+</blockquote>
+
+
+
+<h2 id="fswritesyncfd-data-position-encoding">fs.writeSync(fd, data[, position[, encoding]])</h2>
+
+<blockquote>
+  <ul>
+  <li>fd &lt; Integer&gt;</li>
+  <li>data &lt; String&gt; | &lt; Buffer&gt;</li>
+  <li>position &lt; Integer&gt;</li>
+  <li>encoding &lt; String&gt;</li>
+  </ul>
+</blockquote>
+
+<p>fs.write()的同步版本, 返回写入的bytes数量</p></div></body>
+</html>

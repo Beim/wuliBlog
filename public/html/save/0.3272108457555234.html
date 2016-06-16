@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Events</title>
+<link rel="stylesheet" href="https://stackedit.io/res-min/themes/base.css" />
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML"></script>
+</head>
+<body><div class="container"><h2 id="events">Events</h2>
+
+<p>大部分Node.js的API都是围绕异步的事件驱动的结构构建的,即某些特定的对象(“emitters”)定期发出命名事件来调用方法对象(“listeners”).</p>
+
+<p>例如:一个<a href="https://nodejs.org/api/net.html#net_class_net_server">net.Server</a>对象每次有连接的时候都发出一个事件;每次有文件打开的时候<a href="https://nodejs.org/api/fs.html#fs_class_fs_readstream">fs.ReadStream</a>都会发出一个事件;无论何时有可读的数据时<a href="https://nodejs.org/api/stream.html">stream</a>都会发出一个事件.</p>
+
+<p>所有对象发出的事件都是<code>EventEmitter</code>类的实例. 这些对象都有<code>eventEmitter.on()</code>方法,这个方法可以在该对象提交命名事件时调用一个或多个方法.</p>
+
+<p>当<code>EventEmitter</code>对象发出一个事件时,所有和这个特定事件绑定的方法会<em>同时</em>被调用. 被调用的listeners返回的所有值都会被<em>忽略</em>并且被丢弃.</p>
+
+<p>下面这个栗子简单演示了有一个listener的<code>EventEmitter</code>实例的使用. <code>eventEmitter.on()</code>方法用来注册listener, 这个listener在<code>eventEmitter.emit()</code>方法调用的时候被触发.</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs php"><span class="hljs-keyword">const</span> EventEmitter = <span class="hljs-keyword">require</span>(<span class="hljs-string">'events'</span>);
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyEmitter</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">EventEmitter</span> {</span>}
+
+<span class="hljs-keyword">const</span> myEmitter = <span class="hljs-keyword">new</span> MyEmitter();
+myEmitter.on(<span class="hljs-string">'event'</span>, () =&gt; {
+  console.log(<span class="hljs-string">'an event occurred!'</span>);
+});
+myEmitter.emit(<span class="hljs-string">'event'</span>);</code></pre>
+
+
+
+<h2 id="passing-arguments-and-this-to-listeners给listener传入参数">Passing arguments and this to listeners(给listener传入参数)</h2>
+
+<p><code>eventEmitter.emit()</code>方法允许传入任意参数给listener方法. 需要注意的是,在<code>EventEmitter</code>调用listener方法的时候,<code>this</code>关键字会被设置成对这个listener关联的<code>EventEmitter</code>的引用.看栗子:</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs javascript"><span class="hljs-keyword">const</span> myEmitter = <span class="hljs-keyword">new</span> MyEmitter();
+myEmitter.on(<span class="hljs-string">'event'</span>, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(a, b)</span> {</span>
+  console.log(a, b, <span class="hljs-keyword">this</span>);
+    <span class="hljs-comment">// Prints:</span>
+    <span class="hljs-comment">//   a b MyEmitter {</span>
+    <span class="hljs-comment">//     domain: null,</span>
+    <span class="hljs-comment">//     _events: { event: [Function] },</span>
+    <span class="hljs-comment">//     _eventsCount: 1,</span>
+    <span class="hljs-comment">//     _maxListeners: undefined }</span>
+});
+myEmitter.emit(<span class="hljs-string">'event'</span>, <span class="hljs-string">'a'</span>, <span class="hljs-string">'b'</span>);</code></pre>
+
+<p>可以用ES6的箭头函数作为listener,但是这么做的话<code>this</code>关键字就不再是<code>EventEmitter</code>实例的引用.再看栗子:</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs coffeescript"><span class="hljs-reserved">const</span> myEmitter = <span class="hljs-keyword">new</span> MyEmitter();
+myEmitter.<span class="hljs-literal">on</span><span class="hljs-function"><span class="hljs-params">(<span class="hljs-string">'event'</span>, (a, b) =&gt; {
+  <span class="hljs-built_in">console</span>.log(a, b, <span class="hljs-keyword">this</span>);
+    <span class="hljs-regexp">//</span> Prints: a b {}
+})</span>;
+<span class="hljs-title">myEmitter</span>.<span class="hljs-title">emit</span><span class="hljs-params">(<span class="hljs-string">'event'</span>, <span class="hljs-string">'a'</span>, <span class="hljs-string">'b'</span>)</span>;</span></code></pre>
+
+
+
+<h2 id="asynchronous-vs-synchronous异步-vs-同步">Asynchronous vs. Synchronous(异步 vs. 同步)</h2>
+
+<p><code>EventListener</code>调用listener时是按他们注册时的顺序同步调用的. 这是为了保证事件的正确顺序以及避免race conditions(竞态条件,大概是同时使用相同的资源造成的数据不一直或者性能下降)和逻辑错误. 不过你也可以用<code>setImmediate()</code>或者<code>process.nextTick()</code>方法把listener方法转换成异步模式.</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs coffeescript"><span class="hljs-reserved">const</span> myEmitter = <span class="hljs-keyword">new</span> MyEmitter();
+myEmitter.<span class="hljs-literal">on</span><span class="hljs-function"><span class="hljs-params">(<span class="hljs-string">'event'</span>, (a, b) =&gt; {
+  setImmediate(() =&gt; {
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'this happens asynchronously'</span>);
+  });
+})</span>;
+<span class="hljs-title">myEmitter</span>.<span class="hljs-title">emit</span><span class="hljs-params">(<span class="hljs-string">'event'</span>, <span class="hljs-string">'a'</span>, <span class="hljs-string">'b'</span>)</span>;</span></code></pre>
+
+
+
+<h2 id="handling-events-only-once-只处理一次事件">Handling events only once (只处理一次事件)</h2>
+
+<p>当使用<code>eventEmitter.on()</code>方法注册listener的时候,<em>每次</em>有相应事件发出的时候listener都会被调用</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs coffeescript"><span class="hljs-reserved">const</span> myEmitter = <span class="hljs-keyword">new</span> MyEmitter();
+<span class="hljs-reserved">var</span> m = <span class="hljs-number">0</span>;
+myEmitter.<span class="hljs-literal">on</span><span class="hljs-function"><span class="hljs-params">(<span class="hljs-string">'event'</span>, () =&gt; {
+  <span class="hljs-built_in">console</span>.log(++m);
+})</span>;
+<span class="hljs-title">myEmitter</span>.<span class="hljs-title">emit</span><span class="hljs-params">(<span class="hljs-string">'event'</span>)</span>;
+  // <span class="hljs-title">Prints</span>: 1
+<span class="hljs-title">myEmitter</span>.<span class="hljs-title">emit</span><span class="hljs-params">(<span class="hljs-string">'event'</span>)</span>;
+  // <span class="hljs-title">Prints</span>: 2</span></code></pre>
+
+<p>而用<code>eventEmitter.once()</code>方法注册的listener调用一次之后就被注销了</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs coffeescript"><span class="hljs-reserved">const</span> myEmitter = <span class="hljs-keyword">new</span> MyEmitter();
+<span class="hljs-reserved">var</span> m = <span class="hljs-number">0</span>;
+myEmitter.once<span class="hljs-function"><span class="hljs-params">(<span class="hljs-string">'event'</span>, () =&gt; {
+  <span class="hljs-built_in">console</span>.log(++m);
+})</span>;
+<span class="hljs-title">myEmitter</span>.<span class="hljs-title">emit</span><span class="hljs-params">(<span class="hljs-string">'event'</span>)</span>;
+  // <span class="hljs-title">Prints</span>: 1
+<span class="hljs-title">myEmitter</span>.<span class="hljs-title">emit</span><span class="hljs-params">(<span class="hljs-string">'event'</span>)</span>;
+  // <span class="hljs-title">Ignored</span></span></code></pre>
+
+
+
+<h2 id="error-events-错误事件">Error events (错误事件)</h2>
+
+<p>当<code>EventEmitter</code>实例中出现错误的时候, <code>'error'</code>事件会被发出(不需要自己emit()). 这是Node.js的特殊情况.</p>
+
+<p>如果<code>EventEmitter</code>没有为<code>'error'</code>事件注册listener, 在<code>'error'</code>事件发出的时候, error将会被抛出, 并打印初stack trace(堆栈跟踪), 终止Node.js进程.</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs javascript"><span class="hljs-keyword">const</span> myEmitter = <span class="hljs-keyword">new</span> MyEmitter();
+myEmitter.emit(<span class="hljs-string">'error'</span>, <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">'whoops!'</span>));
+  <span class="hljs-comment">// Throws and crashes Node.js</span></code></pre>
+
+<p>为了避免这个错误摧毁Node.js进程,开发者可以为<code>process.on('uncaughtException')</code>事件注册一个listener 或者 用 <a href="https://nodejs.org/api/domain.html">domain</a>模块 (<em>注意: <code>domain</code>模块已经被弃用</em>)</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs coffeescript"><span class="hljs-reserved">const</span> myEmitter = <span class="hljs-keyword">new</span> MyEmitter();
+
+process.<span class="hljs-literal">on</span><span class="hljs-function"><span class="hljs-params">(<span class="hljs-string">'uncaughtException'</span>, (err) =&gt; {
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'whoops! there was an error'</span>);
+})</span>;
+
+<span class="hljs-title">myEmitter</span>.<span class="hljs-title">emit</span><span class="hljs-params">(<span class="hljs-string">'error'</span>, <span class="hljs-keyword">new</span> Error(<span class="hljs-string">'whoops!'</span>))</span>;
+  // <span class="hljs-title">Prints</span>: <span class="hljs-title">whoops</span>! <span class="hljs-title">there</span> <span class="hljs-title">was</span> <span class="hljs-title">an</span> <span class="hljs-title">error</span></span></code></pre>
+
+<p>最好的办法是开发者应该为<code>'error'</code>事件注册listener</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs coffeescript"><span class="hljs-reserved">const</span> myEmitter = <span class="hljs-keyword">new</span> MyEmitter();
+myEmitter.<span class="hljs-literal">on</span><span class="hljs-function"><span class="hljs-params">(<span class="hljs-string">'error'</span>, (err) =&gt; {
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'whoops! there was an error'</span>);
+})</span>;
+<span class="hljs-title">myEmitter</span>.<span class="hljs-title">emit</span><span class="hljs-params">(<span class="hljs-string">'error'</span>, <span class="hljs-keyword">new</span> Error(<span class="hljs-string">'whoops!'</span>))</span>;
+  // <span class="hljs-title">Prints</span>: <span class="hljs-title">whoops</span>! <span class="hljs-title">there</span> <span class="hljs-title">was</span> <span class="hljs-title">an</span> <span class="hljs-title">error</span></span></code></pre>
+
+
+
+<h2 id="class-eventemitter">Class: EventEmitter</h2>
+
+<p><code>EventEmitter</code>类是由<code>events</code>模块定义和expose(暴露)的</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs javascript"><span class="hljs-keyword">const</span> EventEmitter = <span class="hljs-built_in">require</span>(<span class="hljs-string">'events'</span>);</code></pre>
+
+<p>所有的EventEmitter都会在新的listener添加的时候发出一个<code>'newListener'</code>事件,在有listener被移除的时候发出<code>'removeListener'</code>事件.</p>
+
+
+
+<h3 id="event-newlistener-事件-newlistener">Event: ‘newListener’ (事件: ‘newListener’)</h3>
+
+<ul>
+<li><code>eventName</code> &lt; String&gt; | &lt; Symbol&gt; The name of the event being listened for</li>
+<li><code>listener</code> &lt; Function&gt; The event handler function</li>
+</ul>
+
+<p><code>EventEmitter</code>实例会在有listener要加入到它内部的listener队列中<em>之前</em>发出自己的<code>'newListener'</code>事件.</p>
+
+<p>为<code>'newListener'</code>注册的事件的listener将会传入两个参数(event, listner),event是新注册的事件名称,listener是为新注册的事件绑定的listener的引用.</p>
+
+<p>‘newListener’事件会在新添加的事件添加之前被触发,这会造成一个副作用: 任何在<code>'newListener'</code>回调函数中注册的和新添加的事件<code>同名</code>的事件要比正常过程中添加的事件先触发.看栗子:</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs php"><span class="hljs-keyword">const</span> myEmitter = <span class="hljs-keyword">new</span> MyEmitter();
+<span class="hljs-comment">// Only do this once so we don't loop forever</span>
+myEmitter.once(<span class="hljs-string">'newListener'</span>, (event, listener) =&gt; {
+  <span class="hljs-keyword">if</span> (event === <span class="hljs-string">'event'</span>) {
+    <span class="hljs-comment">// Insert a new listener in front</span>
+    myEmitter.on(<span class="hljs-string">'event'</span>, () =&gt; {
+      console.log(<span class="hljs-string">'B'</span>);
+    });
+  }
+});
+myEmitter.on(<span class="hljs-string">'event'</span>, () =&gt; {
+  console.log(<span class="hljs-string">'A'</span>);
+});
+myEmitter.emit(<span class="hljs-string">'event'</span>);
+  <span class="hljs-comment">// Prints:</span>
+  <span class="hljs-comment">//   B</span>
+  <span class="hljs-comment">//   A</span></code></pre>
+
+
+
+<h3 id="event-removelistener">Event: ‘removeListener’</h3>
+
+<ul>
+<li>eventName &lt; String&gt; | &lt; Symbol&gt; The event name</li>
+<li>listener &lt; Function&gt; The event handler function</li>
+</ul>
+
+<p>在listener被移除<em>之后</em>会发出<code>'removeListener'</code>事件</p>
+
+
+
+<h3 id="eventemitterlistenercountemitter-eventname">EventEmitter.listenerCount(emitter, eventName)</h3>
+
+<blockquote>
+  <p>已经弃用: 用 <code>emitter.listenerCount()</code>替代</p>
+</blockquote>
+
+<p>一个类方法,返回<code>emitter</code>上注册的<code>eventName</code>的listener数量</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs coffeescript"><span class="hljs-reserved">const</span> myEmitter = <span class="hljs-keyword">new</span> MyEmitter();
+myEmitter.<span class="hljs-literal">on</span><span class="hljs-function"><span class="hljs-params">(<span class="hljs-string">'event'</span>, () =&gt; {})</span>;
+<span class="hljs-title">myEmitter</span>.<span class="hljs-title">on</span><span class="hljs-params">(<span class="hljs-string">'event'</span>, () =&gt; {})</span>;
+<span class="hljs-title">console</span>.<span class="hljs-title">log</span><span class="hljs-params">(EventEmitter.listenerCount(myEmitter, <span class="hljs-string">'event'</span>))</span>;
+  // <span class="hljs-title">Prints</span>: 2</span></code></pre>
+
+
+
+<h3 id="eventemitterdefaultmaxlisteners">EventEmitter.defaultMaxListeners</h3>
+
+<p>默认一个事件上最多能注册<code>10</code>个listener. 每个独立的<code>EventEmitter</code>实例可以用<code>emitter.setMaxListeners(n)</code>改变这个限制. 要改变所有<code>EventEmitter</code>实例的默认值需要使用<code>EventEmitter.defaultMaxListeners</code>属性.</p>
+
+<p>要小心设置<code>EventEmitter.defaultMaxListeners</code>会改变所有的<code>EventEmitter</code>实例,包括在这之前就已经创建的实例. 不过用<code>emitter.setMaxListeners(n)</code>还是有更高的优先权.</p>
+
+<p>注意这不是一个硬性限制. <code>EventEmitter</code>实例允许注册更多的listener,但是会在stderr输出警告, 表示监测到一个<code>possible EventEmitter memory leak(可能出现内存泄露)</code>. 对单独的一个<code>EventEmitter</code>实例来说,可以用<code>emitter.getMaxListeners()</code>和<code>emitter.setMaxListeners()</code>方法来暂时避免这个警告:</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs coffeescript">emitter.setMaxListeners(emitter.getMaxListeners() + <span class="hljs-number">1</span>);
+emitter.once<span class="hljs-function"><span class="hljs-params">(<span class="hljs-string">'event'</span>, () =&gt; {
+  <span class="hljs-regexp">//</span> <span class="hljs-keyword">do</span> stuff
+  emitter.setMaxListeners(Math.max(emitter.getMaxListeners() - <span class="hljs-number">1</span>, <span class="hljs-number">0</span>));
+})</span>;</span></code></pre>
+
+
+
+<h3 id="emitteraddlistenereventname-listener">emitter.addListener(eventName, listener)</h3>
+
+<p><code>emitter.on(eventName, listener)</code>的别名</p>
+
+
+
+<h3 id="emitteremiteventname-arg1-arg2">emitter.emit(eventName[, arg1][, arg2][, …])</h3>
+
+<p>按照注册顺序同步的调用<code>eventName</code>的listener,给每个listener传入提供的参数.</p>
+
+<p>如果该事件有listener返回<code>true</code>,没有则返回<code>false</code>.</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs coffeescript"><span class="hljs-reserved">const</span> MyEmitter = <span class="hljs-built_in">require</span>(<span class="hljs-string">'events'</span>)
+
+<span class="hljs-reserved">let</span> myEmitter = <span class="hljs-keyword">new</span> MyEmitter()
+
+myEmitter.<span class="hljs-literal">on</span><span class="hljs-function"><span class="hljs-params">(<span class="hljs-string">'event'</span>, (props) =&gt; {
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'1st on event: '</span> + props)
+})</span>
+
+<span class="hljs-title">myEmitter</span>.<span class="hljs-title">on</span><span class="hljs-params">(<span class="hljs-string">'event'</span>, (props) =&gt; {
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'2nd on event2: '</span> + props)
+})</span>
+
+<span class="hljs-title">myEmitter</span>.<span class="hljs-title">emit</span><span class="hljs-params">(<span class="hljs-string">'event'</span>,<span class="hljs-string">'props1'</span>, <span class="hljs-string">'props2'</span>)</span>
+//<span class="hljs-title">print</span> : 1<span class="hljs-title">st</span> <span class="hljs-title">on</span> <span class="hljs-title">event</span>: <span class="hljs-title">props1</span>
+//        2<span class="hljs-title">nd</span> <span class="hljs-title">on</span> <span class="hljs-title">event2</span>: <span class="hljs-title">props1</span></span></code></pre>
+
+
+
+<h3 id="emittereventnames">emitter.eventNames()</h3>
+
+<p>返回该emitter所注册的所有事件的数组. 数组中的值可能是string或者Symbol</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs coffeescript"><span class="hljs-reserved">const</span> EventEmitter = <span class="hljs-built_in">require</span>(<span class="hljs-string">'events'</span>);
+<span class="hljs-reserved">const</span> myEE = <span class="hljs-keyword">new</span> EventEmitter();
+myEE.<span class="hljs-literal">on</span><span class="hljs-function"><span class="hljs-params">(<span class="hljs-string">'foo'</span>, () =&gt; {})</span>;
+<span class="hljs-title">myEE</span>.<span class="hljs-title">on</span><span class="hljs-params">(<span class="hljs-string">'bar'</span>, () =&gt; {})</span>;
+
+<span class="hljs-title">const</span> <span class="hljs-title">sym</span> = <span class="hljs-title">Symbol</span><span class="hljs-params">(<span class="hljs-string">'symbol'</span>)</span>;
+<span class="hljs-title">myEE</span>.<span class="hljs-title">on</span><span class="hljs-params">(sym, () =&gt; {})</span>;
+
+<span class="hljs-title">console</span>.<span class="hljs-title">log</span><span class="hljs-params">(myEE.eventNames())</span>;
+  // <span class="hljs-title">Prints</span> [ '<span class="hljs-title">foo</span>', '<span class="hljs-title">bar</span>', <span class="hljs-title">Symbol</span><span class="hljs-params">(symbol)</span> ]</span></code></pre>
+
+
+
+<h3 id="emittergetmaxlisteners">emitter.getMaxListeners()</h3>
+
+<p>返回<code>EventEmitter</code>实例当前最大listener数量值,该值可能是通过<code>emitter.setMaxListeners(n)</code>设置或者默认值<code>EventEmitter.defaultMaxListners</code></p>
+
+
+
+<h3 id="emitterlistenercounteventname">emitter.listenerCount(eventName)</h3>
+
+<ul>
+<li>eventName &lt; Value&gt; The name of the event being listened for</li>
+</ul>
+
+<p>返回<code>eventName</code>事件注册的listener数量.</p>
+
+
+
+<h3 id="emitterlistenerseventname">emitter.listeners(eventName)</h3>
+
+<p>返回<code>eventName</code>事件的listener数组的拷贝</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs coffeescript">server.<span class="hljs-literal">on</span><span class="hljs-function"><span class="hljs-params">(<span class="hljs-string">'connection'</span>, (stream) =&gt; {
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'someone connected!'</span>);
+})</span>;
+<span class="hljs-title">console</span>.<span class="hljs-title">log</span><span class="hljs-params">(util.inspect(server.listeners(<span class="hljs-string">'connection'</span>)))</span>;
+  // <span class="hljs-title">Prints</span>: [ [<span class="hljs-title">Function</span>] ]</span></code></pre>
+
+
+
+<h3 id="emitteroneventname-listener">emitter.on(eventName, listener)</h3>
+
+<ul>
+<li>eventName &lt; string&gt; | &lt; Symbol&gt; The name of the event.</li>
+<li>listener &lt; Function&gt; The callback function</li>
+</ul>
+
+<p>给<code>eventName</code>事件的listener数组末尾添加该<code>listener</code>方法. 不会检查该<code>listener</code>是否已经被加入.  重复的添加相同的<code>eventName</code>和<code>listener</code>的组合会导致<code>listener</code>会被添加,调用多次.</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs coffeescript">server.<span class="hljs-literal">on</span><span class="hljs-function"><span class="hljs-params">(<span class="hljs-string">'connection'</span>, (stream) =&gt; {
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'someone connected!'</span>);
+})</span>;</span></code></pre>
+
+<p>该方法会返回一个对<code>EventEmitter</code>的引用,因此可以链式调用</p>
+
+<p>默认的事件listener会按照他们添加的顺序调用. <code>emitter.prependListener()</code>方法可以将该listener添加到listener数组的开始位置.</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs coffeescript"><span class="hljs-reserved">const</span> myEE = <span class="hljs-keyword">new</span> EventEmitter();
+myEE.<span class="hljs-literal">on</span><span class="hljs-function"><span class="hljs-params">(<span class="hljs-string">'foo'</span>, () =&gt; <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'a'</span>))</span>;
+<span class="hljs-title">myEE</span>.<span class="hljs-title">prependListener</span><span class="hljs-params">(<span class="hljs-string">'foo'</span>, () =&gt; <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'b'</span>))</span>;
+<span class="hljs-title">myEE</span>.<span class="hljs-title">emit</span><span class="hljs-params">(<span class="hljs-string">'foo'</span>)</span>;
+  // <span class="hljs-title">Prints</span>:
+  //   <span class="hljs-title">b</span>
+  //   <span class="hljs-title">a</span></span></code></pre>
+
+
+
+<h3 id="emitteronceeventname-listener">emitter.once(eventName, listener)</h3>
+
+<ul>
+<li><code>eventName</code> &lt; string&gt; | &lt; Symbol&gt; The name of the event.</li>
+<li><code>listener</code> &lt; Function&gt; The callback function</li>
+</ul>
+
+<p>为<code>eventName</code>事件添加一个<strong>一次性</strong>的<code>listener</code>. 下一次<code>eventName</code>事件被触发的时候,这个listener就会被移除,然后调用.</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs coffeescript">server.once<span class="hljs-function"><span class="hljs-params">(<span class="hljs-string">'connection'</span>, (stream) =&gt; {
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Ah, we have our first user!'</span>);
+})</span>;</span></code></pre>
+
+<p>返回一个对<code>EventEmitter</code>的引用,因此可以链式调用</p>
+
+<p>默认的事件listener会按照他们添加的顺序调用. <code>emitter.prependOnceListener()</code>方法可以将该listener添加到listener数组的开始位置.</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs coffeescript"><span class="hljs-reserved">const</span> myEE = <span class="hljs-keyword">new</span> EventEmitter();
+myEE.once<span class="hljs-function"><span class="hljs-params">(<span class="hljs-string">'foo'</span>, () =&gt; <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'a'</span>))</span>;
+<span class="hljs-title">myEE</span>.<span class="hljs-title">prependOnceListener</span><span class="hljs-params">(<span class="hljs-string">'foo'</span>, () =&gt; <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'b'</span>))</span>;
+<span class="hljs-title">myEE</span>.<span class="hljs-title">emit</span><span class="hljs-params">(<span class="hljs-string">'foo'</span>)</span>;
+  // <span class="hljs-title">Prints</span>:
+  //   <span class="hljs-title">b</span>
+  //   <span class="hljs-title">a</span></span></code></pre>
+
+
+
+<h3 id="emitterprependlistenereventname-listener">emitter.prependListener(eventName, listener)</h3>
+
+<ul>
+<li><code>eventName</code> &lt; string&gt; | &lt; Symbol&gt; The name of the event.</li>
+<li><code>listener</code> &lt; Function&gt; The callback function</li>
+</ul>
+
+<p>给<code>eventName</code>事件的listener数组<em>开始</em>添加该<code>listener</code>方法. 不会检查该<code>listener</code>是否已经被加入.  重复添加相同的<code>eventName</code>和<code>listener</code>的组合会导致<code>listener</code>会被添加,调用多次.</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs coffeescript">server.prependListener<span class="hljs-function"><span class="hljs-params">(<span class="hljs-string">'connection'</span>, (stream) =&gt; {
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'someone connected!'</span>);
+})</span>;</span></code></pre>
+
+<p>返回对<code>EventEmitter</code>实例的引用,因此可以链式调用</p>
+
+
+
+<h3 id="emitterprependoncelistenereventname-listener">emitter.prependOnceListener(eventName, listener)</h3>
+
+<ul>
+<li><code>eventName</code> &lt; string&gt; | &lt; Symbol&gt; The name of the event.</li>
+<li><code>listener</code> &lt; Function&gt; The callback function</li>
+</ul>
+
+<p>在<code>eventName</code>事件的listener数组的<em>开始</em>位置添加一个<strong>一次性</strong>的listener. 下次<code>eventName</code>事件触发的时候,listener就会被移除,再调用.</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs coffeescript">server.prependOnceListener<span class="hljs-function"><span class="hljs-params">(<span class="hljs-string">'connection'</span>, (stream) =&gt; {
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Ah, we have our first user!'</span>);
+})</span>;</span></code></pre>
+
+<p>返回一个对<code>EventEmitter</code>的引用,因此可以链式调用</p>
+
+
+
+<h3 id="emitterremovealllistenerseventname">emitter.removeAllListeners([eventName])</h3>
+
+<p>移除<code>eventName</code>事件的所有的listener</p>
+
+<p>注意:移除在其他位置添加的listener是一个坏习惯, 特别是当<code>EventEmitter</code>实例是在其他组件或者模块创建的时候.(例如, sockets 或者 file streams)</p>
+
+<p>返回该<code>EventEmitter</code>实例的引用,因此可以链式调用</p>
+
+
+
+<h3 id="emitterremovelistenereventname-listener">emitter.removeListener(eventName, listener)</h3>
+
+<p>移除<code>eventName</code>事件的所有listener</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs r">var callback = (stream) =&gt; {
+  console.log(<span class="hljs-string">'someone connected!'</span>);
+};
+server.on(<span class="hljs-string">'connection'</span>, callback);
+// <span class="hljs-keyword">...</span>
+server.removeListener(<span class="hljs-string">'connection'</span>, callback);</code></pre>
+
+<p><code>removeListener</code>方法一次只会从listener数组中移除一个listener实例. 如果一个listener在<code>eventName</code>事件中添加了多次, 那么要移除每个实例的话也要调用多次<code>removeListener</code>方法.</p>
+
+<p><strong>注意</strong>当一个event发出之后, 在发出事件的时刻已经绑定的listener都会按顺序调用. 这意味着在发出事件<em>之后</em>调用的<code>removeListener()</code>或者<code>removeAllListener()</code>方法在最后一个listener完成<em>之前</em>都不会生效. 之后的事件行为将会正常表现.</p>
+
+
+
+<pre class="prettyprint"><code class=" hljs coffeescript"><span class="hljs-reserved">const</span> myEmitter = <span class="hljs-keyword">new</span> MyEmitter();
+
+<span class="hljs-reserved">var</span> <span class="hljs-function"><span class="hljs-title">callbackA</span> = <span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'A'</span>);
+  myEmitter.removeListener(<span class="hljs-string">'event'</span>, callbackB);
+};
+
+<span class="hljs-reserved">var</span> <span class="hljs-function"><span class="hljs-title">callbackB</span> = <span class="hljs-params">()</span> =&gt;</span> {
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'B'</span>);
+};
+
+myEmitter.<span class="hljs-literal">on</span>(<span class="hljs-string">'event'</span>, callbackA);
+
+myEmitter.<span class="hljs-literal">on</span>(<span class="hljs-string">'event'</span>, callbackB);
+
+<span class="hljs-regexp">//</span> callbackA removes listener callbackB but it will still be called.
+<span class="hljs-regexp">//</span> Internal listener array at time <span class="hljs-keyword">of</span> emit [callbackA, callbackB]
+myEmitter.emit(<span class="hljs-string">'event'</span>);
+  <span class="hljs-regexp">//</span> <span class="hljs-attribute">Prints</span>:
+  <span class="hljs-regexp">//</span>   A
+  <span class="hljs-regexp">//</span>   B
+
+<span class="hljs-regexp">//</span> callbackB <span class="hljs-keyword">is</span> now removed.
+<span class="hljs-regexp">//</span> Internal listener array [callbackA]
+myEmitter.emit(<span class="hljs-string">'event'</span>);
+  <span class="hljs-regexp">//</span> <span class="hljs-attribute">Prints</span>:
+  <span class="hljs-regexp">//</span>   A</code></pre>
+
+<p>由于listener是用内部的数组来管理的,调用这个方法会改变被移除的listener*之后*的listener的index位置, 但不会影响listener调用的顺序, 但是这意味着用<code>emitter.listeners()</code>方法返回的listener数组的拷贝需要被重新创建.</p>
+
+<p>返回对<code>EventEmitter</code>实例的引用,因此可以链式调用.</p>
+
+
+
+<h3 id="emittersetmaxlistenersn">emitter.setMaxListeners(n)</h3>
+
+<p>默认当一个事件上添加了超过<code>10</code>个listener的时候EventEmitters会打印出一个警告.  这是用来发现内存泄露的默认值. 但显然, 不是所有的事件都应该限制只有10个listener. 使用<code>emitter.setMaxListeners()</code>方法可以改变特定<code>EventEmitter</code>实例的限制. 这个值可以设置成<code>Infinity(或者0)</code>,表示对listener数量没有限制</p>
+
+<p>返回对<code>EventEmitter</code>实例的引用, 因此可以链式调用.</p></div></body>
+</html>

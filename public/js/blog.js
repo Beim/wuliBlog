@@ -21654,7 +21654,7 @@
 		totalNum: 1,
 		blog: '',
 		hasZaned: false,
-		onePageNum: 5,
+		onePageNum: 10,
 		nickname: '',
 		email: '',
 		comments: [],
@@ -22077,7 +22077,6 @@
 			ContentStore.addChangeListener(this._onChange);
 		},
 		componentDidMount: function componentDidMount() {
-			console.info('123');
 			ContentStore.addChangeListener(this._onChange);
 		},
 		componentWillUnmount: function componentWillUnmount() {
@@ -22346,6 +22345,7 @@
 			showData: this.state.showData,
 			currentNum: this.state.currentNum,
 			comments: this.state.comments,
+			onePageNum: this.state.onePageNum,
 			display: this.props.display,
 			handlePrev: this.handlePrev,
 			totalNum: this.state.totalNum,
@@ -22390,6 +22390,7 @@
 		var handlePostComment = props.handlePostComment;
 		var _this = props._this;
 		var zan = props.zan;
+		var onePageNum = props.onePageNum;
 
 		var data = showData;
 		var wraps = data.map(function (value, index) {
@@ -22399,7 +22400,7 @@
 					author = author.substring(0, author.indexOf(':'));
 				}
 				value.date = value.date.substring(0, 10);
-				return rce('div', { 'key': 'wraps' + index, 'className': 'post-wrap', 'style': { 'display': index < 5 * currentNum && index >= 5 * (currentNum - 1) ? 'block' : 'none' } }, rce('h1', { 'className': 'post-name' }, rce('a', { 'href': '#!/article/' + value._id, /*'onClick': handleShowBlog,*/'data-myid': value._id }, value.title)), rce('div', { 'className': 'post-date' }, '#' + value.date + ' By: ' + author), rce('div', { 'className': 'post-excerpt' }, value.excerpt), rce('div', { 'className': 'post-tags' }, rce('span', { 'className': 'post-tag' }, 'tags:'), value.tags.map(function (value1, index1) {
+				return rce('div', { 'key': 'wraps' + index, 'className': 'post-wrap', 'style': { 'display': index < onePageNum * currentNum && index >= onePageNum * (currentNum - 1) ? 'block' : 'none' } }, rce('h1', { 'className': 'post-name' }, rce('a', { 'href': '#!/article/' + value._id, /*'onClick': handleShowBlog,*/'data-myid': value._id }, value.title)), rce('div', { 'className': 'post-date' }, '#' + value.date + ' By: ' + author), rce('div', { 'className': 'post-excerpt' }, value.excerpt), rce('div', { 'className': 'post-tags' }, rce('span', { 'className': 'post-tag' }, 'tags:'), value.tags.map(function (value1, index1) {
 					return rce('span', { 'key': 'tags' + Date() + index1, 'className': 'post-tag' },
 					// rce('a', {'href': '#'}, value1)
 					value1);

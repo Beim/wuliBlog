@@ -18,6 +18,7 @@ let Content = (props) => {
 	let handlePostComment = props.handlePostComment
 	let _this = props._this
 	let zan = props.zan
+	let onePageNum = props.onePageNum
 
 	let data = showData
 	let wraps = data.map(function(value, index){
@@ -27,7 +28,7 @@ let Content = (props) => {
 				author = author.substring(0, author.indexOf(':'))
 			}
 			value.date = value.date.substring(0, 10)
-			return rce('div', {'key' : 'wraps' + index, 'className': 'post-wrap', 'style': {'display': (index<5*currentNum && index>=5*(currentNum-1)) ? 'block' : 'none' }},
+			return rce('div', {'key' : 'wraps' + index, 'className': 'post-wrap', 'style': {'display': (index<onePageNum*currentNum && index>=onePageNum*(currentNum-1)) ? 'block' : 'none' }},
 				rce('h1', {'className': 'post-name'},
 					rce('a', {'href': '#!/article/'+value._id, /*'onClick': handleShowBlog,*/ 'data-myid': value._id}, value.title)
 				),

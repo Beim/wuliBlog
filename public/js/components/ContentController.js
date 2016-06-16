@@ -52,7 +52,6 @@ let ContentController = React.createClass({display: 'ContentController',
 		ContentStore.addChangeListener(this._onChange)
 	},
 	componentDidMount: function() {
-		console.info('123')
 		ContentStore.addChangeListener(this._onChange)
 	},
 	componentWillUnmount: function() {
@@ -331,6 +330,7 @@ let ContentController = React.createClass({display: 'ContentController',
 			showData: this.state.showData,
 			currentNum: this.state.currentNum,
 			comments: this.state.comments,
+			onePageNum: this.state.onePageNum,
 			display: this.props.display,
 			handlePrev: this.handlePrev,
 			totalNum: this.state.totalNum,

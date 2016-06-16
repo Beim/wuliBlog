@@ -9,7 +9,7 @@ let ContentStore = assign({}, EventEmitter.prototype, {
 	totalNum: 1,
 	blog: '',
 	hasZaned: false,
-	onePageNum: 5,
+	onePageNum: 10,
 	nickname: '',
 	email: '',
 	comments: [],

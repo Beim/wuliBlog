@@ -7,7 +7,7 @@ var debug = require('debug')('demo:server')
 var http = require('http')
 // var socket = require('../sockets/socket.js')
 
-var port = normalizePort(process.env.PORT || '2333')
+var port = normalizePort(process.env.PORT || '80')
 // app.set('port', port)
 
 /*

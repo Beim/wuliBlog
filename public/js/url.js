@@ -51,7 +51,7 @@
 	var rce = React.createElement.bind();
 	var SiteHeader = __webpack_require__(168);
 	var Fullstrip = __webpack_require__(169);
-	var UrlShorterController = __webpack_require__(189);
+	var UrlShorterController = __webpack_require__(191);
 	var total = React.createClass({
 		displayName: 'total',
 
@@ -20686,16 +20686,18 @@
 /* 186 */,
 /* 187 */,
 /* 188 */,
-/* 189 */
+/* 189 */,
+/* 190 */,
+/* 191 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 
 	var React = __webpack_require__(1);
 	var rce = React.createElement.bind();
-	var UrlShorter = __webpack_require__(190);
+	var UrlShorter = __webpack_require__(192);
 
-	var UrlShorterStore = __webpack_require__(191);
+	var UrlShorterStore = __webpack_require__(193);
 
 	var UrlShorterController = React.createClass({
 		displayName: 'UrlShorterController',
@@ -20814,7 +20816,7 @@
 	module.exports = UrlShorterController;
 
 /***/ },
-/* 190 */
+/* 192 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -20851,7 +20853,7 @@
 	module.exports = UrlShorter;
 
 /***/ },
-/* 191 */
+/* 193 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -20863,7 +20865,7 @@
 		chooseState: 'create',
 		longValue: '',
 		shortValue: '',
-		hostUrl: 'http://140.115.204.185:2333/url/',
+		hostUrl: 'http://beim.site/url/',
 		urls: [],
 
 		getChooseState: function getChooseState() {

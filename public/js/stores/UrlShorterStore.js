@@ -5,7 +5,7 @@ let UrlShorterStore = assign({}, EventEmitter.prototype, {
 	chooseState: 'create',
 	longValue: '',
 	shortValue: '',
-	hostUrl: 'http://140.115.204.185:2333/url/',
+	hostUrl: 'http://beim.site/url/',
 	urls: [],
 
 	getChooseState: function(){
